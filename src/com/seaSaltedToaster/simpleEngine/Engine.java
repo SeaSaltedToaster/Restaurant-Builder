@@ -9,6 +9,7 @@ import com.seaSaltedToaster.simpleEngine.models.VaoLoader;
 import com.seaSaltedToaster.simpleEngine.models.wavefront.ObjLoader;
 import com.seaSaltedToaster.simpleEngine.renderer.SimpleRenderer;
 import com.seaSaltedToaster.simpleEngine.renderer.Window;
+import com.seaSaltedToaster.simpleEngine.utilities.Matrix4f;
 
 public class Engine {
 	
@@ -38,7 +39,7 @@ public class Engine {
 		this.mouse = new Mouse(window);
 		this.keyboard = new Keyboard(window);
 		
-		this.renderer = new SimpleRenderer();
+		this.renderer = new SimpleRenderer(camera);
 	}
 	
 	public void prepareFrame() {
@@ -53,7 +54,15 @@ public class Engine {
 		this.camera.update();
 		this.window.updateWindow();
 	}
+	
+	public Matrix4f getViewMatrix() {
+		return renderer.getViewMatrix();
+	}
 
+	public Matrix4f getProjectionMatrix() {
+		return renderer.getProjectionMatrix();
+	}
+	
 	public Mouse getMouse() {
 		return mouse;
 	}

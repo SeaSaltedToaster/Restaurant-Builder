@@ -28,7 +28,6 @@ public class WorldCamera extends Camera implements ScrollListener, MousePosListe
 	private SmoothVector smoothMove, smoothFocus;
 	
 	//Movement
-	private float speed = 100;
 	public float camDist = 5;
 	private double lastX, lastY;
 	private float outerAngle = 45;
@@ -118,7 +117,7 @@ public class WorldCamera extends Camera implements ScrollListener, MousePosListe
 	
 	@Override
 	public void notifyScrollChanged(float scrollValue) {
-		this.smoothZoom.increaseTarget(scrollValue * -2f);
+		this.smoothZoom.force(camDist + scrollValue * -2f);
 	}
 
 	private void calculateCameraPosition(float horizDistance, float verticDistance) {

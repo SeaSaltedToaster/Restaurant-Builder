@@ -96,11 +96,11 @@ public class Mouse {
 		return scrollValue;
 	}
 
-	public static double getMouseX() {
+	public double getMouseX() {
 		return mousePositionCallback.getMouseX();
 	}
 
-	public static double getMouseY() {
+	public double getMouseY() {
 		return mousePositionCallback.getMouseY();
 	}
 

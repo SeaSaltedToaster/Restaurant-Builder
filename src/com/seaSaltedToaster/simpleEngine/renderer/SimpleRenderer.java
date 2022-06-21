@@ -15,11 +15,14 @@ public class SimpleRenderer {
 	private SimpleShader shader;
 	
 	//Matrices
+	private Matrix4f viewMatrix, projectionMatrix;
 	private MatrixUtils utils;
 	
-	public SimpleRenderer() {
+	public SimpleRenderer(Camera camera) {
 		this.shader = new SimpleShader();
 		this.utils = new MatrixUtils();
+		this.viewMatrix = utils.createViewMatrix(camera);
+		this.projectionMatrix = utils.createProjectionMatrix(90, 0.1f, 10000f);
 	}
 	
 	public void prepare() {
@@ -32,13 +35,21 @@ public class SimpleRenderer {
 		OpenGL.enableCull();
 		Matrix4f transformationMatrix = utils.createTransformationMatrix(transform.getPosition(), transform.getRotation().x, transform.getRotation().y, transform.getRotation().z, transform.getScale());
 		shader.getTransformation().loadMatrix(transformationMatrix);
-		Matrix4f viewMatrix = utils.createViewMatrix(camera);
+		this.viewMatrix = utils.createViewMatrix(camera);
 		shader.getViewMatrix().loadMatrix(viewMatrix);
-		Matrix4f projectionMatrix = utils.createProjectionMatrix(90, 0.1f, 10000f);
+		this.projectionMatrix = utils.createProjectionMatrix(90, 0.1f, 10000f);
 		shader.getProjectionMatrix().loadMatrix(projectionMatrix);
 		vao.render();
 		OpenGL.disableCull();
 		shader.stopProgram();
+	}
+
+	public Matrix4f getViewMatrix() {
+		return viewMatrix;
+	}
+
+	public Matrix4f getProjectionMatrix() {
+		return projectionMatrix;
 	}
 	
 }
