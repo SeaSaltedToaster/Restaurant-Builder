@@ -1,4 +1,4 @@
-package com.seaSaltedToaster.seaSaltedEngine.uis.text.rendering;
+package com.seaSaltedToaster.simpleEngine.uis.text.rendering;
 
 public class TextMeshData {
 	

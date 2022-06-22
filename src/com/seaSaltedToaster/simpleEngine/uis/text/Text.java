@@ -1,12 +1,12 @@
-package com.seaSaltedToaster.seaSaltedEngine.uis.text;
+package com.seaSaltedToaster.simpleEngine.uis.text;
 
-import com.seaSaltedToaster.seaSaltedEngine.Engine;
-import com.seaSaltedToaster.seaSaltedEngine.model.Vao;
-import com.seaSaltedToaster.seaSaltedEngine.model.VaoLoader;
-import com.seaSaltedToaster.seaSaltedEngine.uis.UiComponent;
-import com.seaSaltedToaster.seaSaltedEngine.uis.constraints.HorizontalAlignment;
-import com.seaSaltedToaster.seaSaltedEngine.uis.constraints.VerticalAlignment;
-import com.seaSaltedToaster.seaSaltedEngine.uis.text.rendering.TextMeshData;
+import com.seaSaltedToaster.simpleEngine.Engine;
+import com.seaSaltedToaster.simpleEngine.models.Vao;
+import com.seaSaltedToaster.simpleEngine.models.VaoLoader;
+import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
+import com.seaSaltedToaster.simpleEngine.uis.constraints.HorizontalAlignment;
+import com.seaSaltedToaster.simpleEngine.uis.constraints.VerticalAlignment;
+import com.seaSaltedToaster.simpleEngine.uis.text.rendering.TextMeshData;
 
 public class Text extends UiComponent {
 

@@ -11,11 +11,13 @@ import com.seaSaltedToaster.simpleEngine.input.Keyboard;
 import com.seaSaltedToaster.simpleEngine.input.Mouse;
 import com.seaSaltedToaster.simpleEngine.models.Vao;
 import com.seaSaltedToaster.simpleEngine.models.VaoLoader;
+import com.seaSaltedToaster.simpleEngine.models.texture.TextureLoader;
 import com.seaSaltedToaster.simpleEngine.models.wavefront.ObjLoader;
 import com.seaSaltedToaster.simpleEngine.renderer.SimpleRenderer;
 import com.seaSaltedToaster.simpleEngine.renderer.Window;
 import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
 import com.seaSaltedToaster.simpleEngine.uis.rendering.UiRenderer;
+import com.seaSaltedToaster.simpleEngine.uis.text.rendering.FontRenderer;
 import com.seaSaltedToaster.simpleEngine.utilities.Matrix4f;
 import com.seaSaltedToaster.simpleEngine.utilities.skybox.SkyboxRenderer;
 
@@ -28,6 +30,7 @@ public class Engine {
 	//Models
 	private VaoLoader loader;
 	private ObjLoader objLoader;
+	private TextureLoader texLoader;
 	
 	//Input
 	private Mouse mouse;
@@ -36,6 +39,7 @@ public class Engine {
 	//UIs
 	private List<UiComponent> uis;
 	private UiRenderer uiRenderer;
+	private FontRenderer fontRenderer;
 	
 	//Renderer
 	private SimpleRenderer renderer;
@@ -48,12 +52,14 @@ public class Engine {
 		
 		this.loader = new VaoLoader();
 		this.objLoader = new ObjLoader(this);
+		this.texLoader = new TextureLoader();
 		
 		this.mouse = new Mouse(window);
 		this.keyboard = new Keyboard(window);
 		
 		this.uis = new ArrayList<UiComponent>();
 		this.uiRenderer = new UiRenderer(loader);
+		this.fontRenderer = new FontRenderer();
 		
 		this.renderer = new SimpleRenderer(this);
 		this.skybox = new SkyboxRenderer(this);
@@ -113,8 +119,16 @@ public class Engine {
 		this.keyboard = keyboard;
 	}
 
+	public FontRenderer getFontRenderer() {
+		return fontRenderer;
+	}
+
 	public UiRenderer getUiRenderer() {
 		return uiRenderer;
+	}
+
+	public TextureLoader getTextureLoader() {
+		return texLoader;
 	}
 
 	public ObjLoader getObjLoader() {

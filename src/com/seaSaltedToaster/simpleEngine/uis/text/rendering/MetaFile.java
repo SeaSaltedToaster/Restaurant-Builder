@@ -1,4 +1,4 @@
-package com.seaSaltedToaster.seaSaltedEngine.uis.text.rendering;
+package com.seaSaltedToaster.simpleEngine.uis.text.rendering;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,8 +6,8 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.seaSaltedToaster.seaSaltedEngine.rendering.display.Display;
-import com.seaSaltedToaster.seaSaltedEngine.uis.text.Character;
+import com.seaSaltedToaster.simpleEngine.uis.text.Character;
+import com.seaSaltedToaster.simpleEngine.renderer.Window;
 
 public class MetaFile {
 
@@ -36,7 +36,7 @@ public class MetaFile {
     private Map<String, String> values = new HashMap<String, String>();
 
     public MetaFile(String file) {
-        this.aspectRatio = Display.getAspectRatio();
+        this.aspectRatio = Window.getAspectRatio();
         
         openFile(file);
         loadPaddingData();
@@ -97,7 +97,7 @@ public class MetaFile {
 
     private void openFile(String file) {
         try {
-        	InputStreamReader isr = new InputStreamReader(MetaFile.class.getResourceAsStream("/com/seaSaltedToaster/engineResources/" + file + ".fnt"));
+        	InputStreamReader isr = new InputStreamReader(MetaFile.class.getResourceAsStream(file + ".fnt"));
             reader = new BufferedReader(isr);
         } catch (Exception e) {
             e.printStackTrace();

@@ -1,4 +1,4 @@
-package com.seaSaltedToaster.seaSaltedEngine.uis.text;
+package com.seaSaltedToaster.simpleEngine.uis.text;
 
 import java.util.ArrayList;
 import java.util.List;

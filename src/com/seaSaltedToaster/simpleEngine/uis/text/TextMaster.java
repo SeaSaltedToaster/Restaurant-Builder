@@ -1,15 +1,15 @@
-package com.seaSaltedToaster.seaSaltedEngine.uis.text;
+package com.seaSaltedToaster.simpleEngine.uis.text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.seaSaltedToaster.seaSaltedEngine.Engine;
-import com.seaSaltedToaster.seaSaltedEngine.model.Vao;
-import com.seaSaltedToaster.seaSaltedEngine.model.VaoLoader;
-import com.seaSaltedToaster.seaSaltedEngine.uis.text.rendering.FontRenderer;
-import com.seaSaltedToaster.seaSaltedEngine.uis.text.rendering.TextMeshData;
+import com.seaSaltedToaster.simpleEngine.Engine;
+import com.seaSaltedToaster.simpleEngine.models.Vao;
+import com.seaSaltedToaster.simpleEngine.models.VaoLoader;
+import com.seaSaltedToaster.simpleEngine.uis.text.rendering.FontRenderer;
+import com.seaSaltedToaster.simpleEngine.uis.text.rendering.TextMeshData;
 
 public class TextMaster {
 	
@@ -58,7 +58,6 @@ public class TextMaster {
      
     public static void cleanUp(){
     	clear();
-        renderer.cleanUp();
     }
 
 	public static Map<FontType, List<Text>> getTexts() {

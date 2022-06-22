@@ -1,7 +1,7 @@
-package com.seaSaltedToaster.seaSaltedEngine.uis.text;
+package com.seaSaltedToaster.simpleEngine.uis.text;
 
-import com.seaSaltedToaster.seaSaltedEngine.uis.text.rendering.TextMeshCreator;
-import com.seaSaltedToaster.seaSaltedEngine.uis.text.rendering.TextMeshData;
+import com.seaSaltedToaster.simpleEngine.uis.text.rendering.TextMeshCreator;
+import com.seaSaltedToaster.simpleEngine.uis.text.rendering.TextMeshData;
 
 public class FontType {
 	

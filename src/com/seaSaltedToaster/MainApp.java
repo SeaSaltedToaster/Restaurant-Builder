@@ -7,6 +7,8 @@ import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.entity.Transform;
 import com.seaSaltedToaster.simpleEngine.models.Vao;
 import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
+import com.seaSaltedToaster.simpleEngine.uis.text.Fonts;
+import com.seaSaltedToaster.simpleEngine.uis.text.Text;
 import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 
 public class MainApp {
@@ -17,7 +19,10 @@ public class MainApp {
 	public static void main(String[] args) {
 		//Engine
 		Engine engine = new Engine("Engine Test", ClientConfigs.WINDOW_X, ClientConfigs.WINDOW_Y);
-		engine.setCamera(new WorldCamera(engine));		
+		engine.setCamera(new WorldCamera(engine));
+		
+		//Assets
+		Fonts.loadFonts(engine);
 		
 		//Ground
 		Ground ground = new Ground(10, 1, engine);
@@ -29,7 +34,10 @@ public class MainApp {
 		
 		//Uis
 		UiComponent ui = new UiComponent(0);
-		//engine.addUi(ui);
+		Text text = new Text("Bob", 1, 0);
+		text.setColor(1.0f);
+		ui.addComponent(text);
+		engine.addUi(ui);
 		
 		//Models
 		Vao wall = engine.getObjLoader().loadObjModel("simpleWall");

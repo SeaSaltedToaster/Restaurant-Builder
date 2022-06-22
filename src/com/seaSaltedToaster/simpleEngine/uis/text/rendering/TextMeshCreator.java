@@ -1,13 +1,12 @@
-package com.seaSaltedToaster.seaSaltedEngine.uis.text.rendering;
+package com.seaSaltedToaster.simpleEngine.uis.text.rendering;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.seaSaltedToaster.seaSaltedEngine.basic.Logger;
-import com.seaSaltedToaster.seaSaltedEngine.uis.text.Character;
-import com.seaSaltedToaster.seaSaltedEngine.uis.text.Line;
-import com.seaSaltedToaster.seaSaltedEngine.uis.text.Text;
-import com.seaSaltedToaster.seaSaltedEngine.uis.text.Word;
+import com.seaSaltedToaster.simpleEngine.uis.text.Line;
+import com.seaSaltedToaster.simpleEngine.uis.text.Text;
+import com.seaSaltedToaster.simpleEngine.uis.text.Word;
+import com.seaSaltedToaster.simpleEngine.uis.text.Character;
 
 public class TextMeshCreator {
 	
@@ -16,7 +15,7 @@ public class TextMeshCreator {
  
     private MetaFile metaData;
     
-    private float xScale, yScale;
+    private float xScale;
     private float lowestY, highestY;
     private float leftX, rightX;
  
@@ -38,7 +37,6 @@ public class TextMeshCreator {
 		leftX = 0;
 		rightX = 0;
 		xScale = 0;
-		yScale = 0;
 	}
 
 	private void calculateTextBoundScale(Text text) {

@@ -1,4 +1,4 @@
-package com.seaSaltedToaster.seaSaltedEngine.uis.text.rendering;
+package com.seaSaltedToaster.simpleEngine.uis.text.rendering;
 
 import java.util.List;
 import java.util.Map;
@@ -6,8 +6,8 @@ import java.util.Map;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 
-import com.seaSaltedToaster.seaSaltedEngine.uis.text.FontType;
-import com.seaSaltedToaster.seaSaltedEngine.uis.text.Text;
+import com.seaSaltedToaster.simpleEngine.uis.text.FontType;
+import com.seaSaltedToaster.simpleEngine.uis.text.Text;
 
 public class FontRenderer {
 
@@ -29,16 +29,12 @@ public class FontRenderer {
         }
         endRendering();
     }
- 
-    public void cleanUp(){
-        shader.cleanUp();
-    }
-     
+      
     private static void prepare(){
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glDisable(GL11.GL_DEPTH_TEST);
-        shader.start();
+        shader.useProgram();
     }
     
     public void renderTextSingle(Text text){
@@ -66,9 +62,8 @@ public class FontRenderer {
     }
      
     private static void endRendering(){
-        shader.stop();
+        shader.stopProgram();
         GL11.glDisable(GL11.GL_BLEND);
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
     }
 	
 }
