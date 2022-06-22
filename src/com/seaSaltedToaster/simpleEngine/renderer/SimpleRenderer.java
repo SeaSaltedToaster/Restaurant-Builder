@@ -1,8 +1,6 @@
 package com.seaSaltedToaster.simpleEngine.renderer;
 
-import org.lwjgl.opengl.GL11;
-
-import com.seaSaltedToaster.simpleEngine.entity.Camera;
+import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.entity.Transform;
 import com.seaSaltedToaster.simpleEngine.models.Vao;
 import com.seaSaltedToaster.simpleEngine.utilities.Matrix4f;
@@ -18,26 +16,21 @@ public class SimpleRenderer {
 	private Matrix4f viewMatrix, projectionMatrix;
 	private MatrixUtils utils;
 	
-	public SimpleRenderer(Camera camera) {
+	public SimpleRenderer(Engine engine) {
 		this.shader = new SimpleShader();
 		this.utils = new MatrixUtils();
-		this.viewMatrix = utils.createViewMatrix(camera);
-		this.projectionMatrix = utils.createProjectionMatrix(90, 0.1f, 10000f);
+		this.viewMatrix = utils.createViewMatrix(engine.getCamera());
+		this.projectionMatrix = utils.createProjectionMatrix(90, 0.1f, 10000f, engine);
 	}
 	
-	public void prepare() {
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-		GL11.glClearColor(1.0f, 0.0f, 0.0f, 1);
-	}
-
-	public void render(Vao vao, Transform transform, Camera camera) {
+	public void render(Vao vao, Transform transform, Engine engine) {
 		shader.useProgram();
 		OpenGL.enableCull();
 		Matrix4f transformationMatrix = utils.createTransformationMatrix(transform.getPosition(), transform.getRotation().x, transform.getRotation().y, transform.getRotation().z, transform.getScale());
 		shader.getTransformation().loadMatrix(transformationMatrix);
-		this.viewMatrix = utils.createViewMatrix(camera);
+		this.viewMatrix = utils.createViewMatrix(engine.getCamera());
 		shader.getViewMatrix().loadMatrix(viewMatrix);
-		this.projectionMatrix = utils.createProjectionMatrix(90, 0.1f, 10000f);
+		this.projectionMatrix = utils.createProjectionMatrix(90, 0.1f, 10000f, engine);
 		shader.getProjectionMatrix().loadMatrix(projectionMatrix);
 		vao.render();
 		OpenGL.disableCull();

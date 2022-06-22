@@ -1,7 +1,9 @@
 package com.seaSaltedToaster.simpleEngine.utilities;
 
+import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.entity.Camera;
 import com.seaSaltedToaster.simpleEngine.entity.Transform;
+import com.seaSaltedToaster.simpleEngine.renderer.Window;
 
 public class MatrixUtils {
 
@@ -38,10 +40,11 @@ public class MatrixUtils {
 	    return viewMatrix;
 	}
 	
-	 public Matrix4f createProjectionMatrix(float FOV, float NEAR_PLANE, float FAR_PLANE) {
+	 public Matrix4f createProjectionMatrix(float FOV, float NEAR_PLANE, float FAR_PLANE, Engine engine) {
 		Matrix4f projectionMatrix = new Matrix4f();
 		projectionMatrix.setIdentity();
-		float aspectRatio = (float)  1280 / (float) 720;
+		Window window = engine.getWindow();
+		float aspectRatio = (float)  window.getCurrentWidth() / (float) window.getCurrentHeight();
 		float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
 		float x_scale = y_scale / aspectRatio;
 		float frustum_length = FAR_PLANE - NEAR_PLANE;

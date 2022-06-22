@@ -19,7 +19,7 @@ public class MainApp {
 		engine.setCamera(new WorldCamera(engine));		
 		
 		//Ground
-		Ground ground = new Ground(25, 1, engine);
+		Ground ground = new Ground(10, 2, engine);
 		ground.generateGround(engine);
 		
 		Raycaster ray = new Raycaster(engine);
@@ -29,7 +29,7 @@ public class MainApp {
 				
 		while(!engine.getWindow().shouldClose()) {	
 			engine.prepareFrame();
-			engine.render(ground.getMesh(), transform2);
+			ground.update(engine);
 			engine.render(wall, transform);
 			engine.update();
 		}

@@ -5,16 +5,12 @@ import org.lwjgl.glfw.GLFW;
 import com.seaSaltedToaster.MainApp;
 import com.seaSaltedToaster.restaurantGame.ground.Ground;
 import com.seaSaltedToaster.simpleEngine.Engine;
-import com.seaSaltedToaster.simpleEngine.entity.Camera;
 import com.seaSaltedToaster.simpleEngine.input.listeners.MouseEventData;
 import com.seaSaltedToaster.simpleEngine.input.listeners.MouseListener;
 import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 
 public class Raycaster implements MouseListener {
 
-	//Raycasting
-	private final float MAX_DIST = 1000;
-	
 	//Objects
 	private Engine engine;
 	private MousePicker picker;
@@ -39,14 +35,19 @@ public class Raycaster implements MouseListener {
 		//Get raycast
 		Vector3f ray = picker.getCurrentTerrainPoint();
 		if(ray == null) return;
+		Vector3f placePos = calculatePlacePosition(ray);
 		
 		//Get ray type
-		ground.selectAt(ray);
+		ground.selectAt(placePos);
 		
 		//Set entity pos
-		MainApp.transform.setPosition(ray);
+		MainApp.transform.setPosition(placePos);
 	}
 	
+	private Vector3f calculatePlacePosition(Vector3f placement) {
+		Vector3f pos = new Vector3f(Math.round(placement.x), Math.round(placement.y), Math.round(placement.z));
+		return pos;
+	}
 	
 }
 	

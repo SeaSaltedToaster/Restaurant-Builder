@@ -40,14 +40,14 @@ public class Ground {
 			float tileY = tile.getGridY() * tileSize;
 			if(Math.abs(currentRay.x - tileX) < tileSize/2) {
 				if(Math.abs(currentRay.z - tileY) < tileSize/2) {
-					//renderer.setHighlight(tile.getId());
+					renderer.setHighlight(tile.getId());
 				}
 			}
 		}
 	}
 	
 	public void update(Engine engine) {
-		renderer.render(this, engine.getCamera());
+		renderer.render(vao, engine);
 	}
 	
 	public void generateGround(Engine engine) {
@@ -64,9 +64,9 @@ public class Ground {
 		
 		//Generate mesh
 		this.vao = engine.getLoader().loadToVAO(positions, colors, normals, indices);
-		vao.bind();
-		//vao.createAttribute(3, ids, 1);
-		vao.unbind();
+		this.vao.bind(0,1,2,3);
+		this.vao.createFloatAttribute(3, ids, 1);
+		this.vao.unbind(0,1,2,3);
 	}
 
 	private float[] getIds(List<Float> ids) {
@@ -114,11 +114,12 @@ public class Ground {
 			for(int z = (int) -worldSize; z < worldSize; z++) {
 				//Tile object
 				GroundTile tile = new GroundTile(x, z, random.nextInt(2)+1);
-				tile.setId(id++);
+				tile.setId(id);
 				this.tiles.add(tile);
 				
 				//Create mesh data
 				createVertices(tile);
+				id++;
 			}
 		}
 	}

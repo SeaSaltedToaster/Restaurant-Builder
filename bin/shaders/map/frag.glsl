@@ -1,13 +1,20 @@
-#version 400 core
+#version 400
 
-//Per vertex variables
-in vec3 vertColor;
+const float shade = 1.5;
 
-//Out
-out vec4 outColor;
+in vec3 pass_color;
+in float pass_id;
 
-void main(void) {
+out vec4 out_Color;
 
-	outColor = vec4(vertColor, 1.0);
+uniform float selected;
+
+void main(void)	{
+
+	out_Color = vec4(pass_color, 1.0f);
+	
+	if(pass_id == selected) {
+		out_Color *= vec4(shade, shade, shade, 1);
+	}
 
 }

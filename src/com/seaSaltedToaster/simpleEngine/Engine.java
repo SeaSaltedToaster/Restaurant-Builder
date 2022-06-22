@@ -1,5 +1,7 @@
 package com.seaSaltedToaster.simpleEngine;
 
+import org.lwjgl.opengl.GL11;
+
 import com.seaSaltedToaster.simpleEngine.entity.Camera;
 import com.seaSaltedToaster.simpleEngine.entity.Transform;
 import com.seaSaltedToaster.simpleEngine.input.Keyboard;
@@ -39,15 +41,16 @@ public class Engine {
 		this.mouse = new Mouse(window);
 		this.keyboard = new Keyboard(window);
 		
-		this.renderer = new SimpleRenderer(camera);
+		this.renderer = new SimpleRenderer(this);
 	}
 	
 	public void prepareFrame() {
-		this.renderer.prepare();
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+		GL11.glClearColor(1.0f, 0.0f, 0.0f, 1);
 	}
 	
 	public void render(Vao vao, Transform transform) {
-		this.renderer.render(vao, transform, camera);
+		this.renderer.render(vao, transform, this);
 	}
 	
 	public void update() {

@@ -43,9 +43,9 @@ public class Vao {
 	}
 	
 	public void render() {
-		bind(0,1,2);
+		bind(0,1,2,3,4,5);
 		GL11.glDrawElements(GL11.GL_TRIANGLES, getIndexCount(), GL11.GL_UNSIGNED_INT, 0);
-		unbind(0,1,2);
+		unbind(0,1,2,3,4,5);
 	}
 
 	public void createIndexBuffer(int[] indices) {

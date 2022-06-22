@@ -1,26 +1,23 @@
-#version 400 core
+#version 140
 
-//Per vertex variables
 in vec3 position;
 in vec3 color;
 in vec3 normal;
+in float id;
 
-//Pass to frag shader
-out vec3 vertColor;
+out vec3 pass_color;
+out float pass_id;
 
-//Transforms
 uniform mat4 transformationMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
 
-void main(void) {
+void main(void)	{
 
-	//Transform
 	vec4 worldPosition = transformationMatrix * vec4(position, 1.0f);
-	vec4 positionRelativeToCamera = viewMatrix * worldPosition;
-	gl_Position =  projectionMatrix * positionRelativeToCamera;
-
-	//Out
-	vertColor = color;
-
+	vec4 toCamPos = worldPosition * viewMatrix;
+	gl_Position = toCamPos * projectionMatrix;
+	
+	pass_color = color;
+	pass_id = id;
 }
