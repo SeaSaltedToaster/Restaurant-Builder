@@ -1,5 +1,8 @@
 package com.seaSaltedToaster.simpleEngine;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.lwjgl.opengl.GL11;
 
 import com.seaSaltedToaster.simpleEngine.entity.Camera;
@@ -11,6 +14,8 @@ import com.seaSaltedToaster.simpleEngine.models.VaoLoader;
 import com.seaSaltedToaster.simpleEngine.models.wavefront.ObjLoader;
 import com.seaSaltedToaster.simpleEngine.renderer.SimpleRenderer;
 import com.seaSaltedToaster.simpleEngine.renderer.Window;
+import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
+import com.seaSaltedToaster.simpleEngine.uis.rendering.UiRenderer;
 import com.seaSaltedToaster.simpleEngine.utilities.Matrix4f;
 import com.seaSaltedToaster.simpleEngine.utilities.skybox.SkyboxRenderer;
 
@@ -28,6 +33,10 @@ public class Engine {
 	private Mouse mouse;
 	private Keyboard keyboard;
 	
+	//UIs
+	private List<UiComponent> uis;
+	private UiRenderer uiRenderer;
+	
 	//Renderer
 	private SimpleRenderer renderer;
 	private SkyboxRenderer skybox;
@@ -43,6 +52,9 @@ public class Engine {
 		this.mouse = new Mouse(window);
 		this.keyboard = new Keyboard(window);
 		
+		this.uis = new ArrayList<UiComponent>();
+		this.uiRenderer = new UiRenderer(loader);
+		
 		this.renderer = new SimpleRenderer(this);
 		this.skybox = new SkyboxRenderer(this);
 	}
@@ -57,11 +69,26 @@ public class Engine {
 		this.renderer.render(vao, transform, this);
 	}
 	
+	public void renderUis() {
+		for(UiComponent ui : uis) {
+			ui.updateComponent(this);
+			ui.renderUI(this);
+		}
+	}
+	
 	public void update() {
 		this.camera.update();
 		this.window.updateWindow();
 	}
 	
+	public void addUi(UiComponent ui) {
+		this.uis.add(ui);
+	}
+	
+	public List<UiComponent> getUis() {
+		return uis;
+	}
+
 	public Matrix4f getViewMatrix() {
 		return renderer.getViewMatrix();
 	}
@@ -84,6 +111,10 @@ public class Engine {
 
 	public void setKeyboard(Keyboard keyboard) {
 		this.keyboard = keyboard;
+	}
+
+	public UiRenderer getUiRenderer() {
+		return uiRenderer;
 	}
 
 	public ObjLoader getObjLoader() {

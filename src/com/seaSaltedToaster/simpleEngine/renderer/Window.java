@@ -11,10 +11,10 @@ import org.lwjgl.system.MemoryUtil;
 
 public class Window {
 	
-	public long windowID;
+	public static long windowID;
 	
-	public double DeltaTime;
-	private double lastFrameTime;
+	public static double DeltaTime;
+	private static double lastFrameTime;
 	
 	public void createWindow(int width, int height, String title) {
 		boolean initState = GLFW.glfwInit();
@@ -47,10 +47,10 @@ public class Window {
 		GLFW.glfwSwapBuffers(windowID);
 		GLFW.glfwPollEvents();
 		GLFW.glfwSwapInterval(1);
-		this.DeltaTime = getDelta();
+		Window.DeltaTime = getDelta();
 	}
 	
-	public double getDelta() {
+	public static double getDelta() {
 		double currentTime = GLFW.glfwGetTime();
 		double delta = (currentTime - lastFrameTime);
 		lastFrameTime = currentTime;
@@ -58,16 +58,20 @@ public class Window {
 		return delta;
 	}
 	
-	public double getCurrentWidth() {
+	public static double getCurrentWidth() {
 		IntBuffer posX = BufferUtils.createIntBuffer(1);
 	    GLFW.glfwGetWindowSize(windowID, posX, null);
 	    return posX.get(0);
 	}
 
-	public double getCurrentHeight() {
+	public static double getCurrentHeight() {
 		IntBuffer posY = BufferUtils.createIntBuffer(1);
 		GLFW.glfwGetWindowSize(windowID, null, posY);
 	    return posY.get(0);
+	}
+	
+	public static double getAspectRatio() {
+		return getCurrentWidth() / getCurrentHeight();
 	}
 		
 	public void closeWindow() {

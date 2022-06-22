@@ -29,6 +29,13 @@ public class MatrixUtils {
 		return transformationMatrix;
 	}
 	
+	public Matrix4f createTransformationMatrix(Matrix4f transformationMatrix, Vector2f translation, Vector2f scale) {
+		transformationMatrix.setIdentity();
+		transformationMatrix = transformationMatrix.multiply(Matrix4f.translate(translation.x, translation.y, 0));
+		transformationMatrix = transformationMatrix.multiply(Matrix4f.scale(scale.x, scale.y, 0));
+		return transformationMatrix;
+	}
+	
 	public Matrix4f createViewMatrix(Camera camera) {
 		Matrix4f viewMatrix = new Matrix4f();
 	    viewMatrix.setIdentity();
@@ -43,8 +50,7 @@ public class MatrixUtils {
 	 public Matrix4f createProjectionMatrix(float FOV, float NEAR_PLANE, float FAR_PLANE, Engine engine) {
 		Matrix4f projectionMatrix = new Matrix4f();
 		projectionMatrix.setIdentity();
-		Window window = engine.getWindow();
-		float aspectRatio = (float)  window.getCurrentWidth() / (float) window.getCurrentHeight();
+		float aspectRatio = (float)  Window.getCurrentWidth() / (float) Window.getCurrentHeight();
 		float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
 		float x_scale = y_scale / aspectRatio;
 		float frustum_length = FAR_PLANE - NEAR_PLANE;

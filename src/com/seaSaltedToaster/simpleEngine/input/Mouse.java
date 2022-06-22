@@ -39,9 +39,9 @@ public class Mouse {
 	
 	//Create GLFW callbacks
 	private void createCallbacks(Window window) {
-		GLFW.glfwSetScrollCallback(window.windowID, scrollCallback = new ScrollCallback());
-		GLFW.glfwSetCursorPosCallback(window.windowID, mousePositionCallback = new MousePositionCallback());
-		GLFW.glfwSetMouseButtonCallback(window.windowID, mouseButtonCallback = new MouseButtonCallback());
+		GLFW.glfwSetScrollCallback(Window.windowID, scrollCallback = new ScrollCallback());
+		GLFW.glfwSetCursorPosCallback(Window.windowID, mousePositionCallback = new MousePositionCallback());
+		GLFW.glfwSetMouseButtonCallback(Window.windowID, mouseButtonCallback = new MouseButtonCallback());
 	}
 	
 	public void clearListeners() {
@@ -62,33 +62,33 @@ public class Mouse {
 		scrollCallback.addListener(listener);
 	}
 	
-	public double getMouseCoordsX() {
-		double x = -1.0 + 2.0 * mouseX / window.getCurrentWidth();
+	public static double getMouseCoordsX() {
+		double x = -1.0 + 2.0 * mouseX / Window.getCurrentWidth();
 		return x;
 	}
 	    
-	public double getMouseCoordsY() {
-	    double y = 1.0 - 2.0 * mouseY / window.getCurrentHeight();
+	public static double getMouseCoordsY() {
+	    double y = 1.0 - 2.0 * mouseY / Window.getCurrentHeight();
 	    return y;
 	}
 	
-	public double normalizeMouseCoordX(double x) {
-		double x2 = -1.0 + 2.0 * x / window.getCurrentWidth();
+	public static double normalizeMouseCoordX(double x) {
+		double x2 = -1.0 + 2.0 * x / Window.getCurrentWidth();
 		return x2;
 	}
 	    
-	public double normalizeMouseCoordY(double y) {
-		double y2 = 1.0 - 2.0 * y / window.getCurrentHeight();
+	public static double normalizeMouseCoordY(double y) {
+		double y2 = 1.0 - 2.0 * y / Window.getCurrentHeight();
 	    return y2;
 	}
 	
 	public void setVisible(boolean lock) {
 		isLocked = lock;
 	    if(isLocked) {
-	    	GLFW.glfwSetInputMode(window.windowID, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL); 
+	    	GLFW.glfwSetInputMode(Window.windowID, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL); 
 	    }
 	    else {
-	    	GLFW.glfwSetInputMode(window.windowID, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED); 
+	    	GLFW.glfwSetInputMode(Window.windowID, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED); 
 	    }
 	}
 
@@ -96,11 +96,11 @@ public class Mouse {
 		return scrollValue;
 	}
 
-	public double getMouseX() {
+	public static double getMouseX() {
 		return mousePositionCallback.getMouseX();
 	}
 
-	public double getMouseY() {
+	public static double getMouseY() {
 		return mousePositionCallback.getMouseY();
 	}
 

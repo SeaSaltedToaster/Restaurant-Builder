@@ -10,8 +10,8 @@ import com.seaSaltedToaster.simpleEngine.input.listeners.KeyListener;
 import com.seaSaltedToaster.simpleEngine.input.listeners.MousePosData;
 import com.seaSaltedToaster.simpleEngine.input.listeners.MousePosListener;
 import com.seaSaltedToaster.simpleEngine.input.listeners.ScrollListener;
+import com.seaSaltedToaster.simpleEngine.renderer.Window;
 import com.seaSaltedToaster.simpleEngine.utilities.SmoothFloat;
-import com.seaSaltedToaster.simpleEngine.utilities.SmoothValue;
 import com.seaSaltedToaster.simpleEngine.utilities.SmoothVector;
 import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 
@@ -58,8 +58,9 @@ public class WorldCamera extends Camera implements ScrollListener, MousePosListe
 		float vertical = getVerticalDistance();
 		calculateCameraPosition(horizontal, vertical);
 		
+		engine.getWindow();
 		//Delta
-		double delta = engine.getWindow().getDelta();
+		double delta = Window.getDelta();
 		
 		//Yaw change
 		smoothYaw.update(delta);
@@ -94,7 +95,8 @@ public class WorldCamera extends Camera implements ScrollListener, MousePosListe
 	
 	@Override
 	public void notifyButton(MousePosData eventData) {
-		boolean isRightDown = GLFW.glfwGetMouseButton(engine.getWindow().windowID, RIGHT_MOUSE) == GLFW.GLFW_PRESS;
+		engine.getWindow();
+		boolean isRightDown = GLFW.glfwGetMouseButton(Window.windowID, RIGHT_MOUSE) == GLFW.GLFW_PRESS;
 		
 		//Get change
 		float xChange = (float) (lastX - eventData.getMouseX());

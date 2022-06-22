@@ -18,7 +18,7 @@ public class Keyboard {
 		
 	//Create GLFW callbacks
 	private void createCallbacks(Window window) {
-		GLFW.glfwSetKeyCallback(window.windowID, keyCallback = new KeyCallback());
+		GLFW.glfwSetKeyCallback(Window.windowID, keyCallback = new KeyCallback());
 	}
 	
 	public void addKeyListener(KeyListener keyListener) {

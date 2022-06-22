@@ -6,6 +6,7 @@ import com.seaSaltedToaster.restaurantGame.tools.Raycaster;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.entity.Transform;
 import com.seaSaltedToaster.simpleEngine.models.Vao;
+import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
 import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 
 public class MainApp {
@@ -22,9 +23,15 @@ public class MainApp {
 		Ground ground = new Ground(10, 1, engine);
 		ground.generateGround(engine);
 		
+		//Ray
 		Raycaster ray = new Raycaster(engine);
 		ray.ground = ground;
 		
+		//Uis
+		UiComponent ui = new UiComponent(0);
+		//engine.addUi(ui);
+		
+		//Models
 		Vao wall = engine.getObjLoader().loadObjModel("simpleWall");
 		Vao floor = engine.getObjLoader().loadObjModel("simpleFloor");
 
@@ -32,6 +39,7 @@ public class MainApp {
 			engine.prepareFrame();
 			ground.update(engine);
 			engine.render(wall, transform);
+			engine.renderUis();
 			engine.update();
 		}
 		

@@ -1,6 +1,6 @@
 #version 400
 
-const float shade = 1.5;
+const float shade = 2.0;
 
 in vec3 pass_color;
 in flat int pass_id;
