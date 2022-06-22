@@ -64,6 +64,16 @@ public class Vao {
 		dataVbos.add(dataVbo);
 	}
 	
+	public void createIntAttribute(int attribute, int[] data, int attrSize) {
+		//Add int attrib vao
+		Vbo dataVbo = new Vbo(GL15.GL_ARRAY_BUFFER);
+		dataVbo.bind();
+		dataVbo.storeIntData(data);
+		GL30.glVertexAttribIPointer(attribute, attrSize, GL11.GL_INT, attrSize * Integer.BYTES, 0);
+		dataVbo.unbind();
+		dataVbos.add(dataVbo);
+	}
+		
 	public void delete() {
 		//Delete all vao data
 		GL30.glDeleteVertexArrays(id);

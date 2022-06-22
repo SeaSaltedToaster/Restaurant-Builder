@@ -12,6 +12,7 @@ import com.seaSaltedToaster.simpleEngine.models.wavefront.ObjLoader;
 import com.seaSaltedToaster.simpleEngine.renderer.SimpleRenderer;
 import com.seaSaltedToaster.simpleEngine.renderer.Window;
 import com.seaSaltedToaster.simpleEngine.utilities.Matrix4f;
+import com.seaSaltedToaster.simpleEngine.utilities.skybox.SkyboxRenderer;
 
 public class Engine {
 	
@@ -29,6 +30,7 @@ public class Engine {
 	
 	//Renderer
 	private SimpleRenderer renderer;
+	private SkyboxRenderer skybox;
 	
 	public Engine(String title, int width, int height) {
 		this.window = new Window();
@@ -42,11 +44,13 @@ public class Engine {
 		this.keyboard = new Keyboard(window);
 		
 		this.renderer = new SimpleRenderer(this);
+		this.skybox = new SkyboxRenderer(this);
 	}
 	
 	public void prepareFrame() {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 		GL11.glClearColor(1.0f, 0.0f, 0.0f, 1);
+		skybox.renderSkybox();
 	}
 	
 	public void render(Vao vao, Transform transform) {

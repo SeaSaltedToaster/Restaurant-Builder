@@ -5,6 +5,8 @@ import java.nio.IntBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
 import org.lwjgl.system.MemoryUtil;
 
 public class Window {
@@ -20,6 +22,9 @@ public class Window {
 		if(initState == false) {
 			throw new IllegalStateException("Could not create GLFW");
 		}
+
+		//Anti Aliasing
+		GLFW.glfwWindowHint(GLFW.GLFW_SAMPLES, 8);
 		
 		windowID = GLFW.glfwCreateWindow(width, height, title, MemoryUtil.NULL, MemoryUtil.NULL);
 		
@@ -27,10 +32,15 @@ public class Window {
 			throw new IllegalStateException("Cant make window :(");
 		}
 		
+		GLFW.glfwSetWindowSizeCallback(windowID, new WindowResizer());
+		
 		GLFW.glfwMakeContextCurrent(windowID);
 		GLFW.glfwSwapInterval(0);
 		GLFW.glfwShowWindow(windowID);
 		GL.createCapabilities();
+		
+		//Enable anti aliasing
+		GL11.glEnable(GL13.GL_MULTISAMPLE);  
 	}
 	
 	public void updateWindow() {

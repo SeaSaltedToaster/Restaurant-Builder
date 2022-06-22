@@ -3,11 +3,11 @@
 const float shade = 1.5;
 
 in vec3 pass_color;
-in float pass_id;
+in flat int pass_id;
 
 out vec4 out_Color;
 
-uniform float selected;
+uniform int selected;
 
 void main(void)	{
 

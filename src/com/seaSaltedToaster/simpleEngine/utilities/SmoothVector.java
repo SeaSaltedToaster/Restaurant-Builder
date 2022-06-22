@@ -11,9 +11,9 @@ public class SmoothVector {
 	  this.current.set(target);
 	}
 	
-	public void update(float delta) {
+	public void update(double delta) {
 		Vector3f diff = target.subtract(current);
-	  	float factor = delta * this.speed;
+	  	float factor = (float) (delta * this.speed);
 		if (factor > 1.0F) {
 		    this.current.set(this.target);
 		} else {

@@ -19,14 +19,15 @@ public class MainApp {
 		engine.setCamera(new WorldCamera(engine));		
 		
 		//Ground
-		Ground ground = new Ground(10, 2, engine);
+		Ground ground = new Ground(10, 1, engine);
 		ground.generateGround(engine);
 		
 		Raycaster ray = new Raycaster(engine);
 		ray.ground = ground;
 		
 		Vao wall = engine.getObjLoader().loadObjModel("simpleWall");
-				
+		Vao floor = engine.getObjLoader().loadObjModel("simpleFloor");
+
 		while(!engine.getWindow().shouldClose()) {	
 			engine.prepareFrame();
 			ground.update(engine);

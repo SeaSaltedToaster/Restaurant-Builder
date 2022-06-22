@@ -10,6 +10,7 @@ import com.seaSaltedToaster.simpleEngine.input.listeners.KeyListener;
 import com.seaSaltedToaster.simpleEngine.input.listeners.MousePosData;
 import com.seaSaltedToaster.simpleEngine.input.listeners.MousePosListener;
 import com.seaSaltedToaster.simpleEngine.input.listeners.ScrollListener;
+import com.seaSaltedToaster.simpleEngine.utilities.SmoothFloat;
 import com.seaSaltedToaster.simpleEngine.utilities.SmoothValue;
 import com.seaSaltedToaster.simpleEngine.utilities.SmoothVector;
 import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
@@ -23,8 +24,8 @@ public class WorldCamera extends Camera implements ScrollListener, MousePosListe
 	private int BACKWARD = GLFW.GLFW_KEY_S;
 
 	//Smoothing
-	private SmoothValue smoothZoom;
-	private SmoothValue smoothPitch, smoothYaw;
+	private SmoothFloat smoothZoom, smoothPitch;
+	private SmoothFloat smoothYaw;
 	private SmoothVector smoothMove, smoothFocus;
 	
 	//Movement
@@ -42,9 +43,9 @@ public class WorldCamera extends Camera implements ScrollListener, MousePosListe
 		this.position = new Vector3f(0.0f, 0.0f, 0.0f);
 		this.posTarget = new Vector3f(0.0f, 0.0f, 0.0f);
 		
-		this.smoothZoom = new SmoothValue(5.0f);
-		this.smoothPitch = new SmoothValue(45.0f);
-		this.smoothYaw = new SmoothValue(outerAngle);
+		this.smoothZoom = new SmoothFloat(5.0f);
+		this.smoothPitch = new SmoothFloat(45.0f);
+		this.smoothYaw = new SmoothFloat(outerAngle);
 		this.smoothMove = new SmoothVector(new Vector3f(0.0f));
 		this.smoothFocus = new SmoothVector(new Vector3f(0.0f));
 		registerCamera(engine);
@@ -57,19 +58,20 @@ public class WorldCamera extends Camera implements ScrollListener, MousePosListe
 		float vertical = getVerticalDistance();
 		calculateCameraPosition(horizontal, vertical);
 		
-		//Yaw change
-		float yawTarget = -(focus.getRotation().y + outerAngle);
-		smoothYaw.force(yawTarget);
+		//Delta
+		double delta = engine.getWindow().getDelta();
 		
-		//Smoother
-		float delta = (float) engine.getWindow().getDelta();
-		smoothZoom.update(delta);
-		smoothZoom.clampTarget(3, 100);
-		this.camDist = smoothZoom.get();
-		smoothPitch.update(delta);
-		this.pitch = smoothPitch.get();
+		//Yaw change
 		smoothYaw.update(delta);
-		this.yaw = smoothYaw.get();
+		this.outerAngle = smoothYaw.getValue();
+		float yawTarget = -(focus.getRotation().y + outerAngle);
+		this.yaw = yawTarget;
+
+		//Smoother
+		smoothZoom.update(delta);
+		this.camDist = smoothZoom.getValue();
+		smoothPitch.update(delta);
+		this.pitch = smoothPitch.getValue();
 		smoothMove.update(delta);
 		this.position = smoothMove.get();
 		smoothFocus.update(delta);
@@ -101,13 +103,13 @@ public class WorldCamera extends Camera implements ScrollListener, MousePosListe
 		//Pitch / Y
 		float pitchChange = yChange * -0.3f;
 		if(isRightDown) {
-			smoothPitch.force(pitch += pitchChange);
+			smoothPitch.increaseTarget(pitchChange);
 		}
 			
 		//Outer angle
-		float angleChange = xChange * -0.3f;
+		float angleChange = xChange * 0.3f;
 		if(isRightDown) {
-			this.outerAngle -= angleChange;
+			smoothYaw.increaseTarget(angleChange);
 		}
 		
 		//Reset
@@ -117,7 +119,8 @@ public class WorldCamera extends Camera implements ScrollListener, MousePosListe
 	
 	@Override
 	public void notifyScrollChanged(float scrollValue) {
-		this.smoothZoom.force(camDist + scrollValue * -2f);
+		float scrollAmount = -(scrollValue * 2f);
+		this.smoothZoom.increaseTarget(scrollAmount);
 	}
 
 	private void calculateCameraPosition(float horizDistance, float verticDistance) {
@@ -132,11 +135,11 @@ public class WorldCamera extends Camera implements ScrollListener, MousePosListe
 	}
 	
 	private float getHorizontalDistance() {
-		return (float) (camDist * Math.cos(Math.toRadians(smoothPitch.get())));
+		return (float) (camDist * Math.cos(Math.toRadians(smoothPitch.getValue())));
 	}
 	
 	private float getVerticalDistance() {
-		return (float) (camDist * Math.sin(Math.toRadians(-smoothPitch.get())));
+		return (float) (camDist * Math.sin(Math.toRadians(-smoothPitch.getValue())));
 	}
 	
 	private void registerCamera(Engine engine) {

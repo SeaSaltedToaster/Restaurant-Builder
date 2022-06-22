@@ -16,6 +16,7 @@ public class Raycaster implements MouseListener {
 	private MousePicker picker;
 	
 	//Action objects
+	public RayType type;
 	public Ground ground;
 	
 	public Raycaster(Engine engine) {
@@ -23,6 +24,7 @@ public class Raycaster implements MouseListener {
 		this.engine.getMouse()
 		.getMouseButtonCallback().addListener(this);
 		this.picker = new MousePicker(engine);
+		this.type = RayType.SELECT;
 	}
 
 	@Override
@@ -37,11 +39,17 @@ public class Raycaster implements MouseListener {
 		if(ray == null) return;
 		Vector3f placePos = calculatePlacePosition(ray);
 		
-		//Get ray type
-		ground.selectAt(placePos);
+		switch(type) {
+		case PLACE:
+			MainApp.transform.setPosition(placePos);
+			break;
+		case SELECT:
+			ground.selectAt(placePos);
+			break;
+		default:
+			break;
 		
-		//Set entity pos
-		MainApp.transform.setPosition(placePos);
+		}
 	}
 	
 	private Vector3f calculatePlacePosition(Vector3f placement) {
@@ -51,3 +59,6 @@ public class Raycaster implements MouseListener {
 	
 }
 	
+enum RayType {
+	SELECT, PLACE
+}

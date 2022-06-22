@@ -3,10 +3,10 @@
 in vec3 position;
 in vec3 color;
 in vec3 normal;
-in float id;
+in int id;
 
 out vec3 pass_color;
-out float pass_id;
+out int pass_id;
 
 uniform mat4 transformationMatrix;
 uniform mat4 viewMatrix;

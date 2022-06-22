@@ -19,7 +19,7 @@ public class Ground {
 	private List<Vector3f> colors;
 	private List<Vector3f> normals;
 	private List<Integer> triangles;
-	private List<Float> tileIds;
+	private List<Integer> tileIds;
 	private Vao vao;
 	
 	//Objects
@@ -38,8 +38,8 @@ public class Ground {
 		for(GroundTile tile : tiles) {
 			float tileX = tile.getGridX() * tileSize;
 			float tileY = tile.getGridY() * tileSize;
-			if(Math.abs(currentRay.x - tileX) < tileSize/2) {
-				if(Math.abs(currentRay.z - tileY) < tileSize/2) {
+			if(Math.abs(currentRay.x - tileX) < tileSize) {
+				if(Math.abs(currentRay.z - tileY) < tileSize) {
 					renderer.setHighlight(tile.getId());
 				}
 			}
@@ -60,17 +60,17 @@ public class Ground {
 		float[] colors = getColorList();
 		float[] normals = getVectorList(this.normals);
 		int[] indices = getTriangles(this.triangles);
-		float[] ids = getIds(this.tileIds);
+		int[] ids = getIds(this.tileIds);
 		
 		//Generate mesh
 		this.vao = engine.getLoader().loadToVAO(positions, colors, normals, indices);
 		this.vao.bind(0,1,2,3);
-		this.vao.createFloatAttribute(3, ids, 1);
+		this.vao.createIntAttribute(3, ids, 1);
 		this.vao.unbind(0,1,2,3);
 	}
 
-	private float[] getIds(List<Float> ids) {
-		float[] array = new float[ids.size()*3];
+	private int[] getIds(List<Integer> ids) {
+		int[] array = new int[ids.size()*3];
 		for(int i=0;i<ids.size();i++){
 			array[i] = ids.get(i);
 		}		
@@ -114,12 +114,11 @@ public class Ground {
 			for(int z = (int) -worldSize; z < worldSize; z++) {
 				//Tile object
 				GroundTile tile = new GroundTile(x, z, random.nextInt(2)+1);
-				tile.setId(id);
+				tile.setId(id++);
 				this.tiles.add(tile);
 				
 				//Create mesh data
 				createVertices(tile);
-				id++;
 			}
 		}
 	}
@@ -127,38 +126,39 @@ public class Ground {
 	private void createVertices(GroundTile tile) {
 		//Data
 		float halfStep = tileSize / 2.0f;
+		float tileY = 0.0000005f * (float) (tile.getId());
 		
 		//Vertex 1
-		Vector3f v1 = new Vector3f(halfStep + (tile.getGridX() * tileSize), 0 , halfStep + tile.getGridY() * tileSize);
+		Vector3f v1 = new Vector3f(halfStep + (tile.getGridX() * tileSize), tileY, halfStep + tile.getGridY() * tileSize);
 		vertices.add(v1);
 		
 		//Vertex 2
-		Vector3f v2 = new Vector3f(-halfStep + (tile.getGridX() * tileSize), 0 , halfStep + (tile.getGridY() * tileSize));
+		Vector3f v2 = new Vector3f(-halfStep + (tile.getGridX() * tileSize), tileY, halfStep + (tile.getGridY() * tileSize));
 		vertices.add(v2);
 
 		//Vertex 3
-		Vector3f v3 = new Vector3f(-halfStep + (tile.getGridX() * tileSize), 0 , -halfStep + (tile.getGridY() * tileSize));
+		Vector3f v3 = new Vector3f(-halfStep + (tile.getGridX() * tileSize), tileY, -halfStep + (tile.getGridY() * tileSize));
 		vertices.add(v3);
 
 		//Vertex 4
-		Vector3f v4 = new Vector3f(halfStep + (tile.getGridX() * tileSize), 0 , -halfStep + (tile.getGridY() * tileSize));
+		Vector3f v4 = new Vector3f(halfStep + (tile.getGridX() * tileSize), tileY, -halfStep + (tile.getGridY() * tileSize));
 		vertices.add(v4);
 
 		//Triangle
-		triangles.add(vertices.indexOf(v1));
-		triangles.add(vertices.indexOf(v3));
 		triangles.add(vertices.indexOf(v2));
+		triangles.add(vertices.indexOf(v3));
+		triangles.add(vertices.indexOf(v1));
 
 		//Triangle 2
-		triangles.add(vertices.indexOf(v4));
-		triangles.add(vertices.indexOf(v3));
 		triangles.add(vertices.indexOf(v1));
+		triangles.add(vertices.indexOf(v3));
+		triangles.add(vertices.indexOf(v4));
 		
 		//Colors and Normals
 		for(int i = 0; i < 4; i++) {
 			this.colors.add(colorList[tile.getColorId()].toVector());
 			this.normals.add(new Vector3f(0,1,0));
-			this.tileIds.add((float) tile.getId());
+			this.tileIds.add(tile.getId());
 		}
 	}
 
@@ -168,7 +168,7 @@ public class Ground {
 		this.colors = new ArrayList<Vector3f>();
 		this.normals = new ArrayList<Vector3f>();
 		this.triangles = new ArrayList<Integer>();
-		this.tileIds = new ArrayList<Float>();
+		this.tileIds = new ArrayList<Integer>();
 
 		//Colors
 		this.colorList = new Color[64];
