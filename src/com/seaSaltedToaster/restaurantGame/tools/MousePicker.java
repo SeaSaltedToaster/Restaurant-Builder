@@ -1,6 +1,7 @@
 package com.seaSaltedToaster.restaurantGame.tools;
 
 import com.seaSaltedToaster.simpleEngine.Engine;
+import com.seaSaltedToaster.simpleEngine.input.Mouse;
 import com.seaSaltedToaster.simpleEngine.renderer.Window;
 import com.seaSaltedToaster.simpleEngine.utilities.Matrix4f;
 import com.seaSaltedToaster.simpleEngine.utilities.Vector2f;
@@ -45,8 +46,10 @@ public class MousePicker {
 	}
 
 	private Vector3f calculateMouseRay() {
-		float mouseX = (float) engine.getMouse().getMouseX();
-		float mouseY = (float) engine.getMouse().getMouseY();
+		engine.getMouse();
+		float mouseX = (float) Mouse.getMouseX();
+		engine.getMouse();
+		float mouseY = (float) Mouse.getMouseY();
 		Vector2f normalizedCoords = getNormalisedDeviceCoordinates(mouseX, mouseY);
 		Vector4f clipCoords = new Vector4f(normalizedCoords.x, -normalizedCoords.y, -1.0f, 1.0f);
 		Vector4f eyeCoords = toEyeCoords(clipCoords);
@@ -69,9 +72,8 @@ public class MousePicker {
 	}
 
 	private Vector2f getNormalisedDeviceCoordinates(float mouseX, float mouseY) {
-		Window window = engine.getWindow();
-		float x = (2.0f * mouseX) / (float) window.getCurrentWidth() - 1f;
-		float y = (2.0f * mouseY) / (float) window.getCurrentHeight() - 1f;
+		float x = (2.0f * mouseX) / (float) Window.getCurrentWidth() - 1f;
+		float y = (2.0f * mouseY) / (float) Window.getCurrentHeight() - 1f;
 		return new Vector2f(x, y);
 	}
 	

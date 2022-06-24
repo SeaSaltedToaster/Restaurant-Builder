@@ -3,13 +3,11 @@ package com.seaSaltedToaster.simpleEngine;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.lwjgl.opengl.GL11;
-
 import com.seaSaltedToaster.simpleEngine.entity.Camera;
-import com.seaSaltedToaster.simpleEngine.entity.Transform;
+import com.seaSaltedToaster.simpleEngine.entity.Entity;
+import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.ModelComponent;
 import com.seaSaltedToaster.simpleEngine.input.Keyboard;
 import com.seaSaltedToaster.simpleEngine.input.Mouse;
-import com.seaSaltedToaster.simpleEngine.models.Vao;
 import com.seaSaltedToaster.simpleEngine.models.VaoLoader;
 import com.seaSaltedToaster.simpleEngine.models.texture.TextureLoader;
 import com.seaSaltedToaster.simpleEngine.models.wavefront.ObjLoader;
@@ -19,6 +17,9 @@ import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
 import com.seaSaltedToaster.simpleEngine.uis.rendering.UiRenderer;
 import com.seaSaltedToaster.simpleEngine.uis.text.rendering.FontRenderer;
 import com.seaSaltedToaster.simpleEngine.utilities.Matrix4f;
+import com.seaSaltedToaster.simpleEngine.utilities.MatrixUtils;
+import com.seaSaltedToaster.simpleEngine.utilities.OpenGL;
+import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 import com.seaSaltedToaster.simpleEngine.utilities.skybox.SkyboxRenderer;
 
 public class Engine {
@@ -38,10 +39,16 @@ public class Engine {
 	
 	//UIs
 	private List<UiComponent> uis;
+	private UiComponent mainParent;
 	private UiRenderer uiRenderer;
 	private FontRenderer fontRenderer;
 	
+	//Entities
+	private List<Entity> entities;
+	
 	//Renderer
+	private Matrix4f viewMatrix, projectionMatrix;
+	private MatrixUtils utils;
 	private SimpleRenderer renderer;
 	private SkyboxRenderer skybox;
 	
@@ -58,21 +65,42 @@ public class Engine {
 		this.keyboard = new Keyboard(window);
 		
 		this.uis = new ArrayList<UiComponent>();
+		this.mainParent = createMainUi();
 		this.uiRenderer = new UiRenderer(loader);
 		this.fontRenderer = new FontRenderer();
 		
+		this.entities = new ArrayList<Entity>();
+		
+		this.utils = new MatrixUtils();
+		this.viewMatrix = utils.createViewMatrix(camera);
+		this.projectionMatrix = utils.createProjectionMatrix(90, 0.1f, 10000f, this);
 		this.renderer = new SimpleRenderer(this);
 		this.skybox = new SkyboxRenderer(this);
 	}
 	
+	private UiComponent createMainUi() {
+		UiComponent ui = new UiComponent(0);
+		ui.setScale(1f,1f);
+		return ui;
+	}
+
 	public void prepareFrame() {
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-		GL11.glClearColor(1.0f, 0.0f, 0.0f, 1);
+		OpenGL.setDepthTest(true);
+		OpenGL.clearColor();
+		OpenGL.clearDepth();
+		OpenGL.clearColor(new Vector3f(1,0,0), 1);		
 		skybox.renderSkybox();
 	}
 	
-	public void render(Vao vao, Transform transform) {
-		this.renderer.render(vao, transform, this);
+	public void render() {
+		this.viewMatrix = utils.createViewMatrix(camera);
+		this.projectionMatrix = utils.createProjectionMatrix(90, 0.1f, 10000f, this);
+		for(Entity entity : entities) {
+			ModelComponent comp = (ModelComponent) entity.getComponent("Model");
+			if(comp != null) {
+				this.renderer.render(comp.getMesh(), entity.getTransform(), this);
+			}
+		}
 	}
 	
 	public void renderUis() {
@@ -87,7 +115,16 @@ public class Engine {
 		this.window.updateWindow();
 	}
 	
+	public void addEntity(Entity entity) {
+		this.entities.add(entity);
+	}
+	
+	public List<Entity> getEntities() {
+		return entities;
+	}
+
 	public void addUi(UiComponent ui) {
+		this.mainParent.addComponent(ui);
 		this.uis.add(ui);
 	}
 	
@@ -96,11 +133,11 @@ public class Engine {
 	}
 
 	public Matrix4f getViewMatrix() {
-		return renderer.getViewMatrix();
+		return this.viewMatrix;
 	}
 
 	public Matrix4f getProjectionMatrix() {
-		return renderer.getProjectionMatrix();
+		return this.projectionMatrix;
 	}
 	
 	public Mouse getMouse() {

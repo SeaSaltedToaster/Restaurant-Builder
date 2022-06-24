@@ -26,6 +26,7 @@ public class AlignX extends UiConstraint {
 		if(type != ConstraintType.X) return;
 		UiComponent componentParent = component.getParentComponent();
 		
+		
 		float gapDist = gap * componentParent.getScale().x;
 		
 		switch (alignment) {

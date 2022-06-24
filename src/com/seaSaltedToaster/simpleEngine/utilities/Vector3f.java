@@ -14,6 +14,10 @@ public class Vector3f {
 	public Vector3f(Vector3f src) {
 		set(src);
 	}
+
+    public Vector3f copy() {
+    	return new Vector3f(x, y, z);
+    }
 	
 	public Vector3f(float x, float y, float z) {
 		set(x, y, z);

@@ -28,10 +28,8 @@ public class SimpleRenderer {
 		OpenGL.enableCull();
 		Matrix4f transformationMatrix = utils.createTransformationMatrix(transform.getPosition(), transform.getRotation().x, transform.getRotation().y, transform.getRotation().z, transform.getScale());
 		shader.getTransformation().loadMatrix(transformationMatrix);
-		this.viewMatrix = utils.createViewMatrix(engine.getCamera());
-		shader.getViewMatrix().loadMatrix(viewMatrix);
-		this.projectionMatrix = utils.createProjectionMatrix(90, 0.1f, 10000f, engine);
-		shader.getProjectionMatrix().loadMatrix(projectionMatrix);
+		shader.getViewMatrix().loadMatrix(engine.getViewMatrix());
+		shader.getProjectionMatrix().loadMatrix(engine.getProjectionMatrix());
 		vao.render();
 		OpenGL.disableCull();
 		shader.stopProgram();

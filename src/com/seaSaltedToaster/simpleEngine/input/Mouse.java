@@ -19,10 +19,7 @@ public class Mouse {
 	private boolean isLocked;
 	private static double mouseX = 0, mouseY = 0;
 	private float scrollValue = 0;
-	
-	//Display
-	private Window window;
-	
+		
 	//Key States
 	public static int PRESSED = GLFW.GLFW_PRESS;
 	public static int RELEASED = GLFW.GLFW_RELEASE;
@@ -33,7 +30,6 @@ public class Mouse {
 	
 	//Create mouse instance
 	public Mouse(Window window) {
-		this.window = window;
 		createCallbacks(window);
 	}
 	

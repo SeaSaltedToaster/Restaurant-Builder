@@ -177,6 +177,14 @@ public class Ground {
 		this.colorList[2] = new Color(0.50f, 0.79f, 0.52f);
 	}
 
+	public float getTileSize() {
+		return tileSize;
+	}
+
+	public float getWorldSize() {
+		return worldSize;
+	}
+
 	public Vao getMesh() {
 		return vao;
 	}

@@ -1,14 +1,19 @@
 package com.seaSaltedToaster;
 
 import com.seaSaltedToaster.restaurantGame.WorldCamera;
+import com.seaSaltedToaster.restaurantGame.building.Building;
+import com.seaSaltedToaster.restaurantGame.building.BuildingList;
+import com.seaSaltedToaster.restaurantGame.building.BuildingManager;
 import com.seaSaltedToaster.restaurantGame.ground.Ground;
+import com.seaSaltedToaster.restaurantGame.menus.ItemMenu;
 import com.seaSaltedToaster.restaurantGame.tools.Raycaster;
 import com.seaSaltedToaster.simpleEngine.Engine;
+import com.seaSaltedToaster.simpleEngine.entity.Entity;
 import com.seaSaltedToaster.simpleEngine.entity.Transform;
+import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.ModelComponent;
 import com.seaSaltedToaster.simpleEngine.models.Vao;
-import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
 import com.seaSaltedToaster.simpleEngine.uis.text.Fonts;
-import com.seaSaltedToaster.simpleEngine.uis.text.Text;
+import com.seaSaltedToaster.simpleEngine.utilities.ScreenshotUtils;
 import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 
 public class MainApp {
@@ -20,9 +25,22 @@ public class MainApp {
 		//Engine
 		Engine engine = new Engine("Engine Test", ClientConfigs.WINDOW_X, ClientConfigs.WINDOW_Y);
 		engine.setCamera(new WorldCamera(engine));
+		engine.getKeyboard().addKeyListener(new ScreenshotUtils());
 		
 		//Assets
 		Fonts.loadFonts(engine);
+		BuildingList.create();
+		
+		//Buildings
+		loadBuilding("simpleWall", 0, true, engine);
+		loadBuilding("simpleFloor", 1, false, engine);
+		loadBuilding("simpleLowWall", 2, true, engine);
+		loadBuilding("simpleWindow", 3, true, engine);
+		loadBuilding("simplePlant", 4, false, engine);
+		loadBuilding("simpleBooth", 5, false, engine);
+		loadBuilding("simpleStool", 6, false, engine);
+		loadBuilding("simplePotHedge", 7, false, engine);
+		loadBuilding("simpleDoor", 8, true, engine);
 		
 		//Ground
 		Ground ground = new Ground(10, 1, engine);
@@ -32,26 +50,33 @@ public class MainApp {
 		Raycaster ray = new Raycaster(engine);
 		ray.ground = ground;
 		
-		//Uis
-		UiComponent ui = new UiComponent(0);
-		Text text = new Text("Bob", 1, 0);
-		text.setColor(1.0f);
-		ui.addComponent(text);
-		engine.addUi(ui);
+		//Building
+		BuildingManager manager = new BuildingManager(engine, ground, ray, null);
+		ray.builder = manager;
 		
-		//Models
-		Vao wall = engine.getObjLoader().loadObjModel("simpleWall");
-		Vao floor = engine.getObjLoader().loadObjModel("simpleFloor");
-
+		//Uis
+		ItemMenu ui = new ItemMenu(manager, engine);
+		engine.addUi(ui);
+				
+		//Update per frame
 		while(!engine.getWindow().shouldClose()) {	
 			engine.prepareFrame();
 			ground.update(engine);
-			engine.render(wall, transform);
+			manager.updateFrame();
+			engine.render();
 			engine.renderUis();
 			engine.update();
 		}
 		
 		engine.getWindow().closeWindow();
+	}
+	
+	private static void loadBuilding(String name, int id, boolean isWall, Engine engine) {
+		Vao model = engine.getObjLoader().loadObjModel(name);
+		Entity entity = new Entity();
+		entity.addComponent(new ModelComponent(model));
+		Building bld = new Building(entity, isWall);
+		BuildingList.register(bld, id);
 	}
 
 }

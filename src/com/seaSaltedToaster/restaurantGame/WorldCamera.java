@@ -13,6 +13,7 @@ import com.seaSaltedToaster.simpleEngine.input.listeners.ScrollListener;
 import com.seaSaltedToaster.simpleEngine.renderer.Window;
 import com.seaSaltedToaster.simpleEngine.utilities.SmoothFloat;
 import com.seaSaltedToaster.simpleEngine.utilities.SmoothVector;
+import com.seaSaltedToaster.simpleEngine.utilities.SmoothVector3;
 import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 
 public class WorldCamera extends Camera implements ScrollListener, MousePosListener, KeyListener {
@@ -26,7 +27,8 @@ public class WorldCamera extends Camera implements ScrollListener, MousePosListe
 	//Smoothing
 	private SmoothFloat smoothZoom, smoothPitch;
 	private SmoothFloat smoothYaw;
-	private SmoothVector smoothMove, smoothFocus;
+	private SmoothVector smoothMove;
+	private SmoothVector3 smoothFocus;
 	
 	//Movement
 	public float camDist = 5;
@@ -47,7 +49,7 @@ public class WorldCamera extends Camera implements ScrollListener, MousePosListe
 		this.smoothPitch = new SmoothFloat(45.0f);
 		this.smoothYaw = new SmoothFloat(outerAngle);
 		this.smoothMove = new SmoothVector(new Vector3f(0.0f));
-		this.smoothFocus = new SmoothVector(new Vector3f(0.0f));
+		this.smoothFocus = new SmoothVector3(new Vector3f(0.0f));
 		registerCamera(engine);
 	}
 	
@@ -76,21 +78,20 @@ public class WorldCamera extends Camera implements ScrollListener, MousePosListe
 		smoothMove.update(delta);
 		this.position = smoothMove.get();
 		smoothFocus.update(delta);
-		this.focus.setPosition(smoothFocus.get());
+		this.focus.setPosition(smoothFocus.getValue());
 	}
 	
 	@Override
 	public void notifyButton(KeyEventData eventData) {
-//		if(eventData.getAction() != GLFW.GLFW_PRESS) return;
-//        float distance = (float) (speed * Display.getDelta());
-//        float dx = (float) (distance * Math.sin(Math.toRadians(-smoothYaw.get())));
-//        float dz = (float) (distance * Math.cos(Math.toRadians(-smoothYaw.get())));
-//        if(eventData.getKey() == FORWARD) {
-//        	smoothFocus.increaseTarget(dx, 0, dz);
-//        }
-//        if(eventData.getKey() == BACKWARD) {
-//        	smoothFocus.increaseTarget(-dx, 0, -dz);
-//        }
+        float distance = (float) (100 * Window.getDelta());
+		float dx = (float) (distance * Math.sin(Math.toRadians(-smoothYaw.getValue())));
+        float dz = (float) (distance * Math.cos(Math.toRadians(-smoothYaw.getValue())));
+        if(eventData.getKey() == FORWARD) {
+        	smoothFocus.increaseTarget(dx, 0, dz);
+        }
+        if(eventData.getKey() == BACKWARD) {
+        	smoothFocus.increaseTarget(-dx, 0, -dz);
+        }
 	}
 	
 	@Override
@@ -130,9 +131,9 @@ public class WorldCamera extends Camera implements ScrollListener, MousePosListe
 		float offsetX = (float) (horizDistance * Math.sin(Math.toRadians(theta)));
 		float offsetZ = (float) (horizDistance * Math.cos(Math.toRadians(theta)));
 		
-		posTarget.x = smoothFocus.get().x - offsetX;
-		posTarget.y = smoothFocus.get().y + verticDistance;
-		posTarget.z = smoothFocus.get().z - offsetZ;
+		posTarget.x = smoothFocus.getValue().x - offsetX;
+		posTarget.y = smoothFocus.getValue().y + verticDistance;
+		posTarget.z = smoothFocus.getValue().z - offsetZ;
 		smoothMove.force(posTarget);
 	}
 	

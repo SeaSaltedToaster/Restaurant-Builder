@@ -36,7 +36,7 @@ public class GroundRenderer {
 		shader.useProgram();
 		Matrix4f transformationMatrix = utils.createTransformationMatrix(transform.getPosition(), transform.getRotation().x, transform.getRotation().y, transform.getRotation().z, transform.getScale());
 		shader.getTransformation().loadMatrix(transformationMatrix);
-		shader.getViewMatrix().loadMatrix(engine.getViewMatrix());
+		shader.getViewMatrix().loadMatrix(utils.createViewMatrix(engine.getCamera()));
 		shader.getProjectionMatrix().loadMatrix(engine.getProjectionMatrix());
 		vao.render();
 		shader.stopProgram();
