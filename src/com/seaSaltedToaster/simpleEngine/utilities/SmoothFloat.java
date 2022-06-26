@@ -13,14 +13,19 @@ public class SmoothFloat {
 	
 	public void update(double delta) {
 		float curOffset = target - value;
-		if(curOffset == 0) {
+		if(curOffset == 0.0f || value == target) {
 			value = target;
-			return;
-		} else {
+		} else if(curOffset > 0) {
 			value += (curOffset * amountPer);
+		} else if(curOffset < 0) {
+			value -= (-curOffset * amountPer);
 		}
 	}
 	
+	public void setAmountPer(float amountPer) {
+		this.amountPer = amountPer;
+	}
+
 	public void setTarget(float target) {
 		this.target = target;
 	}
@@ -31,6 +36,10 @@ public class SmoothFloat {
 
 	public float getValue() {
 		return value;
+	}
+
+	public void setValue(float value) {
+		this.value = value;
 	}
 	
 }

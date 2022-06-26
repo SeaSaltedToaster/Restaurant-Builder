@@ -5,11 +5,11 @@ in vec3 color;
 in vec3 normal;
 
 out flat vec3 pass_color;
+out flat vec3 pass_objColor;
 
 uniform mat4 transformationMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
-uniform bool isPreview;
 
 void main(void)	{
 

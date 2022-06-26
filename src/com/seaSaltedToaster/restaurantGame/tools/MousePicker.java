@@ -20,6 +20,7 @@ public class MousePicker {
 	private Engine engine;
 	
 	private Vector3f currentTerrainPoint;
+	private float groundHeight = 0;
 
 	public MousePicker(Engine engine) {
 		this.engine = engine;
@@ -35,7 +36,8 @@ public class MousePicker {
 		return currentRay;
 	}
 
-	public void update() {
+	public void update(float groundHeight) {
+		this.groundHeight = groundHeight;
 		viewMatrix = engine.getViewMatrix();
 		currentRay = calculateMouseRay();
 		if (intersectionInRange(0, RAY_RANGE, currentRay)) {
@@ -110,7 +112,7 @@ public class MousePicker {
 	}
 
 	private boolean isUnderGround(Vector3f testPoint) {
-		float height = 0;
+		float height = groundHeight;
 		if (testPoint.y < height) {
 			return true;
 		} else {

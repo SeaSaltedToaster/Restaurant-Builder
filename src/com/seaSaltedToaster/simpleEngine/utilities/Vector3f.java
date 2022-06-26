@@ -194,16 +194,7 @@ public class Vector3f {
 	}
 	
 	public String toString() {
-		StringBuilder sb = new StringBuilder(64);
-
-		sb.append("Vector3f[");
-		sb.append(x);
-		sb.append(", ");
-		sb.append(y);
-		sb.append(", ");
-		sb.append(z);
-		sb.append(']');
-		return sb.toString();
+		return x + ", " + y + ", " + z;
 	}
 	
 	public final float getX() {

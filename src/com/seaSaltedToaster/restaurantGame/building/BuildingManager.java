@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.lwjgl.glfw.GLFW;
 
+import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
 import com.seaSaltedToaster.restaurantGame.building.renderer.BuildingRenderer;
 import com.seaSaltedToaster.restaurantGame.ground.Ground;
 import com.seaSaltedToaster.restaurantGame.tools.Raycaster;
@@ -19,37 +20,52 @@ public class BuildingManager implements KeyListener {
 	
 	//Building entity
 	private Building preview;
-	private boolean isBuilding;
+	private boolean isBuilding = false;
 	
-	//Ground
+	//Others
 	private Ground ground;
+	private Entity selectedEntity;
+	
+	//Layers
+	private List<BuildLayer> layers;
+	private int curLayer = 0;
+	private int buildingIndex = 0;
 	
 	//Rendering
-	private List<Entity> placedBuildings;
 	private BuildingRenderer renderer;
 	private Engine engine;
 	
 	public BuildingManager(Engine engine, Ground ground, Raycaster raycaster, Building preview) {
-		this.placedBuildings = new ArrayList<Entity>();
-		this.engine = engine;
 		this.renderer = new BuildingRenderer(this, engine);
+		this.engine = engine;
 		this.ground = ground;
-		this.isBuilding = false;
-		engine.getKeyboard().addKeyListener(this);
 		if(preview != null) {
 			this.preview = preview;
 			this.preview.getEntity().getTransform().setScale(0.0f);
 		}
+		createLayers();
+		engine.getKeyboard().addKeyListener(this);
 	}
 	
+	private void createLayers() {
+		this.layers = new ArrayList<BuildLayer>();
+		for(int i = 0; i < 10; i++) {
+			BuildLayer layer = new BuildLayer(i);
+			this.layers.add(layer);
+		}
+		layers.get(curLayer).show();
+	}
+
 	public void updateFrame() {
 		this.renderer.render();
 	}
 	
 	public void placeBuilding(Vector3f placePosition) {
 		Entity copy = preview.getEntity().copyEntity();
-		placedBuildings.add(copy);
-		//engine.addEntity(copy);
+		copy.addComponent(new BuildingId(buildingIndex));
+		BuildLayer layer = layers.get(curLayer);
+		layer.addBuilding(copy);
+		buildingIndex++;
 	}
 
 	public void movePreview(Vector3f placePosition) {
@@ -87,12 +103,49 @@ public class BuildingManager implements KeyListener {
 		} else {
 			snapPosition = new Vector3f(Math.round(placement.x), Math.round(placement.y), Math.round(placement.z));
 		}
+		snapPosition.y = curLayer * BuildLayer.HEIGHT_OFFSET;
 		return snapPosition;
+	}
+	
+	public void delete(Entity entity) {
+		for(BuildLayer layer : layers) {
+			layer.getBuildings().remove(entity);
+		}
+	}
+	
+	public Entity getBuilding(int index) {
+		int curCount = 0;
+		for(BuildLayer layer : layers) {
+			if(layer.isEmpty()) continue;
+			if(index <= curCount + layer.getBuildings().size()) {
+				return layer.getBuildings().get(index - curCount);
+			} else {
+				curCount += layer.getBuildings().size();
+				continue;
+			}
+		}
+		return null;
 	}
 	
 	public void setPlacement(Building building) {
 		this.preview = building;
 		setBuilding(true);
+	}
+	
+	public int getCurLayer() {
+		return curLayer;
+	}
+	
+	public void setLayer(int newLayer) {
+		if(newLayer < 0) return;
+		this.curLayer = newLayer;
+		for(BuildLayer layer : layers) {
+			if(layer.getLayerId() > newLayer)
+				layer.hide();
+			else
+				layer.show();
+		}
+		layers.get(newLayer).show();
 	}
 
 	public boolean isBuilding() {
@@ -107,12 +160,21 @@ public class BuildingManager implements KeyListener {
 		}
 	}
 
-	public Building getPreview() {
-		return preview;
+	public Entity getSelectedEntity() {
+		return selectedEntity;
 	}
 
-	public List<Entity> getPlacedBuildings() {
-		return placedBuildings;
+	public void setSelectedEntity(Entity selectedEntity) {
+		this.selectedEntity = selectedEntity;
+	}
+
+	public List<BuildLayer> getLayers() {
+		return layers;
+	}
+
+
+	public Building getPreview() {
+		return preview;
 	}
 
 	public Engine getEngine() {

@@ -1,10 +1,10 @@
 # Blender MTL File: 'simpleWall.blend'
 # Material Count: 1
 
-newmtl Material.001
+newmtl Material.016
 Ns 323.999994
 Ka 1.000000 1.000000 1.000000
-Kd 0.783538 0.723055 0.428691
+Kd 0.661864 0.630885 0.592476
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000

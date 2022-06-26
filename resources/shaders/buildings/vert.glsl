@@ -9,6 +9,7 @@ out flat vec3 pass_color;
 uniform mat4 transformationMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
+uniform bool isPreview;
 
 void main(void)	{
 

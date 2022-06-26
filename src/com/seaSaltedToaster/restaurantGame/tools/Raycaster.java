@@ -3,8 +3,10 @@ package com.seaSaltedToaster.restaurantGame.tools;
 import org.lwjgl.glfw.GLFW;
 
 import com.seaSaltedToaster.restaurantGame.building.BuildingManager;
+import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
 import com.seaSaltedToaster.restaurantGame.ground.Ground;
 import com.seaSaltedToaster.simpleEngine.Engine;
+import com.seaSaltedToaster.simpleEngine.entity.Entity;
 import com.seaSaltedToaster.simpleEngine.input.listeners.MouseEventData;
 import com.seaSaltedToaster.simpleEngine.input.listeners.MouseListener;
 import com.seaSaltedToaster.simpleEngine.input.listeners.MousePosData;
@@ -35,7 +37,8 @@ public class Raycaster implements MouseListener, MousePosListener {
 	@Override
 	public void notifyButton(MousePosData eventData) {
 		//Update picker
-		picker.update();
+		float groundHeight = BuildLayer.HEIGHT_OFFSET * builder.getCurLayer();
+		picker.update(groundHeight);
 		
 		//Get raycast
 		Vector3f ray = picker.getCurrentTerrainPoint();
@@ -48,10 +51,19 @@ public class Raycaster implements MouseListener, MousePosListener {
 
 	@Override
 	public void notifyButton(MouseEventData eventData) {
-		if(eventData.getAction() != GLFW.GLFW_PRESS 
-				|| eventData.getKey() != GLFW.GLFW_MOUSE_BUTTON_LEFT) return;
+		if(eventData.getAction() != GLFW.GLFW_PRESS) return;
+		
+		//Check for delete
+		if(builder.getSelectedEntity() != null && !builder.isBuilding() && eventData.getKey() == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) {
+			Entity selected = builder.getSelectedEntity();
+			builder.delete(selected);
+			return;
+		}
+		
+		if(eventData.getKey() != GLFW.GLFW_MOUSE_BUTTON_LEFT) return;
 		//Update picker
-		picker.update();
+		float groundHeight = BuildLayer.HEIGHT_OFFSET * builder.getCurLayer();
+		picker.update(groundHeight);
 		
 		//Get raycast
 		Vector3f ray = picker.getCurrentTerrainPoint();
