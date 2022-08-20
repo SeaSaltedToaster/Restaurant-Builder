@@ -50,7 +50,7 @@ public class Window {
 		Window.DeltaTime = getDelta();
 	}
 	
-	public static double getDelta() {
+	private static double getDelta() {
 		double currentTime = GLFW.glfwGetTime();
 		double delta = (currentTime - lastFrameTime);
 		lastFrameTime = currentTime;

@@ -15,14 +15,20 @@ public class HorizontalLayout extends UiLayout {
 
 	@Override
 	public void update(UiComponent component, List<UiComponent> children) {
-		float spacing = (component.getPosition().x - (component.getScale().x)) + (edgeSpace * component.getScale().x);
-		spacing -= children.get(0).getScale().x;
+		float spacing = (component.getPosition().x - component.getScale().x) + (edgeSpace * component.getScale().x);
+		spacing += children.get(0).getScale().x;
 		
 		for(UiComponent child : children) {
+			if(hasExistingConstraints(child)) continue;
+			
 			spacing += child.getScale().x * 2;
 			child.getPosition().setX(spacing);
-			spacing += component.getScale().x * componentSpace;
+			spacing += (componentSpace * component.getScale().x);
 		}
 	}
 
+	private boolean hasExistingConstraints(UiComponent child) {
+		return (child.getConstraints().getXConstraint() != null); 
+	}
+	
 }

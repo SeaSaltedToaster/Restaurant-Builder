@@ -1,60 +1,61 @@
 package com.seaSaltedToaster.simpleEngine.utilities.skybox;
 
-import org.lwjgl.glfw.GLFW;
-
 import com.seaSaltedToaster.simpleEngine.Engine;
+import com.seaSaltedToaster.simpleEngine.entity.Transform;
 import com.seaSaltedToaster.simpleEngine.models.Vao;
-import com.seaSaltedToaster.simpleEngine.utilities.Matrix4f;
-import com.seaSaltedToaster.simpleEngine.utilities.MatrixUtils;
-import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
+import com.seaSaltedToaster.simpleEngine.rendering.Renderer;
 
-public class SkyboxRenderer {
+public class SkyboxRenderer extends Renderer {
 	
 	//Meshing
-	private SkyboxShader shader;
 	private Vao skybox;
 	
+	//Daytime
+	private TimeHandler timing;
+		
 	//Transform
-	private final float SIZE = 1000f;
-	private final Vector3f SIZE_VEC = new Vector3f(SIZE);
-	private Matrix4f transformation = new Matrix4f();
-	
-	//Engine / Math
-	private MatrixUtils utils;
-	private Engine engine;
+	private Transform transform = new Transform();
+	private float size = 1000f;
 	
 	public SkyboxRenderer(Engine engine) {
-		this.engine = engine;
-		this.utils = new MatrixUtils();
-		this.shader = new SkyboxShader();
-		this.skybox = engine.getObjLoader().loadObjModel("skybox");
-		this.prepareInstance();
+		super(new SkyboxShader(), engine);
+		this.skybox = engine.getObjLoader().loadObjModel("models/skybox");
+		this.timing = new TimeHandler();
+		
+		this.transform = new Transform();
+		this.transform.setScale(size);
 	}
 	
 	public void renderSkybox() {
-		beginRendering();
-		skybox.render();
-		finishRendering();
+		//Update time
+		timing.updateTime();
+		
+		//Render
+		this.prepare();
+		this.render(skybox);
+		this.endRender();
 	}
 	
-	private void beginRendering() {
-		prepareInstance();
-		shader.useProgram();
-		shader.getSkyboxSize().loadFloat(SIZE);
-		shader.getViewMatrix().loadMatrix(engine.getViewMatrix());
-		shader.getProjectionMatrix().loadMatrix(engine.getProjectionMatrix());
-		shader.getTransformationMatrix().loadMatrix(transformation);
-		shader.getTime().loadFloat((float)GLFW.glfwGetTime());
+	@Override
+	public void prepare() {
+		super.prepareFrame(false);
 	}
 
-	
-	private void finishRendering() {
-		shader.stopProgram();
+	@Override
+	public void render(Object obj) {
+		//Load matrices
+		super.loadMatrices(transform);
+		shader.loadUniform(size, "skyboxSize");
+		shader.loadUniform(TimeHandler.DAY_VALUE, "dayValue");
+		
+		//Render
+		Vao vao = (Vao) obj;
+		super.renderVao(vao);
 	}
-	
-	private void prepareInstance() {
-		Vector3f cameraPosition = engine.getCamera().getPosition();
-		this.transformation = utils.createTransformationMatrix(new Vector3f(cameraPosition.x, 0, cameraPosition.z), 0f, 0f, 0f, SIZE_VEC);
+
+	@Override
+	public void endRender() {
+		super.endRendering();
 	}
 
 }

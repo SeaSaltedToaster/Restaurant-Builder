@@ -39,20 +39,22 @@ public class LayerMenu extends UiComponent {
 	private void addButtons(Engine engine) {
 		//Increase
 		this.increase = new UiComponent(4);
+		increase.setColor(0.15f);
 		increase.setInteractable(true, engine);
 		UiConstraints cons = increase.getConstraints();
 		cons.setX(new AlignX(HorizontalAlignment.CENTER));
-		cons.setY(new AlignY(VerticalAlignment.TOP, 0.15f));
+		cons.setY(new AlignY(VerticalAlignment.TOP));
 		cons.setHeight(new AspectRatio(1.0f));
 		cons.setWidth(new RelativeScale(0.66f));
 		this.addComponent(increase);
 		
 		//Decrease
 		this.decrease = new UiComponent(4);
+		decrease.setColor(0.15f);
 		decrease.setInteractable(true, engine);
 		UiConstraints cons2 = decrease.getConstraints();
 		cons2.setX(new AlignX(HorizontalAlignment.CENTER));
-		cons2.setY(new AlignY(VerticalAlignment.BOTTOM, 0.15f));
+		cons2.setY(new AlignY(VerticalAlignment.BOTTOM));
 		cons2.setHeight(new AspectRatio(1.0f));
 		cons2.setWidth(new RelativeScale(0.66f));
 		this.addComponent(decrease);
@@ -60,11 +62,12 @@ public class LayerMenu extends UiComponent {
 
 	private void createMenu() {
 		UiConstraints cons = new UiConstraints();
-		cons.setX(new AlignX(HorizontalAlignment.LEFT, 0.05f));
+		cons.setX(new AlignX(HorizontalAlignment.LEFT, 0.0125f));
 		cons.setY(new AlignY(VerticalAlignment.BOTTOM, 0.05f));
 		this.setConstraints(cons);
-		this.setScale(0.05f, 0.175f);
-		this.setColor(0.5f);
+		this.setScale(0.033f, 0.09f);
+		this.setColor(0.15f);
+		this.setAlpha(0.0f);
 	}
 
 }

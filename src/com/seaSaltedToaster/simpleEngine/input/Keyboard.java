@@ -10,6 +10,9 @@ public class Keyboard {
 	
 	//Mouse input callbacks
 	private KeyCallback keyCallback;
+	
+	//Keys
+	public static boolean LSHIFT = false;
 		
 	//Create mouse instance
 	public Keyboard(Window window) {
@@ -32,6 +35,22 @@ public class Keyboard {
 
 	public KeyCallback getKeyCallback() {
 		return keyCallback;
+	}
+	
+	public static String getKeyName(int key) {
+		String keyName = GLFW.glfwGetKeyName(key, GLFW.glfwGetKeyScancode(key));
+		if(keyName == null || keyName.equalsIgnoreCase("null")) return "";
+		return keyName;
+	}
+	
+	public static boolean checkSpecialChar(int keyID) {
+		if(keyID == GLFW.GLFW_KEY_SPACE) {
+			return true;
+		}
+		if(keyID == GLFW.GLFW_KEY_BACKSPACE) {
+			return true;
+		}
+		return false;
 	}
 
 }

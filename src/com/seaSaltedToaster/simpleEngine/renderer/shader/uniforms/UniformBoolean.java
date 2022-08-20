@@ -8,7 +8,9 @@ public class UniformBoolean extends Uniform{
 		super(name);
 	}
 	
-	public void loadBoolean(boolean bool){
+	@Override
+	public void loadValue(Object value){
+		boolean bool = (boolean) value;
 		GL20.glUniform1f(super.getLocation(), bool ? 1f : 0f);
 	}
 	

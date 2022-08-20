@@ -1,6 +1,7 @@
 package com.seaSaltedToaster.restaurantGame.ground.renderer;
 
 import com.seaSaltedToaster.simpleEngine.renderer.shader.Shader;
+import com.seaSaltedToaster.simpleEngine.renderer.shader.uniforms.UniformFloat;
 import com.seaSaltedToaster.simpleEngine.renderer.shader.uniforms.UniformInteger;
 import com.seaSaltedToaster.simpleEngine.renderer.shader.uniforms.UniformMatrix4f;
 
@@ -14,6 +15,7 @@ public class GroundShader extends Shader {
 	protected UniformMatrix4f projectionMatrix = new UniformMatrix4f("projectionMatrix");
 
 	protected UniformInteger selected = new UniformInteger("selected");
+	protected UniformFloat dayValue = new UniformFloat("dayValue");
 	
 	public GroundShader() {
 		super(vertexShader, fragmentShader, "position", "color", "normal", "id");
@@ -21,8 +23,13 @@ public class GroundShader extends Shader {
 		super.locateUniform(viewMatrix);
 		super.locateUniform(projectionMatrix);
 		super.locateUniform(selected);
+		super.locateUniform(dayValue);
 	}
 	
+	public UniformFloat getDayValue() {
+		return dayValue;
+	}
+
 	public UniformInteger getSelected() {
 		return selected;
 	}

@@ -1,6 +1,6 @@
 #version 150
 
-const float lineHeight = 0.03f;
+const float lineHeight = 0.0f;
 
 in vec2 position;
 in vec2 textureCoords;
@@ -12,11 +12,10 @@ uniform vec2 bounds;
 
 void main(void){
 
-	float downTranslation = (1.0 - bounds.y / 2) - lineHeight;
-	vec2 textTranslation = vec2(translation.x, translation.y - downTranslation);
-	vec2 textPosition = vec2(position.x, position.y);
+	float downTranslation = (1.0 - bounds.y / 2);
+	vec2 textPosition = vec2(position.x, position.y - downTranslation);
 
-	gl_Position = vec4( textPosition + textTranslation, 0.0, 1.0);
+	gl_Position = vec4(textPosition + translation, 0.0f, 1.0f);
 	pass_textureCoords = textureCoords;
 
 }

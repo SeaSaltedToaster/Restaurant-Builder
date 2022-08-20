@@ -2,6 +2,7 @@ package com.seaSaltedToaster.restaurantGame.tools;
 
 import org.lwjgl.glfw.GLFW;
 
+import com.seaSaltedToaster.MainApp;
 import com.seaSaltedToaster.restaurantGame.building.BuildingManager;
 import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
 import com.seaSaltedToaster.restaurantGame.ground.Ground;
@@ -17,7 +18,10 @@ public class Raycaster implements MouseListener, MousePosListener {
 
 	//Objects
 	private Engine engine;
+	
+	//Raycasting
 	private MousePicker picker;
+	public static Vector3f lastRay;
 	
 	//Building
 	public BuildingManager builder;
@@ -36,25 +40,52 @@ public class Raycaster implements MouseListener, MousePosListener {
 	
 	@Override
 	public void notifyButton(MousePosData eventData) {
+		if(MainApp.menuFocused) {
+			ground.selectAt(null);
+			return;
+		}
+		
 		//Update picker
 		float groundHeight = BuildLayer.HEIGHT_OFFSET * builder.getCurLayer();
 		picker.update(groundHeight);
 		
 		//Get raycast
 		Vector3f ray = picker.getCurrentTerrainPoint();
+		ground.getRenderer().setHighlight(-1);
 		if(ray == null) return;
-		Vector3f placePos = new Vector3f(Math.round(ray.x), Math.round(ray.y), Math.round(ray.z));;		
 		
-		builder.movePreview(placePos);
-		ground.selectAt(placePos);
+		builder.movePreview(ray);
+		
+		Vector3f placePosition = new Vector3f(Math.round(ray.x), Math.round(ray.y), Math.round(ray.z));
+		lastRay = placePosition;
+		ground.selectAt(placePosition);
 	}
 
 	@Override
 	public void notifyButton(MouseEventData eventData) {
+		if(MainApp.menuFocused) {
+			ground.selectAt(null);
+			return;
+		}
+		
+		//Get raycast
+		Vector3f ray = picker.getCurrentTerrainPoint();
+		if(ray == null) return;
+		Vector3f placePosition = new Vector3f(Math.round(ray.x), Math.round(ray.y), Math.round(ray.z));
+		
+		//Place
+		boolean isLeftDown = eventData.getKey() == GLFW.GLFW_MOUSE_BUTTON_LEFT;
+		boolean isPlaceDown = eventData.getAction() == GLFW.GLFW_PRESS;
+		if(isPlaceDown && isLeftDown) {
+			if(builder.isBuilding()) {
+				boolean placed = builder.startPlacement(placePosition);
+			}
+		}
+		
 		if(eventData.getAction() != GLFW.GLFW_PRESS) return;
 		
 		//Check for delete
-		if(builder.getSelectedEntity() != null && !builder.isBuilding() && eventData.getKey() == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) {
+		if(builder.getSelectedEntity() != null && !builder.isBuilding() && eventData.getKey() == GLFW.GLFW_KEY_X) {
 			Entity selected = builder.getSelectedEntity();
 			builder.delete(selected);
 			return;
@@ -64,14 +95,17 @@ public class Raycaster implements MouseListener, MousePosListener {
 		//Update picker
 		float groundHeight = BuildLayer.HEIGHT_OFFSET * builder.getCurLayer();
 		picker.update(groundHeight);
+	}
+	
+	static {
+		//Unit 1 Primitive Types
+		int hi = 12;
+		hi += 999;
+		hi /= 10;
 		
-		//Get raycast
-		Vector3f ray = picker.getCurrentTerrainPoint();
-		if(ray == null) return;
-		Vector3f placePos = (ray);
-		
-		if(builder.isBuilding())
-			builder.placeBuilding(placePos);
+		double number = 12.0f; //floats >>> doubles any day
+		number -= 25;
+		number *= 2;
 	}
 		
 }

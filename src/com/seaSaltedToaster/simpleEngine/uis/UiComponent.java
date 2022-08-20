@@ -21,7 +21,7 @@ public class UiComponent implements MouseListener, MousePosListener {
 	protected UiConstraints constraints;
 	private int[] clippingBounds;
 	
-	private Vector3f color;
+	protected Vector3f color;
 	private int texture;
 	
 	protected boolean isActive = true;
@@ -61,7 +61,6 @@ public class UiComponent implements MouseListener, MousePosListener {
 		if(isActive) {
 			updateSelf();
 			animator.update(this);
-			setChildrenClippingBounds(clippingBounds);
 			if(isHovering)
 				this.whileHover();
 		}
@@ -169,27 +168,28 @@ public class UiComponent implements MouseListener, MousePosListener {
 	    } 
 	}
 	
+
 	public void setClippingBounds(float x, float y, float width, float height) {
 	    int xPixels = (int) Math.round(x * Window.getCurrentWidth());
-	    int yPixels = (int) Math.round(y * Window.getCurrentWidth());
+	    int yPixels = (int) (Window.getCurrentHeight() - Math.round((y + height) * Window.getCurrentHeight()));
 	    int widthPixels = (int) Math.round(width * Window.getCurrentWidth());
 	    int heightPixels = (int) Math.round(height * Window.getCurrentHeight());
 	    if (this.clippingBounds == null) {
 	      int[] bounds = { xPixels, yPixels, widthPixels, heightPixels };
 	      setChildrenClippingBounds(bounds);
-	    }
-	    this.clippingBounds[0] = xPixels;
-	    this.clippingBounds[1] = yPixels;
-	    this.clippingBounds[2] = widthPixels;
-	    this.clippingBounds[3] = heightPixels;
-	    setChildrenClippingBounds(clippingBounds);
+	    } else {
+	      this.clippingBounds[0] = xPixels;
+	      this.clippingBounds[1] = yPixels;
+	      this.clippingBounds[2] = widthPixels;
+	      this.clippingBounds[3] = heightPixels;
+	    } 
 	  }
 	
 	private void setChildrenClippingBounds(int[] bounds) {
 	    this.clippingBounds = bounds;
 	    for (UiComponent child : children)
-	    	child.setChildrenClippingBounds(this.clippingBounds); 
-	}
+	      child.setChildrenClippingBounds(this.clippingBounds); 
+	  }
 	
 	public int[] getClippingBounds() {
 		return clippingBounds;

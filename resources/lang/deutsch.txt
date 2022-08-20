@@ -1,0 +1,5 @@
+example_text_id,Example;
+buildMenu_general,Allgemein;
+buildMenu_furniture,Mobel;
+buildMenu_plants,Pflanzen;
+buildMenu_workstations,Arbeitsplatze;

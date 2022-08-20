@@ -7,7 +7,7 @@ public class Fonts {
 	public static FontType ARIAL;
 	
 	public static void loadFonts(Engine engine) {
-		ARIAL = new FontType(engine.getTextureLoader().loadTexture("/uis/berlin", -0.4f), "/uis/berlin");
+		ARIAL = new FontType(engine.getTextureLoader().loadTexture("/uis/extended", -0.4f), "/uis/extended");
 	}
 	
 }

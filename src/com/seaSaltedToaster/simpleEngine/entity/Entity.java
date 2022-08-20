@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.Component;
+import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.ModelComponent;
+import com.seaSaltedToaster.simpleEngine.models.Vao;
 
 public class Entity {
 	
@@ -28,6 +30,11 @@ public class Entity {
 		for(Component component : this.getComponents()) {
 			component.update();
 		}
+	}
+	
+	public Vao getModel() {
+		ModelComponent comp = (ModelComponent) this.getComponent("Model");
+		return comp.getMesh();
 	}
 	
 	public Entity copyEntity() {
@@ -78,6 +85,7 @@ public class Entity {
 				return component;
 			}
 		}
+		System.out.println("Entity does not have '" + comp +"' component");
 		return null;
 	}
 	

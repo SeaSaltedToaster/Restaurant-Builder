@@ -13,8 +13,8 @@ public class Fbo {
 	public static final int DEPTH_TEXTURE = 1;
 	public static final int DEPTH_RENDER_BUFFER = 2;
 
-	private final int width;
-	private final int height;
+	private int width;
+	private int height;
 
 	private int frameBuffer;
 
@@ -57,6 +57,7 @@ public class Fbo {
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, frameBuffer);
 		GL11.glReadBuffer(GL30.GL_COLOR_ATTACHMENT0);
+		GL11.glViewport(0, 0, (int) Window.getCurrentWidth(), (int) Window.getCurrentHeight());
 	}
 
 	public int getColourTexture() {
@@ -120,8 +121,17 @@ public class Fbo {
 		return width;
 	}
 
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
 	public int getHeight() {
 		return height;
 	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
 
 }

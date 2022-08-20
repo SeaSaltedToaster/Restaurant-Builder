@@ -14,9 +14,21 @@ public class Vector3f {
 	public Vector3f(Vector3f src) {
 		set(src);
 	}
+	
+	public Vector3f(Vector4f src) {
+		set(src.x, src.y, src.z);
+	}
 
     public Vector3f copy() {
     	return new Vector3f(x, y, z);
+    }
+    
+    public boolean equals(Vector3f v2) {
+    	return (x == v2.x && y == v2.y && z == v2.z);
+    }
+    
+    public boolean equals(Vector3f v2, float y) {
+    	return (x == v2.x && z == v2.z);
     }
 	
 	public Vector3f(float x, float y, float z) {
@@ -138,7 +150,7 @@ public class Vector3f {
     public Vector3f subtract(Vector3f other) {
         return this.add(other.negate());
     }
-    
+        
     public Vector3f divide(float scalar) {
         return scale(1f / scalar);
     }

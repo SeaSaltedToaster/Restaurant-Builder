@@ -2,11 +2,15 @@ package com.seaSaltedToaster.restaurantGame;
 
 import org.lwjgl.glfw.GLFW;
 
+import com.seaSaltedToaster.MainApp;
+import com.seaSaltedToaster.restaurantGame.tools.Raycaster;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.entity.Camera;
 import com.seaSaltedToaster.simpleEngine.entity.Transform;
 import com.seaSaltedToaster.simpleEngine.input.listeners.KeyEventData;
 import com.seaSaltedToaster.simpleEngine.input.listeners.KeyListener;
+import com.seaSaltedToaster.simpleEngine.input.listeners.MouseEventData;
+import com.seaSaltedToaster.simpleEngine.input.listeners.MouseListener;
 import com.seaSaltedToaster.simpleEngine.input.listeners.MousePosData;
 import com.seaSaltedToaster.simpleEngine.input.listeners.MousePosListener;
 import com.seaSaltedToaster.simpleEngine.input.listeners.ScrollListener;
@@ -16,24 +20,24 @@ import com.seaSaltedToaster.simpleEngine.utilities.SmoothVector;
 import com.seaSaltedToaster.simpleEngine.utilities.SmoothVector3;
 import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 
-public class WorldCamera extends Camera implements ScrollListener, MousePosListener, KeyListener {
+public class WorldCamera extends Camera implements ScrollListener, MousePosListener, MouseListener {
 
 	//Settings
 	private Engine engine;
 	private int RIGHT_MOUSE = GLFW.GLFW_MOUSE_BUTTON_RIGHT;
-	private int FORWARD = GLFW.GLFW_KEY_W;
-	private int BACKWARD = GLFW.GLFW_KEY_S;
+	
+	//Camera focus movement
+	private float lastClick = 0;
+	private float clickOffset = 0.0625f / 1.0f;
 
 	//Smoothing
 	private SmoothFloat smoothZoom, smoothPitch;
 	private SmoothFloat smoothYaw;
-	private SmoothVector smoothMove;
-	private SmoothVector3 smoothFocus;
 	
 	//Movement
-	public float camDist = 5;
+	public float camDist = -25;
 	private double lastX, lastY;
-	private float outerAngle = 45;
+	private float outerAngle = 360;
 	
 	//Points
 	private Vector3f posTarget;
@@ -45,11 +49,9 @@ public class WorldCamera extends Camera implements ScrollListener, MousePosListe
 		this.position = new Vector3f(0.0f, 0.0f, 0.0f);
 		this.posTarget = new Vector3f(0.0f, 0.0f, 0.0f);
 		
-		this.smoothZoom = new SmoothFloat(5.0f);
+		this.smoothZoom = new SmoothFloat(camDist);
 		this.smoothPitch = new SmoothFloat(45.0f);
 		this.smoothYaw = new SmoothFloat(outerAngle);
-		this.smoothMove = new SmoothVector(new Vector3f(0.0f));
-		this.smoothFocus = new SmoothVector3(new Vector3f(0.0f));
 		registerCamera(engine);
 	}
 	
@@ -60,9 +62,8 @@ public class WorldCamera extends Camera implements ScrollListener, MousePosListe
 		float vertical = getVerticalDistance();
 		calculateCameraPosition(horizontal, vertical);
 		
-		engine.getWindow();
 		//Delta
-		double delta = Window.getDelta();
+		double delta = Window.DeltaTime;
 		
 		//Yaw change
 		smoothYaw.update(delta);
@@ -75,28 +76,30 @@ public class WorldCamera extends Camera implements ScrollListener, MousePosListe
 		this.camDist = smoothZoom.getValue();
 		smoothPitch.update(delta);
 		this.pitch = smoothPitch.getValue();
-		smoothMove.update(delta);
-		this.position = smoothMove.get();
-		smoothFocus.update(delta);
-		this.focus.setPosition(smoothFocus.getValue());
+		lastClick += delta;
 	}
 	
 	@Override
-	public void notifyButton(KeyEventData eventData) {
-        float distance = (float) (100 * Window.getDelta());
-		float dx = (float) (distance * Math.sin(Math.toRadians(-smoothYaw.getValue())));
-        float dz = (float) (distance * Math.cos(Math.toRadians(-smoothYaw.getValue())));
-        if(eventData.getKey() == FORWARD) {
-        	smoothFocus.increaseTarget(dx, 0, dz);
-        }
-        if(eventData.getKey() == BACKWARD) {
-        	smoothFocus.increaseTarget(-dx, 0, -dz);
-        }
+	public void notifyButton(MouseEventData eventData) {
+		if(MainApp.menuFocused)
+			return;
+		
+		boolean isRightDown = (eventData.getKey() == GLFW.GLFW_MOUSE_BUTTON_RIGHT && eventData.getAction() == GLFW.GLFW_RELEASE);
+		
+		//Movement
+		if(isRightDown) {
+			if(lastClick < clickOffset) {
+				this.focus.setPosition(Raycaster.lastRay);
+			} 
+			lastClick = 0;
+		}
 	}
-	
+		
 	@Override
 	public void notifyButton(MousePosData eventData) {
-		engine.getWindow();
+		if(MainApp.menuFocused)
+			return;
+		
 		boolean isRightDown = GLFW.glfwGetMouseButton(Window.windowID, RIGHT_MOUSE) == GLFW.GLFW_PRESS;
 		
 		//Get change
@@ -104,15 +107,25 @@ public class WorldCamera extends Camera implements ScrollListener, MousePosListe
 		float yChange = (float) (lastY - eventData.getMouseY());
 		
 		//Pitch / Y
-		float pitchChange = yChange * -0.3f;
 		if(isRightDown) {
+			float pitchChange = yChange * -0.3f;
 			smoothPitch.increaseTarget(pitchChange);
 		}
 			
 		//Outer angle
-		float angleChange = xChange * 0.3f;
 		if(isRightDown) {
+			float angleChange = xChange * 0.3f;
 			smoothYaw.increaseTarget(angleChange);
+		}
+		
+		//Move with middle mouse
+		boolean isMiddleDown = GLFW.glfwGetMouseButton(Window.windowID, GLFW.GLFW_MOUSE_BUTTON_MIDDLE) == GLFW.GLFW_PRESS;
+		if(isMiddleDown) {
+			float theta = -smoothYaw.getValue();
+			float offsetX = (float) (xChange * 10 * Math.sin(Math.toRadians(theta+90)));
+			float offsetZ = (float) (yChange * 10 * Math.cos(Math.toRadians(theta)));
+			Vector3f change = new Vector3f(offsetX, 0, offsetZ).scale(0.0025f);
+			focus.setPosition(focus.getPosition().add(change));
 		}
 		
 		//Reset
@@ -122,7 +135,10 @@ public class WorldCamera extends Camera implements ScrollListener, MousePosListe
 	
 	@Override
 	public void notifyScrollChanged(float scrollValue) {
-		float scrollAmount = -(scrollValue * 2f);
+		if(MainApp.menuFocused)
+			return;
+		
+		float scrollAmount = (scrollValue * 2f);
 		this.smoothZoom.increaseTarget(scrollAmount);
 	}
 
@@ -131,10 +147,10 @@ public class WorldCamera extends Camera implements ScrollListener, MousePosListe
 		float offsetX = (float) (horizDistance * Math.sin(Math.toRadians(theta)));
 		float offsetZ = (float) (horizDistance * Math.cos(Math.toRadians(theta)));
 		
-		posTarget.x = smoothFocus.getValue().x - offsetX;
-		posTarget.y = smoothFocus.getValue().y + verticDistance;
-		posTarget.z = smoothFocus.getValue().z - offsetZ;
-		smoothMove.force(posTarget);
+		posTarget.x = focus.getPosition().x - offsetX;
+		posTarget.y = focus.getPosition().y + verticDistance;
+		posTarget.z = focus.getPosition().z - offsetZ;
+		this.setPosition(posTarget);
 	}
 	
 	private float getHorizontalDistance() {
@@ -148,7 +164,7 @@ public class WorldCamera extends Camera implements ScrollListener, MousePosListe
 	private void registerCamera(Engine engine) {
 		engine.getMouse().addScrollListener(this);
 		engine.getMouse().getMousePositionCallback().addListener(this);
-		engine.getKeyboard().addKeyListener(this);
+		engine.getMouse().getMouseButtonCallback().addListener(this);
 		engine.setCamera(this);		
 	}
 		

@@ -3,6 +3,7 @@ package com.seaSaltedToaster.simpleEngine.uis.constraints;
 import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.position.AlignX;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.position.AlignY;
+import com.seaSaltedToaster.simpleEngine.uis.constraints.scale.RelativeScale;
 import com.seaSaltedToaster.simpleEngine.uis.layouts.UiLayout;
 
 public class UiConstraints {
@@ -43,6 +44,14 @@ public class UiConstraints {
 	
 	public static UiConstraints getCentered() {
 		return new UiConstraints().setX(new AlignX(HorizontalAlignment.CENTER)).setY(new AlignY(VerticalAlignment.MIDDLE));
+	}
+	
+	public static UiConstraints getFill() {
+		return new UiConstraints().setWidth(new RelativeScale(1.0f)).setHeight(new RelativeScale(1.0f));
+	}
+	
+	public static UiConstraints getFillCenter() {
+		return new UiConstraints().setWidth(new RelativeScale(1.0f)).setHeight(new RelativeScale(1.0f)).setX(new AlignX(HorizontalAlignment.CENTER)).setY(new AlignY(VerticalAlignment.MIDDLE));
 	}
 
 	public UiConstraint getXConstraint() {

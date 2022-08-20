@@ -4,8 +4,6 @@ import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.models.Vao;
 import com.seaSaltedToaster.simpleEngine.models.VaoLoader;
 import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
-import com.seaSaltedToaster.simpleEngine.uis.constraints.HorizontalAlignment;
-import com.seaSaltedToaster.simpleEngine.uis.constraints.VerticalAlignment;
 import com.seaSaltedToaster.simpleEngine.uis.text.rendering.TextMeshData;
 
 public class Text extends UiComponent {
@@ -14,10 +12,7 @@ public class Text extends UiComponent {
 	private String textString;
 	private float fontSize;
 	private FontType font;
-	    
-	private HorizontalAlignment horizontalAlignment;
-	private VerticalAlignment verticalAlignment;
-	
+	    	
 	private float lineMaxSize;
 	private int numberOfLines;
 	    
@@ -32,8 +27,6 @@ public class Text extends UiComponent {
 		this.fontSize = 1;
         this.font = Fonts.ARIAL;
         this.lineMaxSize = 1;
-        this.horizontalAlignment = HorizontalAlignment.CENTER;
-        this.verticalAlignment = VerticalAlignment.MIDDLE;
         loadText();
 	}
 	
@@ -44,8 +37,6 @@ public class Text extends UiComponent {
 		this.fontSize = fontSize;
         this.font = Fonts.ARIAL;
         this.lineMaxSize = 1;
-        this.horizontalAlignment = HorizontalAlignment.CENTER;
-        this.verticalAlignment = VerticalAlignment.MIDDLE;
         loadText();
 	}
 	
@@ -62,7 +53,7 @@ public class Text extends UiComponent {
 	
 	@Override
 	public void renderUI(Engine engine) {
-		engine.getFontRenderer().renderTextSingle(this);
+		engine.getFontRenderer().renderText(this);
 		for(UiComponent childComponent : children) {
 			childComponent.renderUI(engine);
 		}
@@ -103,23 +94,7 @@ public class Text extends UiComponent {
 	public FontType getFont() {
 		return font;
 	}
-
-	public HorizontalAlignment getHorizontalAlignment() {
-		return horizontalAlignment;
-	}
-
-	public VerticalAlignment getVerticalAlignment() {
-		return verticalAlignment;
-	}
-
-	public void setHorizontalAlignment(HorizontalAlignment horizontalAlignment) {
-		this.horizontalAlignment = horizontalAlignment;
-	}
-
-	public void setVerticalAlignment(VerticalAlignment verticalAlignment) {
-		this.verticalAlignment = verticalAlignment;
-	}
-
+	
 	public float getLineMaxSize() {
 		return lineMaxSize;
 	}

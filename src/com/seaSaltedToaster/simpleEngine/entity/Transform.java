@@ -4,9 +4,7 @@ import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 
 public class Transform {
 
-	private Vector3f position;
-	private Vector3f rotation;
-	private Vector3f scale;
+	private Vector3f position, rotation, scale;
 	
 	public Transform(Vector3f position, Vector3f rotation, Vector3f scale) {
 		this.position = position;

@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
@@ -12,29 +14,46 @@ import com.seaSaltedToaster.simpleEngine.renderer.shader.uniforms.Uniform;
 
 public class Shader {
 	
+	//IDs
 	private int programID;
 	private int vertexShader, fragmentShader;
 	
+	//Uniforms
+	private List<Uniform> uniforms;
+	
 	public Shader(String vertexFile, String fragmentFile, String... inVariables) {
-		vertexShader = loadShader(vertexFile, GL20.GL_VERTEX_SHADER);
-		fragmentShader = loadShader(fragmentFile, GL20.GL_FRAGMENT_SHADER);
-		programID = GL20.glCreateProgram();
+		this.vertexShader = loadShader(vertexFile, GL20.GL_VERTEX_SHADER);
+		this.fragmentShader = loadShader(fragmentFile, GL20.GL_FRAGMENT_SHADER);
+		this.programID = GL20.glCreateProgram();
 		GL20.glAttachShader(programID, vertexShader);
 		GL20.glAttachShader(programID, fragmentShader);
-		for(int i=0;i<inVariables.length;i++){
+		for(int i = 0; i < inVariables.length; i++){
 			GL20.glBindAttribLocation(programID, i, inVariables[i]);
 		}
 		GL20.glLinkProgram(programID);
 		GL20.glValidateProgram(programID);
+		this.uniforms = new ArrayList<Uniform>();
+	}
+	
+	public void loadUniform(Object value, String name) {
+		for(Uniform uniform : uniforms) {
+			if(uniform.getVariable().equalsIgnoreCase(name)) {
+				uniform.loadValue(value);
+				return;
+			}
+		}
 	}
 	
 	public void locateUniforms(Uniform... uniforms) {
-		for(Uniform uniform : uniforms)
+		for(Uniform uniform : uniforms) {
 			uniform.getUniformLocation(programID);
+			this.uniforms.add(uniform);
+		}
 	}
 	
 	public void locateUniform(Uniform uniform) {
 		uniform.getUniformLocation(programID);
+		this.uniforms.add(uniform);
 	}
 	
 	public void useProgram() {

@@ -13,9 +13,8 @@ public class SmoothVector3 {
 	
 	public void update(double delta) {
 		Vector3f curOffset = target.subtract(value);
-		if(curOffset.lengthSquared() == 0) {
+		if(curOffset.lengthSquared() == 0f) {
 			value = target;
-			return;
 		} else {
 			value.add(curOffset.scale(amountPer));
 		}

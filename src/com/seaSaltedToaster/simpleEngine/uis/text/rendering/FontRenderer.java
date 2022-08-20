@@ -1,68 +1,65 @@
 package com.seaSaltedToaster.simpleEngine.uis.text.rendering;
 
-import java.util.List;
-import java.util.Map;
-
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 
+import com.seaSaltedToaster.simpleEngine.Engine;
+import com.seaSaltedToaster.simpleEngine.rendering.Renderer;
 import com.seaSaltedToaster.simpleEngine.uis.text.FontType;
 import com.seaSaltedToaster.simpleEngine.uis.text.Text;
+import com.seaSaltedToaster.simpleEngine.utilities.OpenGL;
 
-public class FontRenderer {
-
-	private static FontShader shader;
+public class FontRenderer extends Renderer {
 	 
-    public FontRenderer() {
-        shader = new FontShader();
+	public FontRenderer(Engine engine) {
+		super(new FontShader(), engine);
     }
-     
-    public void render(Map<FontType, List<Text>> texts){
-        prepare();
-        for(FontType font : texts.keySet()){
-        	GL13.glActiveTexture(GL13.GL_TEXTURE0);
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, font.getTextureAtlas());
-            for(Text text : texts.get(font)){
-            	if(text.isActive())
-            		renderText(text);
-            }
-        }
-        endRendering();
-    }
-      
-    private static void prepare(){
+	
+	public void renderText(Text text) {
+    	if(!text.isActive()) return;
+    	prepare();
+    	render(text);
+    	endRender();
+	}
+    
+    @Override
+	public void prepare() {
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glDisable(GL11.GL_DEPTH_TEST);
-        shader.useProgram();
+        super.prepareFrame(false);
     }
     
-    public void renderTextSingle(Text text){
-    	if(!text.isActive()) return;
-    	prepare();
+    @Override
+    public void render(Object obj){
+    	//Load Text attribs
+    	Text text = (Text) obj;
     	FontType font = text.getFont();
     	GL13.glActiveTexture(GL13.GL_TEXTURE0);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, font.getTextureAtlas());
-    	text.getTextMeshVao().bind(0,1);
-        shader.getColor().loadVec3(text.getColor());
-        shader.getTranslation().loadVec2(text.getPosition());
-        shader.getBounds().loadVec2(text.getScale());
-        shader.getAlpha().loadFloat(text.getAlpha());
+        shader.loadUniform(text.getColor(), "color");
+        shader.loadUniform(text.getAlpha(), "alpha");
+        shader.loadUniform(text.getPosition(), "translation");
+        shader.loadUniform(text.getScale(), "bounds");
+        setScissorTest(text.getClippingBounds());
+        
+        //Render
+    	text.getTextMeshVao().bind(0,1,2,3);
         GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, text.getVertexCount());
-	    text.getTextMeshVao().unbind(0,1);
-	    endRendering();
+	    text.getTextMeshVao().unbind(0,1,2,3);
     }
-     
-    public static void renderText(Text text){
-    	text.getTextMeshVao().bind(0,1);
-        shader.getColor().loadVec3(text.getColor());
-        shader.getTranslation().loadVec2(text.getPosition());
-        GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, text.getVertexCount());
-	    text.getTextMeshVao().unbind(0,1);
-    }
-     
-    private static void endRendering(){
-        shader.stopProgram();
+    
+    private void setScissorTest(int[] bounds) {
+	    if (bounds == null) {
+	      OpenGL.disableScissorTest();
+	    } else {
+	    	OpenGL.enableScissorTest(bounds[0], bounds[1], bounds[2], bounds[3]);
+	    } 
+	}
+    
+    @Override
+	public void endRender() {
+    	super.endRendering();
         GL11.glDisable(GL11.GL_BLEND);
     }
 	

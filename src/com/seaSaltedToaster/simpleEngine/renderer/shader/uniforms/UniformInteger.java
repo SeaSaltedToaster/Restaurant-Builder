@@ -8,8 +8,10 @@ public class UniformInteger extends Uniform {
 		super(name);
 	}
 	
-	public void loadInt(int value){
-		GL20.glUniform1i(super.getLocation(), value);
+	@Override
+	public void loadValue(Object value){
+		int num = (int) value;
+		GL20.glUniform1i(super.getLocation(), num);
 	}
 	
 }

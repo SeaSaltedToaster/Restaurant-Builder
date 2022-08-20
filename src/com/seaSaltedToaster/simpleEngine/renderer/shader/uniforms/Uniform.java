@@ -11,12 +11,20 @@ public class Uniform {
 		this.variable = variable;
 	}
 	
+	public void loadValue(Object value) {
+		return;
+	}
+	
 	public void getUniformLocation(int programID){
 		shaderLocation = GL20.glGetUniformLocation(programID, variable);
 	}
-	
+
 	public int getLocation(){
 		return shaderLocation;
+	}
+
+	public String getVariable() {
+		return variable;
 	}
 	
 }

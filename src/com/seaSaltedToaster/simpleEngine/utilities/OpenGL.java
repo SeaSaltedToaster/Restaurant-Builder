@@ -32,17 +32,10 @@ public class OpenGL {
 	public static void enableScissorTest(int x, int y, int width, int height) {
 	    GL11.glEnable(GL11.GL_SCISSOR_TEST);
 	    GL11.glScissor(x, y, width, height);
-	    scissorBounds[0] = x;
-	    scissorBounds[1] = y;
-	    scissorBounds[2] = width;
-	    scissorBounds[3] = height;
 	  }
 	  
 	  public static void disableScissorTest() {
-	    if (scissorTest) {
-	      scissorTest = false;
 	      GL11.glDisable(GL11.GL_SCISSOR_TEST);
-	    } 
 	  }
 	
 	public static void enableCull() {

@@ -16,16 +16,6 @@ public class TextMaster {
     private static Map<FontType, List<Text>> textList = new HashMap<FontType, List<Text>>();
     private static List<Text> textMap = new ArrayList<Text>();
     
-    private static FontRenderer renderer;
-     
-    public TextMaster(Engine engine) {
-        renderer = new FontRenderer();
-    }
-     
-    public static void render(){
-        renderer.render(textList);
-    }
-    
     public static void clear() {
     	textList.clear();
     	textMap.clear();

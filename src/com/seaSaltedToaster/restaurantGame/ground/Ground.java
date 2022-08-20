@@ -24,17 +24,20 @@ public class Ground {
 	
 	//Objects
 	private List<GroundTile> tiles;
-	private float tileSize;
-	private float worldSize;
+	public static float worldSize, tileSize;
 
 	public Ground(float worldSize, float tileSize, Engine engine) {
 		this.renderer = new GroundRenderer(engine);
 		this.tiles = new ArrayList<GroundTile>();
-		this.worldSize = worldSize;
-		this.tileSize = tileSize;
+		Ground.worldSize = worldSize;
+		Ground.tileSize = tileSize;
 	}
 	
 	public void selectAt(Vector3f currentRay) {
+		if(currentRay == null) {
+			renderer.setHighlight(-256); 
+			return;
+		}
 		for(GroundTile tile : tiles) {
 			float tileX = tile.getGridX() * tileSize;
 			float tileY = tile.getGridY() * tileSize;
@@ -47,7 +50,9 @@ public class Ground {
 	}
 	
 	public void update(Engine engine) {
-		renderer.render(vao, engine);
+		renderer.prepare();
+		renderer.render(vao);
+		renderer.endRender();
 	}
 	
 	public void generateGround(Engine engine) {
@@ -177,7 +182,7 @@ public class Ground {
 		this.colorList[2] = new Color(0.50f, 0.79f, 0.52f);
 	}
 
-	public float getTileSize() {
+	public static float getTileSize() {
 		return tileSize;
 	}
 

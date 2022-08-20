@@ -10,12 +10,14 @@ public class UniformVec3 extends Uniform {
 		super(variable);
 	}
 	
+	@Override
+	public void loadValue(Object value) {
+		Vector3f vec = (Vector3f) value;
+		loadVec3(vec.x, vec.y, vec.z);
+	}
+	
 	public void loadVec3(float x, float y, float z) {
 		GL20.glUniform3f(getLocation(), x, y, z);
 	}
 	
-	public void loadVec3(Vector3f vec) {
-		GL20.glUniform3f(getLocation(), vec.x, vec.y, vec.z);
-	}
-
 }

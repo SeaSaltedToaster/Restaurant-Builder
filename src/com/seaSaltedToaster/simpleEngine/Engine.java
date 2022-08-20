@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.seaSaltedToaster.simpleEngine.entity.Camera;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
-import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.ModelComponent;
 import com.seaSaltedToaster.simpleEngine.input.Keyboard;
 import com.seaSaltedToaster.simpleEngine.input.Mouse;
 import com.seaSaltedToaster.simpleEngine.models.VaoLoader;
@@ -13,6 +12,8 @@ import com.seaSaltedToaster.simpleEngine.models.texture.TextureLoader;
 import com.seaSaltedToaster.simpleEngine.models.wavefront.ObjLoader;
 import com.seaSaltedToaster.simpleEngine.renderer.SimpleRenderer;
 import com.seaSaltedToaster.simpleEngine.renderer.Window;
+import com.seaSaltedToaster.simpleEngine.renderer.lighting.Light;
+import com.seaSaltedToaster.simpleEngine.rendering.AdvancedRenderer;
 import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
 import com.seaSaltedToaster.simpleEngine.uis.rendering.UiRenderer;
 import com.seaSaltedToaster.simpleEngine.uis.text.rendering.FontRenderer;
@@ -46,11 +47,21 @@ public class Engine {
 	//Entities
 	private List<Entity> entities;
 	
-	//Renderer
+	//Rendering
+	private SkyboxRenderer skybox;
+	private AdvancedRenderer advRenderer;
+	
+	//Lighting
+	private Light light;
+	
+	//Matrices
 	private Matrix4f viewMatrix, projectionMatrix;
 	private MatrixUtils utils;
-	private SimpleRenderer renderer;
-	private SkyboxRenderer skybox;
+		
+	//Matrix settings
+	public static float FOV = 70f;
+	public static float NEAR_PLANE = 0.1f;
+	public static float FAR_PLANE = 100000f;
 	
 	public Engine(String title, int width, int height) {
 		this.window = new Window();
@@ -66,16 +77,19 @@ public class Engine {
 		
 		this.uis = new ArrayList<UiComponent>();
 		this.mainParent = createMainUi();
-		this.uiRenderer = new UiRenderer(loader);
-		this.fontRenderer = new FontRenderer();
+		this.uiRenderer = new UiRenderer(this);
+		this.fontRenderer = new FontRenderer(this);
 		
 		this.entities = new ArrayList<Entity>();
 		
 		this.utils = new MatrixUtils();
 		this.viewMatrix = utils.createViewMatrix(camera);
-		this.projectionMatrix = utils.createProjectionMatrix(90, 0.1f, 10000f, this);
-		this.renderer = new SimpleRenderer(this);
+		this.projectionMatrix = utils.createProjectionMatrix(FOV, NEAR_PLANE, FAR_PLANE, this);
+		new SimpleRenderer(this);
 		this.skybox = new SkyboxRenderer(this);
+		
+		this.light = new Light(new Vector3f(0.0f), new Vector3f(0.0f));
+		this.advRenderer = new AdvancedRenderer(this);
 	}
 	
 	private UiComponent createMainUi() {
@@ -88,19 +102,19 @@ public class Engine {
 		OpenGL.setDepthTest(true);
 		OpenGL.clearColor();
 		OpenGL.clearDepth();
-		OpenGL.clearColor(new Vector3f(1,0,0), 1);		
+		OpenGL.clearColor(new Vector3f(1.0f), 0.0f);		
 		skybox.renderSkybox();
 	}
 	
 	public void render() {
 		this.viewMatrix = utils.createViewMatrix(camera);
-		this.projectionMatrix = utils.createProjectionMatrix(90, 0.1f, 10000f, this);
+		this.projectionMatrix = utils.createProjectionMatrix(70, 0.1f, 100000f, this);
+		
+		this.advRenderer.prepare();
 		for(Entity entity : entities) {
-			ModelComponent comp = (ModelComponent) entity.getComponent("Model");
-			if(comp != null) {
-				this.renderer.render(comp.getMesh(), entity.getTransform(), this);
-			}
+			this.advRenderer.render(entity);
 		}
+		this.advRenderer.endRender();
 	}
 	
 	public void renderUis() {
@@ -130,6 +144,10 @@ public class Engine {
 	
 	public List<UiComponent> getUis() {
 		return uis;
+	}
+
+	public Light getLight() {
+		return light;
 	}
 
 	public Matrix4f getViewMatrix() {

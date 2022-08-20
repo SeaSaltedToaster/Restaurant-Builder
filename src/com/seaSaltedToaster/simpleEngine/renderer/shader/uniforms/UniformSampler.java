@@ -11,7 +11,9 @@ public class UniformSampler extends Uniform {
 		super(name);
 	}
 
-	public void loadTexUnit(int texUnit) {
+	@Override
+	public void loadValue(Object value) {
+		int texUnit = (int) value;
 		if (!used || currentValue != texUnit) {
 			GL20.glUniform1i(super.getLocation(), texUnit);
 			used = true;

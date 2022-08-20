@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.lwjgl.glfw.GLFW;
 
+import com.seaSaltedToaster.MainApp;
 import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
 import com.seaSaltedToaster.restaurantGame.building.renderer.BuildingRenderer;
 import com.seaSaltedToaster.restaurantGame.ground.Ground;
@@ -12,6 +13,7 @@ import com.seaSaltedToaster.restaurantGame.tools.Raycaster;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
 import com.seaSaltedToaster.simpleEngine.entity.Transform;
+import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.Component;
 import com.seaSaltedToaster.simpleEngine.input.listeners.KeyEventData;
 import com.seaSaltedToaster.simpleEngine.input.listeners.KeyListener;
 import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
@@ -19,39 +21,32 @@ import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 public class BuildingManager implements KeyListener {
 	
 	//Building entity
-	private Building preview;
-	private boolean isBuilding = false;
+	public static boolean isBuilding = false;
 	
 	//Others
-	private Ground ground;
 	private Entity selectedEntity;
 	
 	//Layers
 	private List<BuildLayer> layers;
-	private int curLayer = 0;
-	private int buildingIndex = 0;
+	private int curLayer = 0, layerCount = 10;
 	
-	//Rendering
+	//Building
 	private BuildingRenderer renderer;
-	private Engine engine;
+	private AdvancedBuilder builder;
 	
 	public BuildingManager(Engine engine, Ground ground, Raycaster raycaster, Building preview) {
 		this.renderer = new BuildingRenderer(this, engine);
-		this.engine = engine;
-		this.ground = ground;
-		if(preview != null) {
-			this.preview = preview;
-			this.preview.getEntity().getTransform().setScale(0.0f);
-		}
+		this.builder = new AdvancedBuilder(preview);
 		createLayers();
 		engine.getKeyboard().addKeyListener(this);
 	}
 	
 	private void createLayers() {
 		this.layers = new ArrayList<BuildLayer>();
-		for(int i = 0; i < 10; i++) {
+		for(int i = 0; i < layerCount; i++) {
 			BuildLayer layer = new BuildLayer(i);
 			this.layers.add(layer);
+			MainApp.restaurant.layers.add(layer);
 		}
 		layers.get(curLayer).show();
 	}
@@ -60,18 +55,23 @@ public class BuildingManager implements KeyListener {
 		this.renderer.render();
 	}
 	
-	public void placeBuilding(Vector3f placePosition) {
-		Entity copy = preview.getEntity().copyEntity();
-		copy.addComponent(new BuildingId(buildingIndex));
-		BuildLayer layer = layers.get(curLayer);
-		layer.addBuilding(copy);
-		buildingIndex++;
+	public boolean startPlacement(Vector3f placePosition) {
+		if(MainApp.menuFocused) return false;
+		this.builder.startPlacement();
+		endPlacement();
+		return true;
 	}
 
-	public void movePreview(Vector3f placePosition) {
-		if(preview == null) return;
-		Vector3f newPos = calculatePlacePosition(placePosition.copy());
-		this.preview.getEntity().getTransform().setPosition(newPos);
+	public void movePreview(Vector3f rawPosition) {
+		Vector3f newPos = calculatePlacePosition(rawPosition.copy());
+		builder.increasePlacement(newPos);
+	}
+	
+	public boolean endPlacement() {
+		if(MainApp.menuFocused) return false;
+		BuildLayer layer = layers.get(curLayer);
+		this.builder.endPlacement(layer);
+		return true;
 	}
 
 	@Override
@@ -79,11 +79,17 @@ public class BuildingManager implements KeyListener {
 		if(eventData.getAction() != GLFW.GLFW_PRESS) return;
 		int key = eventData.getKey();
 		if(key == GLFW.GLFW_KEY_R) {
-			Transform previewTransform = preview.getEntity().getTransform();
+			Transform previewTransform = builder.getStart().getTransform();
 			previewTransform.getRotation().y += 90;
 			if(previewTransform.getRotation().y >= 360)
 				previewTransform.getRotation().y = 0;
 			movePreview(previewTransform.getPosition());
+			
+			Transform previewTransform2 = builder.getEnd().getTransform();
+			previewTransform2.getRotation().y += 90;
+			if(previewTransform2.getRotation().y >= 360)
+				previewTransform2.getRotation().y = 0;
+			movePreview(previewTransform2.getPosition());
 		}
 		if(key == GLFW.GLFW_KEY_ESCAPE) {
 			setBuilding(false);
@@ -92,9 +98,9 @@ public class BuildingManager implements KeyListener {
 	
 	private Vector3f calculatePlacePosition(Vector3f placement) {
 		Vector3f snapPosition = null;
-		if(preview.isWall()) {
-			float yRot = preview.getEntity().getTransform().getRotation().y;
-			float offset = ground.getTileSize() / 2;
+		if(builder.getObject().isWall()) {
+			float yRot = builder.getStart().getTransform().getRotation().y;
+			float offset = Ground.getTileSize() / 2;
 			if(yRot == 0 || yRot == 180) {
 				snapPosition = new Vector3f(Math.round(placement.x - offset) + offset, Math.round(placement.y), Math.round(placement.z));
 			} else if(yRot == 90 || yRot == 270) {
@@ -107,29 +113,34 @@ public class BuildingManager implements KeyListener {
 		return snapPosition;
 	}
 	
-	public void delete(Entity entity) {
-		for(BuildLayer layer : layers) {
-			layer.getBuildings().remove(entity);
-		}
-	}
-	
 	public Entity getBuilding(int index) {
 		int curCount = 0;
 		for(BuildLayer layer : layers) {
 			if(layer.isEmpty()) continue;
-			if(index <= curCount + layer.getBuildings().size()) {
+			int buildingsOnLayer = layer.getBuildings().size();
+			if(index < (curCount + buildingsOnLayer)) {
 				return layer.getBuildings().get(index - curCount);
 			} else {
-				curCount += layer.getBuildings().size();
+				curCount += layer.getBuildings().size()-1;
 				continue;
 			}
 		}
 		return null;
 	}
 	
-	public void setPlacement(Building building) {
-		this.preview = building;
+	public void setCurrentBuilding(Building building) {
+		this.builder.setObject(building);
+		movePreview(Raycaster.lastRay);
 		setBuilding(true);
+	}
+	
+	public void delete(Entity entity) {
+		for(BuildLayer layer : layers) {
+			for(Component comp : entity.getComponents()) {
+				comp.reset();
+			}
+			layer.getBuildings().remove(entity);
+		}
 	}
 	
 	public int getCurLayer() {
@@ -153,11 +164,12 @@ public class BuildingManager implements KeyListener {
 	}
 
 	public void setBuilding(boolean isBuilding) {
-		this.isBuilding = isBuilding;
-		if(preview != null) {
-			Transform trans = preview.getEntity().getTransform();
-			trans.setScale(isBuilding ? 1 : 0);	
-		}
+		BuildingManager.isBuilding = isBuilding;
+		builder.showPreview(isBuilding);
+//		if(preview != null) {
+//			Transform trans = preview.getEntity().getTransform();
+//			trans.setScale(isBuilding ? 1 : 0);	
+//		}
 	}
 
 	public Entity getSelectedEntity() {
@@ -173,12 +185,12 @@ public class BuildingManager implements KeyListener {
 	}
 
 
-	public Building getPreview() {
-		return preview;
+	public AdvancedBuilder getBuilder() {
+		return builder;
 	}
 
-	public Engine getEngine() {
-		return engine;
+	public Building getPreview() {
+		return builder.getObject();
 	}
 
 }

@@ -8,7 +8,7 @@ public class SmoothFloat {
 	
 	public SmoothFloat(float startValue) {
 		this.target = startValue;
-		this.value = startValue;
+		this.value = 0;
 	}
 	
 	public void update(double delta) {
@@ -24,6 +24,10 @@ public class SmoothFloat {
 	
 	public void setAmountPer(float amountPer) {
 		this.amountPer = amountPer;
+	}
+
+	public float getTarget() {
+		return target;
 	}
 
 	public void setTarget(float target) {

@@ -1,7 +1,7 @@
 package com.seaSaltedToaster.restaurantGame.building.renderer;
 
 import com.seaSaltedToaster.simpleEngine.renderer.shader.Shader;
-import com.seaSaltedToaster.simpleEngine.renderer.shader.uniforms.UniformBoolean;
+import com.seaSaltedToaster.simpleEngine.renderer.shader.uniforms.UniformFloat;
 import com.seaSaltedToaster.simpleEngine.renderer.shader.uniforms.UniformInteger;
 import com.seaSaltedToaster.simpleEngine.renderer.shader.uniforms.UniformMatrix4f;
 
@@ -16,7 +16,8 @@ public class BuildingShader extends Shader {
 	
 	protected UniformInteger currentId = new UniformInteger("currentId");
 	protected UniformInteger selectedId = new UniformInteger("selectedId");
-	
+	protected UniformFloat dayValue = new UniformFloat("dayValue");
+
 	public BuildingShader() {
 		super(vertexShader, fragmentShader, "position", "color", "normal");
 		super.locateUniform(transformation);
@@ -24,8 +25,13 @@ public class BuildingShader extends Shader {
 		super.locateUniform(projectionMatrix);
 		super.locateUniform(currentId);
 		super.locateUniform(selectedId);
+		super.locateUniform(dayValue);
 	}
 	
+	public UniformFloat getDayValue() {
+		return dayValue;
+	}
+
 	public UniformInteger getCurrentId() {
 		return currentId;
 	}

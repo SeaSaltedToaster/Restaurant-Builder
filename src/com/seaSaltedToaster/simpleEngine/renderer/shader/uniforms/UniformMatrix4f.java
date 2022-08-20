@@ -15,7 +15,9 @@ public class UniformMatrix4f extends Uniform {
 		super(name);
 	}
 	
-	public void loadMatrix(Matrix4f matrix)	{
+	@Override
+	public void loadValue(Object value)	{
+		Matrix4f matrix = (Matrix4f) value;
 		matrix.store(matrixBuffer);
 		GL20.glUniformMatrix4fv(super.getLocation(), false, matrixBuffer);
 	}

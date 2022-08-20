@@ -3,43 +3,49 @@ package com.seaSaltedToaster.restaurantGame.ground.renderer;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.entity.Transform;
 import com.seaSaltedToaster.simpleEngine.models.Vao;
-import com.seaSaltedToaster.simpleEngine.utilities.Matrix4f;
-import com.seaSaltedToaster.simpleEngine.utilities.MatrixUtils;
-import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
+import com.seaSaltedToaster.simpleEngine.rendering.Renderer;
+import com.seaSaltedToaster.simpleEngine.utilities.skybox.TimeHandler;
 
-public class GroundRenderer {
-
-	//Position
-	public Transform transform = new Transform(new Vector3f(0.0f,0.0f,0.0f), new Vector3f(0,0,0), new Vector3f(1.0f,1.0f,1.0f));
-	
-	//Shader
-	private GroundShader shader;
-	private MatrixUtils utils;
+public class GroundRenderer extends Renderer {
 	
 	//ID
+	private Transform transform;
 	private int selected = -1;
 	
 	//Create shader
 	public GroundRenderer(Engine engine) {
-		this.shader = new GroundShader();
-		this.utils = new MatrixUtils();
+		super(new GroundShader(), engine);
+		this.transform = new Transform();
 	}
 	
 	public void setHighlight(int id) {
 		this.selected = id;
-		shader.useProgram();
-		shader.getSelected().loadInt(selected);
-		shader.stopProgram();
+		this.shader.useProgram();
+		this.shader.loadUniform(id, "selected");
+		this.shader.stopProgram();
 	}
-	
-	public void render(Vao vao, Engine engine) {
-		shader.useProgram();
-		Matrix4f transformationMatrix = utils.createTransformationMatrix(transform.getPosition(), transform.getRotation().x, transform.getRotation().y, transform.getRotation().z, transform.getScale());
-		shader.getTransformation().loadMatrix(transformationMatrix);
-		shader.getViewMatrix().loadMatrix(utils.createViewMatrix(engine.getCamera()));
-		shader.getProjectionMatrix().loadMatrix(engine.getProjectionMatrix());
-		vao.render();
-		shader.stopProgram();
+
+	@Override
+	public void prepare() {
+		super.prepareFrame(false);
+	}
+
+	@Override
+	public void render(Object obj) {
+		shader.loadUniform(TimeHandler.DAY_VALUE, "dayValue");
+		this.loadMatrices(transform);
+		
+		Vao vao = (Vao) obj;
+		super.renderVao(vao);
+	}
+
+	@Override
+	public void endRender() {
+		super.endRendering();
+	}
+
+	public int getSelected() {
+		return selected;
 	}
 	
 }
