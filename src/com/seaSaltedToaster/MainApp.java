@@ -6,10 +6,11 @@ import com.seaSaltedToaster.restaurantGame.WorldCamera;
 import com.seaSaltedToaster.restaurantGame.building.BuildingManager;
 import com.seaSaltedToaster.restaurantGame.building.categories.BuildingList;
 import com.seaSaltedToaster.restaurantGame.ground.Ground;
-import com.seaSaltedToaster.restaurantGame.menus.BuildingMenu;
 import com.seaSaltedToaster.restaurantGame.menus.GeneralMenu;
 import com.seaSaltedToaster.restaurantGame.menus.LayerMenu;
+import com.seaSaltedToaster.restaurantGame.menus.MoneyCounter;
 import com.seaSaltedToaster.restaurantGame.menus.TimeDisplay;
+import com.seaSaltedToaster.restaurantGame.menus.buildingSelector.BuildingMenu;
 import com.seaSaltedToaster.restaurantGame.menus.employees.EmployeeMenu;
 import com.seaSaltedToaster.restaurantGame.menus.languages.Language;
 import com.seaSaltedToaster.restaurantGame.menus.languages.LanguageManager;
@@ -32,7 +33,7 @@ public class MainApp {
 	
 	public static void main(String[] args) {
 		//Engine
-		Engine engine = new Engine("Restaurant Game v0.0.4e", ClientConfigs.WINDOW_X, ClientConfigs.WINDOW_Y);
+		Engine engine = new Engine("Restaurant Game v0.0.4m", ClientConfigs.WINDOW_X, ClientConfigs.WINDOW_Y);
 		engine.setCamera(new WorldCamera(engine));
 		engine.getKeyboard().addKeyListener(new ScreenshotUtils());
 		
@@ -84,19 +85,29 @@ public class MainApp {
 		general.setEmployee(employee);
 		engine.addUi(general);
 		
-		//TimeDisplay timeDisplay = new TimeDisplay();
-		//engine.addUi(timeDisplay);
-				
+		TimeDisplay timeDisplay = new TimeDisplay();
+		engine.addUi(timeDisplay);
+		
+		MoneyCounter moneyCounter = new MoneyCounter();
+		engine.addUi(moneyCounter);
+		
 		//Update per frame
 		while(!engine.getWindow().shouldClose()) {	
 			//Prepare new frame
 			engine.prepareFrame();
+			restaurant.update();
 			
-			//Render
+			//Shadow map pass
+			engine.startPostProcess();
+			
+			//Render Normal Pass
 			ground.update(engine);
 			manager.updateFrame();
 			engine.render();
-			//post processing and end render
+			
+			//Post processing
+			engine.postProcess();
+			manager.renderSelection();
 			
 			//Render Uis on top
 			engine.renderUis();

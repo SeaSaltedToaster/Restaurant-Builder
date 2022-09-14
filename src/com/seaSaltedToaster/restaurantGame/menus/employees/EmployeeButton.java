@@ -3,16 +3,16 @@ package com.seaSaltedToaster.restaurantGame.menus.employees;
 import org.lwjgl.glfw.GLFW;
 
 import com.seaSaltedToaster.MainApp;
-import com.seaSaltedToaster.restaurantGame.menus.BuildingMenu;
+import com.seaSaltedToaster.restaurantGame.menus.buildingSelector.BuildingMenu;
 import com.seaSaltedToaster.restaurantGame.objects.people.Employee;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.input.Keyboard;
 import com.seaSaltedToaster.simpleEngine.input.listeners.KeyEventData;
 import com.seaSaltedToaster.simpleEngine.input.listeners.KeyListener;
 import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
-import com.seaSaltedToaster.simpleEngine.uis.constraints.HorizontalAlignment;
+import com.seaSaltedToaster.simpleEngine.uis.constraints.XAlign;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.UiConstraints;
-import com.seaSaltedToaster.simpleEngine.uis.constraints.VerticalAlignment;
+import com.seaSaltedToaster.simpleEngine.uis.constraints.YAlign;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.position.AlignX;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.position.AlignY;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.scale.AspectRatio;
@@ -29,8 +29,18 @@ public class EmployeeButton extends UiComponent implements KeyListener {
 	//Icon
 	private UiComponent nameBacker, icon, iconBacker;
 	private Text name;
+	
+	//Level
+	private LevelBar level;
+	
+	//Status
+	private UiComponent statusBar;
+	private Text wage;
+	
+	//Fire
+	private FireButton fire;
 
-	public EmployeeButton(Employee employee) {
+	public EmployeeButton(Employee employee, EmployeeMenu employeeMenu) {
 		super(4);
 		createPanel(employee);
 		addDetails(employee.name);
@@ -39,6 +49,15 @@ public class EmployeeButton extends UiComponent implements KeyListener {
 		Engine engine = MainApp.restaurant.engine;
 		this.setInteractable(true, engine);
 		engine.getKeyboard().addKeyListener(this);
+		
+		this.fire = new FireButton(employee, this, employeeMenu, engine);
+		this.fire.setInteractable(true, engine);
+		this.addComponent(fire);
+	}
+	
+	@Override
+	public void updateSelf() {
+		level.setProgress(employee);
 	}
 	
 	@Override
@@ -80,8 +99,8 @@ public class EmployeeButton extends UiComponent implements KeyListener {
 	private void addDetails(String nameString) {
 		UiConstraints backerCons = new UiConstraints();
 		backerCons.setWidth(new RelativeScale(0.66f));
-		backerCons.setHeight(new AspectRatio(0.2f));
-		backerCons.setY(new AlignY(VerticalAlignment.TOP, 0.1f));
+		backerCons.setHeight(new AspectRatio(0.15f));
+		backerCons.setY(new AlignY(YAlign.TOP, 0.1f));
 		this.nameBacker = new UiComponent(5);
 		this.nameBacker.setConstraints(backerCons);
 		this.nameBacker.setColor(0.2f);
@@ -89,12 +108,15 @@ public class EmployeeButton extends UiComponent implements KeyListener {
 		this.nameBacker.setInteractable(true, MainApp.restaurant.engine);
 		
 		UiConstraints textCons = new UiConstraints();
-		textCons.setX(new AlignX(HorizontalAlignment.CENTER));
-		textCons.setY(new AlignY(VerticalAlignment.TOP, 0.0f));
+		textCons.setX(new AlignX(XAlign.CENTER));
+		textCons.setY(new AlignY(YAlign.TOP, 0.0f));
 		this.name = new Text(nameString, 0.85f, 4);
 		this.name.setColor(1.0f);
 		this.name.setConstraints(textCons);
 		this.nameBacker.addComponent(name);
+		
+		this.level = new LevelBar(25f);
+		this.addComponent(level);
 	}
 
 	private void createPanel(Employee employee) {
@@ -107,7 +129,7 @@ public class EmployeeButton extends UiComponent implements KeyListener {
 		UiConstraints backerCons = new UiConstraints();
 		backerCons.setWidth(new RelativeScale(0.15f));
 		backerCons.setHeight(new AspectRatio(1.0f));
-		backerCons.setY(new AlignY(VerticalAlignment.TOP, 0.1f));
+		backerCons.setY(new AlignY(YAlign.TOP, 0.1f));
 		this.iconBacker = new UiComponent(5);
 		this.iconBacker.setConstraints(backerCons);
 		this.iconBacker.setColor(0.2f);
@@ -118,6 +140,23 @@ public class EmployeeButton extends UiComponent implements KeyListener {
 		this.icon.setConstraints(UiConstraints.getFillCenter());
 		this.icon.setTexture(iconTex);
 		this.iconBacker.addComponent(icon);
+		
+		this.statusBar = new UiComponent(6);
+		UiConstraints cons2 = this.statusBar.getConstraints();
+		cons2.setWidth(new RelativeScale(0.75f));
+		cons2.setHeight(new AspectRatio(0.1f));
+		cons2.setX(new AlignX(XAlign.RIGHT, 0.075f));
+		cons2.setY(new AlignY(YAlign.MIDDLE, 0.0f));
+		this.statusBar.setColor(0.2f);
+		this.addComponent(statusBar);
+		
+		this.wage = new Text("Wage : $"+employee.getWage() + " / day", 0.5f, 6);
+		UiConstraints textCons = new UiConstraints();
+		textCons.setX(new AlignX(XAlign.LEFT, 0.15f));
+		textCons.setY(new AlignY(YAlign.TOP, 0.0f));
+		this.wage.setColor(1.0f);
+		this.wage.setConstraints(textCons);
+		this.statusBar.addComponent(wage);
 	}
 
 }

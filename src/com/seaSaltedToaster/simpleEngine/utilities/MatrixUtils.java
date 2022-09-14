@@ -57,6 +57,17 @@ public class MatrixUtils {
 	    return viewMatrix;
 	}
 	
+	public Matrix4f createViewMatrix(Vector3f pos, Vector3f rot) {
+		Matrix4f viewMatrix = new Matrix4f();
+	    viewMatrix.setIdentity();
+	    Vector3f position = pos;
+	    Vector3f cameraPos = new Vector3f(-position.x, -position.y, -position.z);
+	    Matrix4f.rotate((float) Math.toRadians(rot.getX()), new Vector3f(1,0,0), viewMatrix, viewMatrix);
+	    Matrix4f.rotate((float) Math.toRadians(rot.getY()), new Vector3f(0,1,0), viewMatrix, viewMatrix);
+	    Matrix4f.translate(cameraPos, viewMatrix, viewMatrix);
+	    return viewMatrix;
+	}
+	
 	public Matrix4f createViewMatrix(Matrix4f viewMatrix, Camera camera) {
 	    viewMatrix.setIdentity();
 	    Vector3f position = camera.getPosition();

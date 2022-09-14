@@ -10,10 +10,11 @@ import com.seaSaltedToaster.simpleEngine.input.Mouse;
 import com.seaSaltedToaster.simpleEngine.models.VaoLoader;
 import com.seaSaltedToaster.simpleEngine.models.texture.TextureLoader;
 import com.seaSaltedToaster.simpleEngine.models.wavefront.ObjLoader;
-import com.seaSaltedToaster.simpleEngine.renderer.SimpleRenderer;
+import com.seaSaltedToaster.simpleEngine.renderer.AdvancedRenderer;
 import com.seaSaltedToaster.simpleEngine.renderer.Window;
 import com.seaSaltedToaster.simpleEngine.renderer.lighting.Light;
-import com.seaSaltedToaster.simpleEngine.rendering.AdvancedRenderer;
+import com.seaSaltedToaster.simpleEngine.renderer.postProcessing.PostProcessor;
+import com.seaSaltedToaster.simpleEngine.renderer.shadows.ShadowRenderer;
 import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
 import com.seaSaltedToaster.simpleEngine.uis.rendering.UiRenderer;
 import com.seaSaltedToaster.simpleEngine.uis.text.rendering.FontRenderer;
@@ -54,6 +55,10 @@ public class Engine {
 	//Lighting
 	private Light light;
 	
+	//Graphical FX
+	private PostProcessor postProcessor;
+	private ShadowRenderer shadowRenderer;
+	
 	//Matrices
 	private Matrix4f viewMatrix, projectionMatrix;
 	private MatrixUtils utils;
@@ -61,7 +66,7 @@ public class Engine {
 	//Matrix settings
 	public static float FOV = 70f;
 	public static float NEAR_PLANE = 0.1f;
-	public static float FAR_PLANE = 100000f;
+	public static float FAR_PLANE = 1000f;
 	
 	public Engine(String title, int width, int height) {
 		this.window = new Window();
@@ -85,10 +90,12 @@ public class Engine {
 		this.utils = new MatrixUtils();
 		this.viewMatrix = utils.createViewMatrix(camera);
 		this.projectionMatrix = utils.createProjectionMatrix(FOV, NEAR_PLANE, FAR_PLANE, this);
-		new SimpleRenderer(this);
 		this.skybox = new SkyboxRenderer(this);
 		
-		this.light = new Light(new Vector3f(0.0f), new Vector3f(0.0f));
+		this.light = new Light(new Vector3f(10000, 15000, -10000), new Vector3f(0.0f));
+		this.postProcessor = new PostProcessor(this);
+		this.shadowRenderer = new ShadowRenderer(this);
+		
 		this.advRenderer = new AdvancedRenderer(this);
 	}
 	
@@ -99,22 +106,42 @@ public class Engine {
 	}
 
 	public void prepareFrame() {
+		clearFrame();
+	}
+	
+	private void clearFrame() {
 		OpenGL.setDepthTest(true);
 		OpenGL.clearColor();
 		OpenGL.clearDepth();
-		OpenGL.clearColor(new Vector3f(1.0f), 0.0f);		
-		skybox.renderSkybox();
+		OpenGL.clearColor(new Vector3f(0.0f), 0.0f);
 	}
 	
 	public void render() {
 		this.viewMatrix = utils.createViewMatrix(camera);
-		this.projectionMatrix = utils.createProjectionMatrix(70, 0.1f, 100000f, this);
+		this.projectionMatrix = utils.createProjectionMatrix(70, 0.1f, 1000f, this);
 		
 		this.advRenderer.prepare();
 		for(Entity entity : entities) {
 			this.advRenderer.render(entity);
 		}
 		this.advRenderer.endRender();
+	}
+	
+	public void startPostProcess() {
+		this.postProcessor.prepare();
+		this.skybox.renderSkybox();
+	}
+	
+	public void postProcess() {
+		this.postProcessor.render(null);
+		this.postProcessor.endRender();
+	}
+	
+	public void renderShadows(List<Entity> others) {
+		this.shadowRenderer.prepare(light);
+		this.shadowRenderer.render(others);
+		this.shadowRenderer.render(entities);
+		this.shadowRenderer.stopRender();
 	}
 	
 	public void renderUis() {
@@ -144,6 +171,14 @@ public class Engine {
 	
 	public List<UiComponent> getUis() {
 		return uis;
+	}
+
+	public PostProcessor getPostProcessor() {
+		return postProcessor;
+	}
+
+	public ShadowRenderer getShadowRenderer() {
+		return shadowRenderer;
 	}
 
 	public Light getLight() {

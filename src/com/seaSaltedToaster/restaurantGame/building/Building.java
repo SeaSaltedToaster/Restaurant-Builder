@@ -20,6 +20,7 @@ public class Building {
 	//Settings
 	private boolean isWall = false, isFloor = false, isObstructive = false, isTable = false;
 	private float iconZoom = 1f;
+	private int price = 0;
 	public String name;
 
 	public Building(Entity entity, boolean isWall, boolean isFloor, BuildingType type) {
@@ -51,6 +52,14 @@ public class Building {
 
 	public void setCategory(BuildingCategory category) {
 		this.category = category;
+	}
+
+	public int getPrice() {
+		return price;
+	}
+
+	public void setPrice(int price) {
+		this.price = price;
 	}
 
 	public boolean isWall() {

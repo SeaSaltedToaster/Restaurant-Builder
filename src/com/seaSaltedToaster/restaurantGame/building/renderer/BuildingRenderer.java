@@ -1,71 +1,48 @@
 package com.seaSaltedToaster.restaurantGame.building.renderer;
 
-import org.lwjgl.opengl.GL11;
-
 import com.seaSaltedToaster.restaurantGame.building.AdvancedBuilder;
+import com.seaSaltedToaster.restaurantGame.building.BuildingId;
 import com.seaSaltedToaster.restaurantGame.building.BuildingManager;
 import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
 import com.seaSaltedToaster.simpleEngine.entity.Transform;
 import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.ModelComponent;
-import com.seaSaltedToaster.simpleEngine.input.Mouse;
-import com.seaSaltedToaster.simpleEngine.renderer.Fbo;
-import com.seaSaltedToaster.simpleEngine.renderer.Window;
+import com.seaSaltedToaster.simpleEngine.renderer.Renderer;
 import com.seaSaltedToaster.simpleEngine.utilities.Matrix4f;
-import com.seaSaltedToaster.simpleEngine.utilities.MatrixUtils;
-import com.seaSaltedToaster.simpleEngine.utilities.OpenGL;
-import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 import com.seaSaltedToaster.simpleEngine.utilities.skybox.TimeHandler;
 
-public class BuildingRenderer {
+public class BuildingRenderer extends Renderer {
 	
 	//Shading / Objects
-	private BuildingShader shader;
-	private MatrixUtils utils;
-	private Matrix4f transform, view;
-	
-	//Buildings
-	private Engine engine;
 	private BuildingManager manager;
-	
-	//Framebuffer
-	private Fbo fbo;
-	private SelectionShader fboShader;
-	private short[] pixels;
+	private Matrix4f transform;
 	private int selectedId = -127;
 
 	public BuildingRenderer(BuildingManager manager, Engine engine) {
-		this.engine = engine;
+		super(new BuildingShader(), engine);
 		this.manager = manager;
-		this.shader = new BuildingShader();
-		this.utils = new MatrixUtils();
-		this.fbo = new Fbo(Window.getCurrentWidth(), Window.getCurrentHeight(), Fbo.DEPTH_RENDER_BUFFER);
-		this.fboShader = new SelectionShader();
-		this.pixels = new short[3];
 		this.transform = new Matrix4f();
-		this.view = new Matrix4f();
 	}
 	
-	public void prepareFrame() {
-		fbo.bindFrameBuffer();
-		OpenGL.setDepthTest(true);
-		OpenGL.clearColor();
-		OpenGL.clearDepth();
-		OpenGL.clearColor(new Vector3f(1,0,0), 1);	
-		fbo.unbindFrameBuffer();
+	@Override
+	public void prepare() {
+		this.selectedId = manager.getSelectRenderer().getSelectedId();
+		super.prepareFrame(false);
 	}
 	
-	public void render() {
-		//Standard pass
-		shader.useProgram();
+	@Override
+	public void render(Object obj) {
+		//Objects pass
+		if(manager.getSelectedEntity() == null)
+			this.selectedId = -127;
 		int index = 0;
 		for(BuildLayer layer : manager.getLayers()) {
-			layer.updateLayer();
 			if(!layer.isOn()) {
 				continue;
 			}
 			for(Entity entity : layer.getBuildings()) {
+				if(entity == null) continue;
 				entity.updateComponents();
 			}
 			layer.getBuildings().remove(null);
@@ -75,6 +52,8 @@ public class BuildingRenderer {
 				index++;
 			}
 		}
+		
+		//Preview pass
 		AdvancedBuilder builder = manager.getBuilder();
 		for(Entity entity : builder.getPreviews()) {
 			if(entity != null)
@@ -82,112 +61,39 @@ public class BuildingRenderer {
 		}
 		renderEntity(builder.getStart(), -1, selectedId);
 		renderEntity(builder.getEnd(), -1, selectedId);
-		shader.stopProgram();
-		
-		//FBO Pass
-		prepareFrame();
-		this.fbo.bindFrameBuffer();
-		fboShader.useProgram();
-		float fboIndex = 0;
-		for(BuildLayer layer : manager.getLayers()) {
-			if(!layer.isOn()) continue;
-			for(Entity entity : layer.getBuildings()) {
-				if(entity == null) continue;
-				Vector3f color = getIdColor(fboIndex);
-				renderEntityForFBO(entity, color);
-				fboIndex++;
-			}
-		}
-		fboShader.stopProgram();
-		this.fbo.unbindFrameBuffer();
-		
-		//Get selected objects
-		short[] bytes = readPixelColour();
-		int id = decodeIdFromColor(bytes) / 256;
-		this.selectedId = id;
-		Entity selected = manager.getBuilding(id);
-		if(selected != null)
-			manager.setSelectedEntity(selected);
-		else
-			manager.setSelectedEntity(null);
-	}
-		
-	private void renderEntityForFBO(Entity entity, Vector3f color) {
-		GL11.glViewport(0, 0, (int) Window.getCurrentWidth(), (int) Window.getCurrentHeight());
-		Transform transform = entity.getTransform();
-		ModelComponent comp = (ModelComponent) entity.getComponent("Model");
-		
-		this.transform = utils.createTransformationMatrix(this.transform, transform.getPosition(), transform.getRotation().x, transform.getRotation().y, transform.getRotation().z, transform.getScale());
-		fboShader.getTransformation().loadValue(this.transform);
-		this.view = utils.createViewMatrix(this.view, engine.getCamera());
-		fboShader.getViewMatrix().loadValue(this.view);
-		fboShader.getProjectionMatrix().loadValue(engine.getProjectionMatrix());
-		
-		fboShader.getColor().loadValue(color);
-		comp.getMesh().render();
 	}
 
 	private void renderEntity(Entity entity, int index, int curId) {
+		//Matrices
 		Transform transform = entity.getTransform();
-		ModelComponent comp = (ModelComponent) entity.getComponent("Model");
-		this.transform = utils.createTransformationMatrix(this.transform, transform.getPosition(), transform.getRotation().x, transform.getRotation().y, transform.getRotation().z, transform.getScale());
-		shader.getTransformation().loadValue(this.transform);
-		this.view = utils.createViewMatrix(this.view, engine.getCamera());
-		shader.getViewMatrix().loadValue(this.view);
-		shader.getProjectionMatrix().loadValue(engine.getProjectionMatrix());
+		super.loadMatrices(transform);
 		
-		shader.getCurrentId().loadValue(index);
-		shader.getDayValue().loadValue(TimeHandler.DAY_VALUE);
+		//Transformation
+		this.transform = utils.createTransformationMatrix(this.transform, transform.getPosition(), transform.getRotation().x, transform.getRotation().y, transform.getRotation().z, transform.getScale());
+		shader.loadUniform(this.transform, "transformationMatrix");
+		
+		//Other uniforms
+		shader.loadUniform(index, "currentId");
+		shader.loadUniform(TimeHandler.DAY_VALUE, "dayValue");
 		if(!manager.isBuilding())
-			shader.getSelectedId().loadValue(curId);
+			shader.loadUniform(curId, "selectedId");
 		else
-			shader.getSelectedId().loadValue(-127);
-		comp.getMesh().render();
-	}
-	
-	private short[] readPixelColour() {
-		this.fbo.bindToRead();
-		int mouseX = (int) Mouse.getMouseX();
-		int mouseY = (int) -Mouse.getMouseY() + (int) Window.getCurrentHeight();
-		GL11.glReadPixels(mouseX, mouseY, 1, 1, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, pixels);
-	    this.fbo.unbindFrameBuffer();
-	    return pixels;
-	}
-	
-	private Vector3f getIdColor(float index) {
-		float[] color = new float[16];
-		encodeIdIntoColor(index, color);
-		float x = color[0];
-		float y = color[1];
-		float z = color[2];
-		return new Vector3f(x/256,y/256,z/256);
-	}
-		  
-	private void encodeIdIntoColor(float id, float[] color) {
-		float index = (float) id;
-		color[2] = (index % 256);
-		index = index / 256;
-		if(index < 1) {
-			color[1] = 0f;
-			color[0] = 0f;
+			shader.loadUniform(-127, "selectedId");
+		
+		//Load id related
+		BuildingId buildingId = (BuildingId) entity.getComponent("BuildingId");
+		if(buildingId != null) {
+			shader.loadUniform(buildingId.getCustomColor(), "customColor");
 		}
-	    color[1] = (index % 256);
-		index = index / 256;
-		if(index < 1) {
-			color[0] = 0f;
-		}
-	    color[0] = (index % 256);
-	}
-		  
-	private static int decodeIdFromColor(short[] colour) {
-		int id = convertUnsignedByte(colour[2]);
-	    id += (convertUnsignedByte(colour[1]) * (256)) + 1;
-	    id += convertUnsignedByte(colour[0]) * (256 * 256);
-	    return id;
+		
+		//Render
+		ModelComponent comp = (ModelComponent) entity.getComponent("Model");
+		super.renderVao(comp.getMesh());
 	}
 	
-	private static int convertUnsignedByte(short b) {
-		return b & 0xFF;
+	@Override
+	public void endRender() {
+		super.endRendering();
 	}
 
 }

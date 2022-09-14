@@ -2,20 +2,20 @@ package com.seaSaltedToaster.simpleEngine.uis.constraints.position;
 
 import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.ConstraintType;
-import com.seaSaltedToaster.simpleEngine.uis.constraints.HorizontalAlignment;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.UiConstraint;
+import com.seaSaltedToaster.simpleEngine.uis.constraints.XAlign;
 
 public class AlignX extends UiConstraint {
 	
-	private HorizontalAlignment alignment;
+	private XAlign alignment;
 	private float gap;
 	
-	public AlignX(HorizontalAlignment alignment) {
+	public AlignX(XAlign alignment) {
 		this.alignment = alignment;
 		this.gap = 0;
 	}
 	
-	public AlignX(HorizontalAlignment alignment, float gap) {
+	public AlignX(XAlign alignment, float gap) {
 		this.alignment = alignment;
 		this.gap = gap;
 	}
@@ -46,11 +46,11 @@ public class AlignX extends UiConstraint {
 		}
 	}
 
-	public HorizontalAlignment getAlignment() {
+	public XAlign getAlignment() {
 		return alignment;
 	}
 
-	public void setAlignment(HorizontalAlignment alignment) {
+	public void setAlignment(XAlign alignment) {
 		this.alignment = alignment;
 	}
 

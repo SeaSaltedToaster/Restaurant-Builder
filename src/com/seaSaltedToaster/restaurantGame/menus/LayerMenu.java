@@ -3,9 +3,9 @@ package com.seaSaltedToaster.restaurantGame.menus;
 import com.seaSaltedToaster.restaurantGame.building.BuildingManager;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
-import com.seaSaltedToaster.simpleEngine.uis.constraints.HorizontalAlignment;
+import com.seaSaltedToaster.simpleEngine.uis.constraints.XAlign;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.UiConstraints;
-import com.seaSaltedToaster.simpleEngine.uis.constraints.VerticalAlignment;
+import com.seaSaltedToaster.simpleEngine.uis.constraints.YAlign;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.position.AlignX;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.position.AlignY;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.scale.AspectRatio;
@@ -42,8 +42,8 @@ public class LayerMenu extends UiComponent {
 		increase.setColor(0.15f);
 		increase.setInteractable(true, engine);
 		UiConstraints cons = increase.getConstraints();
-		cons.setX(new AlignX(HorizontalAlignment.CENTER));
-		cons.setY(new AlignY(VerticalAlignment.TOP));
+		cons.setX(new AlignX(XAlign.CENTER));
+		cons.setY(new AlignY(YAlign.TOP));
 		cons.setHeight(new AspectRatio(1.0f));
 		cons.setWidth(new RelativeScale(0.66f));
 		this.addComponent(increase);
@@ -53,8 +53,8 @@ public class LayerMenu extends UiComponent {
 		decrease.setColor(0.15f);
 		decrease.setInteractable(true, engine);
 		UiConstraints cons2 = decrease.getConstraints();
-		cons2.setX(new AlignX(HorizontalAlignment.CENTER));
-		cons2.setY(new AlignY(VerticalAlignment.BOTTOM));
+		cons2.setX(new AlignX(XAlign.CENTER));
+		cons2.setY(new AlignY(YAlign.BOTTOM));
 		cons2.setHeight(new AspectRatio(1.0f));
 		cons2.setWidth(new RelativeScale(0.66f));
 		this.addComponent(decrease);
@@ -62,8 +62,8 @@ public class LayerMenu extends UiComponent {
 
 	private void createMenu() {
 		UiConstraints cons = new UiConstraints();
-		cons.setX(new AlignX(HorizontalAlignment.LEFT, 0.0125f));
-		cons.setY(new AlignY(VerticalAlignment.BOTTOM, 0.05f));
+		cons.setX(new AlignX(XAlign.LEFT, 0.0125f));
+		cons.setY(new AlignY(YAlign.BOTTOM, 0.05f));
 		this.setConstraints(cons);
 		this.setScale(0.033f, 0.09f);
 		this.setColor(0.15f);

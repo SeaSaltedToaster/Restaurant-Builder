@@ -35,7 +35,7 @@ public class WorldCamera extends Camera implements ScrollListener, MousePosListe
 	private SmoothFloat smoothYaw;
 	
 	//Movement
-	public float camDist = -25;
+	public float camDist = 25, maxCamDist = 150;
 	private double lastX, lastY;
 	private float outerAngle = 360;
 	
@@ -138,8 +138,14 @@ public class WorldCamera extends Camera implements ScrollListener, MousePosListe
 		if(MainApp.menuFocused)
 			return;
 		
-		float scrollAmount = (scrollValue * 2f);
-		this.smoothZoom.increaseTarget(scrollAmount);
+		float increment = this.camDist / 10.0f; 
+		float scrollAmount = (scrollValue * increment);
+		this.smoothZoom.increaseTarget(-scrollAmount);
+		
+		if(smoothZoom.getTarget() > maxCamDist)
+			this.smoothZoom.setTarget(maxCamDist);
+		if(smoothZoom.getTarget() < 1)
+			this.smoothZoom.setTarget(1);
 	}
 
 	private void calculateCameraPosition(float horizDistance, float verticDistance) {
@@ -154,11 +160,11 @@ public class WorldCamera extends Camera implements ScrollListener, MousePosListe
 	}
 	
 	private float getHorizontalDistance() {
-		return (float) (camDist * Math.cos(Math.toRadians(smoothPitch.getValue())));
+		return (float) (-camDist * Math.cos(Math.toRadians(smoothPitch.getValue())));
 	}
 	
 	private float getVerticalDistance() {
-		return (float) (camDist * Math.sin(Math.toRadians(-smoothPitch.getValue())));
+		return (float) (-camDist * Math.sin(Math.toRadians(-smoothPitch.getValue())));
 	}
 	
 	private void registerCamera(Engine engine) {

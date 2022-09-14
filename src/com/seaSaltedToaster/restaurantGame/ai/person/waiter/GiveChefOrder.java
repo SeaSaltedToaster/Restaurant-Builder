@@ -3,6 +3,7 @@ package com.seaSaltedToaster.restaurantGame.ai.person.waiter;
 import com.seaSaltedToaster.MainApp;
 import com.seaSaltedToaster.restaurantGame.ai.person.Action;
 import com.seaSaltedToaster.restaurantGame.objects.people.ChefComponent;
+import com.seaSaltedToaster.restaurantGame.objects.people.Employee;
 import com.seaSaltedToaster.restaurantGame.objects.people.ServerComponent;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
 
@@ -18,6 +19,9 @@ public class GiveChefOrder extends Action {
 	public void start() {
 		MainApp.restaurant.chefOrders.add(server.getOrder());
 		server.setOrder(null);
+		
+		Employee employee = (Employee) server;
+		employee.addExp(5);
 	}
 
 	@Override

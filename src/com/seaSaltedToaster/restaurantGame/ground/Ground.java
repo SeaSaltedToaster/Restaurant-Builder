@@ -179,7 +179,7 @@ public class Ground {
 		this.colorList = new Color[64];
 		this.colorList[0] = new Color(1,1,1);
 		this.colorList[1] = new Color(0.53f, 0.82f, 0.52f);
-		this.colorList[2] = new Color(0.50f, 0.79f, 0.52f);
+		this.colorList[2] = new Color(0.50f, 0.75f, 0.52f);
 	}
 
 	public static float getTileSize() {

@@ -8,6 +8,9 @@ in int id;
 out vec3 pass_color;
 out int pass_id;
 
+out vec4 shadowCoords;
+uniform mat4 toShadowMapSpace;
+
 uniform mat4 transformationMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
@@ -15,6 +18,8 @@ uniform mat4 projectionMatrix;
 void main(void)	{
 
 	vec4 worldPosition = transformationMatrix * vec4(position, 1.0f);
+	shadowCoords = toShadowMapSpace * worldPosition;
+	
 	vec4 toCamPos = worldPosition * viewMatrix;
 	gl_Position = toCamPos * projectionMatrix;
 	

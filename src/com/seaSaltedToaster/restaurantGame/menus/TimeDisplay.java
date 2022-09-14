@@ -1,9 +1,9 @@
 package com.seaSaltedToaster.restaurantGame.menus;
 
 import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
-import com.seaSaltedToaster.simpleEngine.uis.constraints.HorizontalAlignment;
+import com.seaSaltedToaster.simpleEngine.uis.constraints.XAlign;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.UiConstraints;
-import com.seaSaltedToaster.simpleEngine.uis.constraints.VerticalAlignment;
+import com.seaSaltedToaster.simpleEngine.uis.constraints.YAlign;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.position.AlignX;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.position.AlignY;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.scale.AspectRatio;
@@ -49,15 +49,15 @@ public class TimeDisplay extends UiComponent {
 		this.display = new Text(getTimeString(), 1.0f, 6);
 		this.display.setColor(1.0f);
 		UiConstraints cons = display.getConstraints();
-		cons.setX(new AlignX(HorizontalAlignment.CENTER));
-		cons.setY(new AlignY(VerticalAlignment.TOP));
+		cons.setX(new AlignX(XAlign.CENTER));
+		cons.setY(new AlignY(YAlign.TOP));
 		this.addComponent(display);
 	}
 
 	private void createPanel() {
 		UiConstraints cons = this.getConstraints();
-		cons.setX(new AlignX(HorizontalAlignment.CENTER));
-		cons.setY(new AlignY(VerticalAlignment.TOP));
+		cons.setX(new AlignX(XAlign.CENTER));
+		cons.setY(new AlignY(YAlign.TOP));
 		cons.setWidth(new RelativeScale(0.1125f));
 		cons.setHeight(new AspectRatio(0.2f));
 		this.setColor(0.15f);

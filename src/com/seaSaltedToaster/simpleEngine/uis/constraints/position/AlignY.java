@@ -3,19 +3,19 @@ package com.seaSaltedToaster.simpleEngine.uis.constraints.position;
 import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.ConstraintType;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.UiConstraint;
-import com.seaSaltedToaster.simpleEngine.uis.constraints.VerticalAlignment;
+import com.seaSaltedToaster.simpleEngine.uis.constraints.YAlign;
 
 public class AlignY extends UiConstraint {
 
-	private VerticalAlignment alignment;
+	private YAlign alignment;
 	private float gap;
 	
-	public AlignY(VerticalAlignment alignment) {
+	public AlignY(YAlign alignment) {
 		this.alignment = alignment;
 		this.gap = 0;
 	}
 	
-	public AlignY(VerticalAlignment alignment, float gap) {
+	public AlignY(YAlign alignment, float gap) {
 		this.alignment = alignment;
 		this.gap = gap;
 	}
@@ -45,11 +45,11 @@ public class AlignY extends UiConstraint {
 		}
 	}
 
-	public VerticalAlignment getAlignment() {
+	public YAlign getAlignment() {
 		return alignment;
 	}
 
-	public void setAlignment(VerticalAlignment alignment) {
+	public void setAlignment(YAlign alignment) {
 		this.alignment = alignment;
 	}
 

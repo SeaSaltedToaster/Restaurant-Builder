@@ -3,7 +3,7 @@ package com.seaSaltedToaster.simpleEngine.utilities.skybox;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.entity.Transform;
 import com.seaSaltedToaster.simpleEngine.models.Vao;
-import com.seaSaltedToaster.simpleEngine.rendering.Renderer;
+import com.seaSaltedToaster.simpleEngine.renderer.Renderer;
 
 public class SkyboxRenderer extends Renderer {
 	
@@ -15,7 +15,7 @@ public class SkyboxRenderer extends Renderer {
 		
 	//Transform
 	private Transform transform = new Transform();
-	private float size = 1000f;
+	private float size = 250f;
 	
 	public SkyboxRenderer(Engine engine) {
 		super(new SkyboxShader(), engine);

@@ -17,34 +17,44 @@ public class IconMaker {
 	private MatrixUtils utils;
 	
 	//FBO
+	private Fbo[] fbos;
 	private int fboQuality = 1280;
 	private Camera camera;
+	
+	//Details
+	private float yAngle = 0.0f;
+	private Vector3f clear = new Vector3f(0.0f);
 	
 	public IconMaker(Engine engine) {
 		this.shader = new IconShader();
 		this.utils = new MatrixUtils();		
 		this.camera = new Camera();
+		int max_models = 512;
+		this.fbos = new Fbo[max_models]; 
 	}
 	
 	public void prepareFrame() {
 		OpenGL.setDepthTest(true);
 		OpenGL.clearColor();
 		OpenGL.clearDepth();
-		OpenGL.clearColor(new Vector3f(0.0f), 0.0f);
+		OpenGL.clearColor(clear, 0.0f);
 	}
 	
 	public int createIcon(Vao vao, float camDist) {
+		if(vao == null) return 0;
 		calculateCameraPosition(camDist);
 		camera.getPosition().y = -0.5f;
 		
-		Fbo fbo = new Fbo(fboQuality, fboQuality, Fbo.DEPTH_RENDER_BUFFER); 
+		int fboId = vao.id;
+		Fbo fbo = getFbo(fboId);
+		
 		prePrepare(fbo);
 		fbo.bindFrameBuffer();
 		this.shader.useProgram();
 		prepareFrame();
 		Transform transform = new Transform();
 		transform.getRotation().x = 180f;
-		transform.getRotation().y = 90;
+		transform.getRotation().y = 90 + yAngle;
 		Matrix4f transformationMatrix = utils.createTransformationMatrix(transform.getPosition(), transform.getRotation().x, transform.getRotation().y, transform.getRotation().z, transform.getScale());
 		shader.getTransformation().loadValue(transformationMatrix);
 		shader.getViewMatrix().loadValue(utils.createViewMatrix(camera));
@@ -55,6 +65,15 @@ public class IconMaker {
 		return fbo.getColourTexture();
 	}
 	
+	private Fbo getFbo(int fboId) {
+		if(fbos[fboId] != null) {
+			return fbos[fboId];
+		}
+		Fbo fbo = new Fbo(fboQuality, fboQuality, Fbo.DEPTH_RENDER_BUFFER);
+		fbos[fboId] = fbo;
+		return fbo;
+	}
+
 	private void prePrepare(Fbo fbo) {
 		fbo.bindFrameBuffer();
 		shader.useProgram();
@@ -79,6 +98,26 @@ public class IconMaker {
 	
 	private float getVerticalDistance(float camDist) {
 		return (float) (camDist * Math.sin(Math.toRadians(-camera.getPitch())));
+	}
+
+	public Vector3f getClear() {
+		return clear;
+	}
+
+	public void setClear(Vector3f clear) {
+		this.clear = clear;
+	}
+
+	public float getYAngle() {
+		return yAngle;
+	}
+
+	public void setYAngle(float yAngle) {
+		this.yAngle = yAngle;
+	}
+	
+	public void increaseYAngle(float amt) {
+		setYAngle(this.yAngle + amt);
 	}
 
 }

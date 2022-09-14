@@ -6,6 +6,7 @@ import java.util.List;
 import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.Component;
 import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.ModelComponent;
 import com.seaSaltedToaster.simpleEngine.models.Vao;
+import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 
 public class Entity {
 	
@@ -85,10 +86,12 @@ public class Entity {
 				return component;
 			}
 		}
-		System.out.println("Entity does not have '" + comp +"' component");
 		return null;
 	}
 	
+	public Vector3f getPosition() {
+		return this.transform.getPosition();
+	}
 	public Transform getTransform() {
 		return transform;
 	}

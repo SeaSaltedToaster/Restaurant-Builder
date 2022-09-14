@@ -5,6 +5,7 @@ import com.seaSaltedToaster.restaurantGame.objects.TableComponent;
 
 public class WaitForCleanTable extends Action {
 
+	//The table and seat we are waiting to be clean
 	private TableComponent tableComp;
 	private int claimedSeat;
 
@@ -15,16 +16,17 @@ public class WaitForCleanTable extends Action {
 
 	@Override
 	public void start() {
-		
+		//Nothing
 	}
 
 	@Override
 	public void update() {
-		
+		//Nothing
 	}
 
 	@Override
 	public boolean isDone() {
+		//Check if the table is clean and return it
 		boolean isDone = !tableComp.hasFood(claimedSeat);
 		return isDone;
 	}

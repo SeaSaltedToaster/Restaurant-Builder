@@ -7,6 +7,7 @@ import com.seaSaltedToaster.restaurantGame.objects.TableComponent;
 
 public class RequestTableClean extends Action {
 	
+	//The table and seat that need to be cleaned
 	private TableComponent tableComp;
 	private int claimedSeat;
 
@@ -17,17 +18,19 @@ public class RequestTableClean extends Action {
 
 	@Override
 	public void start() {
+		//Send request to clean the table
 		CleanRequest request = new CleanRequest(tableComp, claimedSeat);
 		MainApp.restaurant.dirtyTables.add(request);
 	}
 
 	@Override
 	public void update() {
-		
+		//Nothing
 	}
 
 	@Override
 	public boolean isDone() {
+		//All is done in start(), return true
 		return true;
 	}
 

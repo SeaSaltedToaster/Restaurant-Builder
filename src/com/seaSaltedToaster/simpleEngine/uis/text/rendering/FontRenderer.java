@@ -4,7 +4,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 
 import com.seaSaltedToaster.simpleEngine.Engine;
-import com.seaSaltedToaster.simpleEngine.rendering.Renderer;
+import com.seaSaltedToaster.simpleEngine.renderer.Renderer;
 import com.seaSaltedToaster.simpleEngine.uis.text.FontType;
 import com.seaSaltedToaster.simpleEngine.uis.text.Text;
 import com.seaSaltedToaster.simpleEngine.utilities.OpenGL;

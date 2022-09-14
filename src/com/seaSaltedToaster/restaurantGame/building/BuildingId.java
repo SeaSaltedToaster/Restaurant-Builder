@@ -2,10 +2,13 @@ package com.seaSaltedToaster.restaurantGame.building;
 
 import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
 import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.Component;
+import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 
 public class BuildingId extends Component {
 
 	private int id;
+	private Vector3f customColor;
+	
 	private Building type;
 	private BuildLayer layer;
 	
@@ -13,8 +16,17 @@ public class BuildingId extends Component {
 		this.id = id;
 		this.type = preview;
 		this.layer = buildLayer;
+		this.customColor = new Vector3f(Math.random(), Math.random(), Math.random());
 	}
 	
+	public Vector3f getCustomColor() {
+		return customColor;
+	}
+
+	public void setCustomColor(Vector3f customColor) {
+		this.customColor = customColor;
+	}
+
 	public Building getType() {
 		return type;
 	}

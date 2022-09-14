@@ -20,23 +20,50 @@ public class TableComponent extends Component {
 	
 	//Food spots
 	private Entity[] foodSpots;
+	private TableType tableType;
 	
+	public TableComponent(TableType tableType) {
+		this.tableType = tableType;
+	}
+
 	@Override
 	public void init() {
-		this.seats = new Vector3f[seatCount];
-		this.seatTaken = new boolean[seatCount];
-		this.foodSpots = new Entity[seatCount];
 		addSeats();
+		MainApp.restaurant.tables.add(this);
 	}
 
 	private void addSeats() {
+		switch(tableType) {
+		case BOOTH1:
+			createTable(4);
+			createBooth();
+			break;
+		case TABLE1:
+			createTable(2);
+			createTwoSeater();
+			break;
+		default:
+			break;
+		}
+	}
+	
+	private void createTwoSeater() {
+		this.seats[0] = new Vector3f(0.0f, 0.125f, 0.3f);
+		this.seats[1] = new Vector3f(0.0f, 0.125f, -0.3f);
+		setTableEmpty();
+		
+		float tableHeight = 0.4125f;
+		this.foodSpots[0] = addSpot(new Vector3f(0.0f, tableHeight, 0.1f));
+		this.foodSpots[1] = addSpot(new Vector3f(0.0f, tableHeight, -0.1f));
+	}
+	
+	private void createBooth() {
 		this.seats[0] = new Vector3f(0.15f, 0.125f, 0.3f);
 		this.seats[1] = new Vector3f(-0.15f, 0.125f, 0.3f);
 		this.seats[2] = new Vector3f(0.15f, 0.125f, -0.3f);
 		this.seats[3] = new Vector3f(-0.15f, 0.125f, -0.3f);
-		for(int i = 0; i < seatCount; i++) {
-			seatTaken[i] = false;
-		}
+		setTableEmpty();
+		
 		float tableHeight = 0.4125f;
 		this.foodSpots[0] = addSpot(new Vector3f(0.15f, tableHeight, 0.1f));
 		this.foodSpots[1] = addSpot(new Vector3f(-0.15f, tableHeight, 0.1f));
@@ -44,6 +71,19 @@ public class TableComponent extends Component {
 		this.foodSpots[3] = addSpot(new Vector3f(-0.15f, tableHeight, -0.1f));
 	}
 	
+	private void createTable(int seats) {
+		this.seatCount = seats;
+		this.seats = new Vector3f[seats];
+		this.seatTaken = new boolean[seats];
+		this.foodSpots = new Entity[seats];
+	}
+	
+	private void setTableEmpty() {
+		for(int i = 0; i < seatCount; i++) {
+			seatTaken[i] = false;
+		}		
+	}
+ 	
 	private Entity addSpot(Vector3f vector3f) {
 		Entity entity = new Entity();
 		entity.addComponent(new ModelComponent(null));
@@ -130,7 +170,7 @@ public class TableComponent extends Component {
 
 	@Override
 	public Component copyInstance() {
-		return new TableComponent();
+		return new TableComponent(tableType);
 	}
 
 }

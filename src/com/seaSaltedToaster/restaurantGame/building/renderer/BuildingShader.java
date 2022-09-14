@@ -4,6 +4,7 @@ import com.seaSaltedToaster.simpleEngine.renderer.shader.Shader;
 import com.seaSaltedToaster.simpleEngine.renderer.shader.uniforms.UniformFloat;
 import com.seaSaltedToaster.simpleEngine.renderer.shader.uniforms.UniformInteger;
 import com.seaSaltedToaster.simpleEngine.renderer.shader.uniforms.UniformMatrix4f;
+import com.seaSaltedToaster.simpleEngine.renderer.shader.uniforms.UniformVec3;
 
 public class BuildingShader extends Shader {
 	
@@ -17,6 +18,8 @@ public class BuildingShader extends Shader {
 	protected UniformInteger currentId = new UniformInteger("currentId");
 	protected UniformInteger selectedId = new UniformInteger("selectedId");
 	protected UniformFloat dayValue = new UniformFloat("dayValue");
+	
+	protected UniformVec3 customColor = new UniformVec3("customColor");
 
 	public BuildingShader() {
 		super(vertexShader, fragmentShader, "position", "color", "normal");
@@ -26,8 +29,13 @@ public class BuildingShader extends Shader {
 		super.locateUniform(currentId);
 		super.locateUniform(selectedId);
 		super.locateUniform(dayValue);
+		super.locateUniform(customColor);
 	}
 	
+	public UniformVec3 getCustomColor() {
+		return customColor;
+	}
+
 	public UniformFloat getDayValue() {
 		return dayValue;
 	}

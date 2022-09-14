@@ -10,59 +10,74 @@ import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 
 public class PathfinderComponent extends Component {
 
-	//Target
+	//Our path and current node
 	private List<Node> curPath;
 	private Node curNode;
 	
-	//Path
+	//Calculating and moving on the path
 	private Pathfinder pathfinder;
 	private Mover mover;
 	
-	//Other
+	//Layer the path is on
 	private BuildLayer layer;
 	
 	public PathfinderComponent() {
+		//Create path node list and pathfinder
 		this.curPath = new ArrayList<Node>();
 		this.pathfinder = new Pathfinder();
 	}
 	
 	@Override
 	public void update() {
+		//If we arent moving, this code is obsolete
 		if(!mover.isMoving) return;
+		
+		//Set position the entity should be at
 		Vector3f newPos = mover.update();
 		if(newPos != null)
 			entity.getTransform().setPosition(newPos.copy());
-
+		
+		//If the entity reached the node, move to the next
 		if(mover.reachedTarget()) {
 			curPath.remove(curNode);
 			getNextNode();
 		}
 	}
 	
-	public void goTo(Vector3f target) {		
+	public void goTo(Vector3f target) {	
+		//Set the layer we are moving on
 		BuildingId id = (BuildingId) entity.getComponent("BuildingId");
 		this.layer = id.getLayer();
 		
+		//
 		Vector3f end = target;
 		this.curPath = pathfinder.getPath(entity.getTransform().getPosition().copy(), end, layer);
+		
+		//If the path doesnt exist, set an empty path and return an error
 		if(curPath == null) {
-			System.out.println("Coundn't calculate path");
+			System.err.println("Coundn't calculate path");
 			this.curPath = new ArrayList<Node>();
-			return;
 		}
+		
+		//Move to the first node in the path
 		getNextNode();
 	}
 	
-	public void getNextNode() {
+	private void getNextNode() {
+		//If there are more nodes
 		if(curPath.size() > 0) {
+			//Get the next available node
 			curNode = curPath.get(0);
 			mover.setTarget(curNode.getNodePoint());
-		} else {
+		} 
+		//End of the path, stop entity
+		else {
 			mover.stop();
 		}
 	}
-		
+	
 	public boolean reachedEnd() {
+		//Check if the path is over or is non-existant
 		return (curPath.size() <= 0 && curPath != null);
 	}
 	
@@ -86,6 +101,14 @@ public class PathfinderComponent extends Component {
 		return mover;
 	}
 
+	public BuildLayer getLayer() {
+		return layer;
+	}
+	
+	/*
+	 * Standard component methods (mainly unused)
+	 */
+
 	@Override
 	public void init() {
 		this.mover = new Mover(entity);
@@ -94,7 +117,7 @@ public class PathfinderComponent extends Component {
 
 	@Override
 	public void reset() {
-		
+		//Nothing
 	}
 
 	@Override

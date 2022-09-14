@@ -7,6 +7,7 @@ import com.seaSaltedToaster.restaurantGame.ai.person.GoToAction;
 import com.seaSaltedToaster.restaurantGame.ai.person.WaitAction;
 import com.seaSaltedToaster.restaurantGame.objects.Restaurant;
 import com.seaSaltedToaster.restaurantGame.objects.people.ChefComponent;
+import com.seaSaltedToaster.restaurantGame.objects.people.Employee;
 import com.seaSaltedToaster.restaurantGame.objects.people.ServerComponent;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
 
@@ -14,8 +15,10 @@ public class FillOrder extends Action {
 	
 	//Objects
 	private Entity waiterEntity;
+	
 	private ServerComponent server;
 	private ChefComponent chef;
+	
 	private boolean orderDelivering = false;
 	
 	public FillOrder(Entity waiterEntity) {
@@ -38,7 +41,9 @@ public class FillOrder extends Action {
 				comp.getActions().add(new WaitAction(1));
 				comp.getActions().add(new WaitForOrder(waiterEntity));
 				this.orderDelivering = true;
-				System.out.println("Getting order for chef");
+				
+				Employee employee = (Employee) server;
+				employee.addExp(5);
 			}
 		}
 	}

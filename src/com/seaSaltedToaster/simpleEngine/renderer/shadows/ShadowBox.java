@@ -8,29 +8,26 @@ import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 import com.seaSaltedToaster.simpleEngine.utilities.Vector4f;
 
 public class ShadowBox {
-	
 
 	private static final float OFFSET = 10;
 	private static final Vector4f UP = new Vector4f(0, 1, 0, 0);
 	private static final Vector4f FORWARD = new Vector4f(0, 0, -1, 0);
-	private static final float SHADOW_DISTANCE = 100;
+	private static final float SHADOW_DISTANCE = 25;
 
 	private float minX, maxX;
 	private float minY, maxY;
 	private float minZ, maxZ;
 	private Matrix4f lightViewMatrix;
-	private Camera cam;
 
 	private float farHeight, farWidth, nearHeight, nearWidth;
 	
-	protected ShadowBox(Matrix4f lightViewMatrix, Camera camera) {
+	protected ShadowBox(Matrix4f lightViewMatrix) {
 		this.lightViewMatrix = lightViewMatrix;
-		this.cam = camera;
 		calculateWidthsAndHeights();
 	}
 	
-	protected void update() {
-		Matrix4f rotation = calculateCameraRotationMatrix();
+	public void update(Camera cam) {
+		Matrix4f rotation = calculateCameraRotationMatrix(cam);
 		Vector3f forwardVector = new Vector3f(Matrix4f.transform(rotation, FORWARD, null));
 
 		Vector3f toFar = new Vector3f(forwardVector);
@@ -96,7 +93,7 @@ public class ShadowBox {
 	protected float getLength() {
 		return maxZ - minZ;
 	}
-	
+
 	private Vector4f[] calculateFrustumVertices(Matrix4f rotation, Vector3f forwardVector,
 			Vector3f centerNear, Vector3f centerFar) {
 		Vector3f upVector = new Vector3f(Matrix4f.transform(rotation, UP, null));
@@ -132,7 +129,7 @@ public class ShadowBox {
 		return point4f;
 	}
 	
-	private Matrix4f calculateCameraRotationMatrix() {
+	private Matrix4f calculateCameraRotationMatrix(Camera cam) {
 		Matrix4f rotation = new Matrix4f();
 		rotation.rotate((float) Math.toRadians(-cam.getYaw()), new Vector3f(0, 1, 0));
 		rotation.rotate((float) Math.toRadians(-cam.getPitch()), new Vector3f(1, 0, 0));
@@ -148,7 +145,7 @@ public class ShadowBox {
 	}
 
 	private float getAspectRatio() {
-		return (float) Window.getCurrentWidth() / (float) Window.getCurrentHeight();
+		return (float) Window.getAspectRatio();
 	}
 
 }

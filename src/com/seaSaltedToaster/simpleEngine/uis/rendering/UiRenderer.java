@@ -6,7 +6,7 @@ import org.lwjgl.opengl.GL13;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.models.Vao;
 import com.seaSaltedToaster.simpleEngine.models.VaoLoader;
-import com.seaSaltedToaster.simpleEngine.rendering.Renderer;
+import com.seaSaltedToaster.simpleEngine.renderer.Renderer;
 import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
 import com.seaSaltedToaster.simpleEngine.utilities.Matrix4f;
 import com.seaSaltedToaster.simpleEngine.utilities.OpenGL;

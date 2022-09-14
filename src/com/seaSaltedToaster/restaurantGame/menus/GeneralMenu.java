@@ -2,15 +2,15 @@ package com.seaSaltedToaster.restaurantGame.menus;
 
 import org.lwjgl.glfw.GLFW;
 
-import com.seaSaltedToaster.restaurantGame.building.categories.BuildingCategory;
+import com.seaSaltedToaster.restaurantGame.menus.buildingSelector.BuildingMenu;
 import com.seaSaltedToaster.restaurantGame.menus.employees.EmployeeMenu;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.input.listeners.KeyEventData;
 import com.seaSaltedToaster.simpleEngine.input.listeners.KeyListener;
 import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
-import com.seaSaltedToaster.simpleEngine.uis.constraints.HorizontalAlignment;
+import com.seaSaltedToaster.simpleEngine.uis.constraints.XAlign;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.UiConstraints;
-import com.seaSaltedToaster.simpleEngine.uis.constraints.VerticalAlignment;
+import com.seaSaltedToaster.simpleEngine.uis.constraints.YAlign;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.position.AlignX;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.position.AlignY;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.scale.AspectRatio;
@@ -105,7 +105,7 @@ public class GeneralMenu extends UiComponent implements KeyListener {
 			this.addComponent(button);
 			buttons[i] = button;
 			UiConstraints cons = new UiConstraints();
-			cons.setX(new AlignX(HorizontalAlignment.CENTER));
+			cons.setX(new AlignX(XAlign.CENTER));
 			cons.setWidth(new RelativeScale(0.66f));
 			cons.setHeight(new AspectRatio(1.0f));
 			button.setConstraints(cons);
@@ -114,8 +114,8 @@ public class GeneralMenu extends UiComponent implements KeyListener {
 			UiComponent icon = new UiComponent(4);
 			icon.setTexture(buttonIcons[i]);
 			UiConstraints iconCons = new UiConstraints();
-			iconCons.setX(new AlignX(HorizontalAlignment.CENTER));
-			iconCons.setY(new AlignY(VerticalAlignment.MIDDLE));
+			iconCons.setX(new AlignX(XAlign.CENTER));
+			iconCons.setY(new AlignY(YAlign.MIDDLE));
 			iconCons.setWidth(new RelativeScale(0.75f));
 			iconCons.setHeight(new AspectRatio(1.0f));
 			icon.setConstraints(iconCons);
@@ -133,8 +133,8 @@ public class GeneralMenu extends UiComponent implements KeyListener {
 
 	private void createBacking() {
 		UiConstraints cons = new UiConstraints();
-		cons.setX(new AlignX(HorizontalAlignment.LEFT, 0.0125f));
-		cons.setY(new AlignY(VerticalAlignment.TOP, 0.5f));
+		cons.setX(new AlignX(XAlign.LEFT, 0.0125f));
+		cons.setY(new AlignY(YAlign.TOP, 0.5f));
 		cons.setWidth(new AspectRatio(0.05f));
 		cons.setLayout(new VerticalLayout(-0.066f, 0.025f));
 		this.setConstraints(cons);

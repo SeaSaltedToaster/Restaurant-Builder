@@ -1,15 +1,14 @@
-package com.seaSaltedToaster.simpleEngine.rendering;
+package com.seaSaltedToaster.simpleEngine.renderer;
 
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
 import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.ModelComponent;
 import com.seaSaltedToaster.simpleEngine.models.Vao;
-import com.seaSaltedToaster.simpleEngine.renderer.SimpleShader;
 
 public class AdvancedRenderer extends Renderer {
 
 	public AdvancedRenderer(Engine engine) {
-		super(new SimpleShader(), engine);
+		super(new AdvancedShader(), engine);
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 package com.seaSaltedToaster.simpleEngine.uis.constraints;
 
-public enum VerticalAlignment {
+public enum YAlign {
 
 	TOP, MIDDLE, BOTTOM
 	

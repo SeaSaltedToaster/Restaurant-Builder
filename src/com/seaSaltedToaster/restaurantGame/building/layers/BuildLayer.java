@@ -6,6 +6,7 @@ import java.util.List;
 import com.seaSaltedToaster.restaurantGame.ai.WalkableType;
 import com.seaSaltedToaster.restaurantGame.building.Building;
 import com.seaSaltedToaster.restaurantGame.building.BuildingId;
+import com.seaSaltedToaster.restaurantGame.building.BuildingManager;
 import com.seaSaltedToaster.restaurantGame.building.PlaceAnimation;
 import com.seaSaltedToaster.restaurantGame.building.BuildingType;
 import com.seaSaltedToaster.restaurantGame.ground.Ground;
@@ -17,8 +18,11 @@ import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 
 public class BuildLayer {
 	
-	//Data
+	//Buildings list
+	private List<Entity> buildingsToAdd;
 	private List<Entity> buildings;
+	
+	//Data
 	private boolean isOn;
 	private int layerId;
 	
@@ -28,15 +32,22 @@ public class BuildLayer {
 	private float animFactor = 1f;
 	
 	//AI
+	private BuildingManager manager;
+	
+	//OLD AI
 	private float[][] walkableMap;
 	private int worldScale;
 	
 	//Height
 	public static float HEIGHT_OFFSET = 1f;
 	
-	public BuildLayer(int layerId) {
+	public BuildLayer(BuildingManager manager, int layerId) {
+		this.manager = manager;
 		this.layerId = layerId;
+		
 		this.buildings = new ArrayList<Entity>();
+		this.buildingsToAdd = new ArrayList<Entity>();
+		
 		this.isOn = false;
 		this.scaleAnim = new SmoothFloat(0.0f);
 		this.scaleAnim.setAmountPer(0.125f);
@@ -51,6 +62,9 @@ public class BuildLayer {
 	}
 	
 	public void updateLayer() {
+		buildings.addAll(buildingsToAdd);
+		buildingsToAdd.clear();
+		
 		scaleAnim.update(Window.DeltaTime);
 		float scale = scaleAnim.getValue();
 		if(isClosing)
@@ -95,16 +109,26 @@ public class BuildLayer {
 	}
 
 	public void addBuilding(Entity preview, Building object, int buildingIndex) {
+		//Add building comps
 		preview.addComponent(new BuildingId(buildingIndex, object, this));
 		preview.addComponent(new PlaceAnimation());
-		this.buildings.add(preview);
+		this.buildingsToAdd.add(preview);
 		for(Component comp : object.getBuildingComponents()) {
 			preview.addComponent(comp.copyInstance());
 		}
-		int indexX = getTileX(preview);
-		int indexZ = getTileZ(preview);
-		int walkable = getWalkableType(object, indexX, indexZ).ordinal();
-		walkableMap[indexX][indexZ] = walkable;
+		
+		//AI
+		manager.getPathWorld().addBuilding(object, preview.getTransform().getPosition());
+		
+		//Old AI
+//		int indexX = getTileX(preview);
+//		int indexZ = getTileZ(preview);
+//		int walkable = getWalkableType(object, indexX, indexZ).ordinal();
+//		walkableMap[indexX][indexZ] = walkable;
+	}
+	
+	public void remove(Entity entity) {
+		this.buildings.remove(entity);
 	}
 
 	private WalkableType getWalkableType(Building preview, int indexX, int indexZ) {
@@ -151,6 +175,10 @@ public class BuildLayer {
 		int pos = (int) entity.getTransform().getPosition().z;
 		int normalized = pos + (worldScale / 2);
 		return normalized;
+	}
+
+	public BuildingManager getManager() {
+		return manager;
 	}
 
 	public float[][] getWalkableMap() {

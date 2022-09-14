@@ -1,7 +1,6 @@
 package com.seaSaltedToaster.restaurantGame.objects.food;
 
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
-import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 
 public class ItemOrder {
 	
@@ -17,7 +16,7 @@ public class ItemOrder {
 
 	//Cooking
 	private boolean isCooked = false;
-	private Vector3f cookingLocation;
+	private Entity chefWhoCooked;
 	
 	public ItemOrder(Entity table, int seat, Food foodItem) {
 		this.table = table;
@@ -32,12 +31,12 @@ public class ItemOrder {
 		return id;
 	}
 
-	public Vector3f getCookingLocation() {
-		return cookingLocation;
+	public Entity getChefWhoCooked() {
+		return chefWhoCooked;
 	}
 
-	public void setCookingLocation(Vector3f cookingLocation) {
-		this.cookingLocation = cookingLocation;
+	public void setChefWhoCooked(Entity entity) {
+		this.chefWhoCooked = entity;
 	}
 
 	public boolean isCooked() {
@@ -49,7 +48,7 @@ public class ItemOrder {
 	}
 
 	public float getCookingTime() {
-		return foodItem.cookTime;
+		return foodItem.getCookTime();
 	}
 
 	public boolean isDelivered() {

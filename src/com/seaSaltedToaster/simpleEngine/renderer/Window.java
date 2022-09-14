@@ -63,11 +63,19 @@ public class Window {
 	    GLFW.glfwGetWindowSize(windowID, posX, null);
 	    return posX.get(0);
 	}
+	
+	public static double getWidth() {
+		return Window.getCurrentWidth();
+	}
 
 	public static double getCurrentHeight() {
 		IntBuffer posY = BufferUtils.createIntBuffer(1);
 		GLFW.glfwGetWindowSize(windowID, null, posY);
 	    return posY.get(0);
+	}
+	
+	public static double getHeight() {
+		return Window.getCurrentHeight();
 	}
 	
 	public static double getAspectRatio() {

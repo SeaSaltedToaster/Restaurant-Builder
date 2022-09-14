@@ -17,7 +17,7 @@ public class PlaceAnimation extends Component {
 		this.popup = new SmoothFloat(0);
 		this.popup.setValue(HEIGHT + curY);
 		this.popup.setTarget(curY);
-		this.popup.setAmountPer(0.125f);
+		this.popup.setAmountPer(0.25f);
 	}
 
 	@Override

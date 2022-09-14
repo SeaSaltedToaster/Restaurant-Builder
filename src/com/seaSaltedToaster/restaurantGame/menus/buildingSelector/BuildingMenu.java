@@ -1,4 +1,4 @@
-package com.seaSaltedToaster.restaurantGame.menus;
+package com.seaSaltedToaster.restaurantGame.menus.buildingSelector;
 
 import com.seaSaltedToaster.MainApp;
 import com.seaSaltedToaster.restaurantGame.building.Building;
@@ -10,9 +10,9 @@ import com.seaSaltedToaster.restaurantGame.menus.languages.LanguageManager;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.renderer.Window;
 import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
-import com.seaSaltedToaster.simpleEngine.uis.constraints.HorizontalAlignment;
+import com.seaSaltedToaster.simpleEngine.uis.constraints.XAlign;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.UiConstraints;
-import com.seaSaltedToaster.simpleEngine.uis.constraints.VerticalAlignment;
+import com.seaSaltedToaster.simpleEngine.uis.constraints.YAlign;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.position.AlignX;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.position.AlignY;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.scale.RelativeScale;
@@ -38,6 +38,9 @@ public class BuildingMenu extends UiComponent {
 	private UiComponent categoryBacking;
 	private Text categoryName;
 	
+	//Tooltip
+	private ItemTooltip tooltip;
+	
 	//Categories
 	private BuildingCategory curCategory;
 	
@@ -50,6 +53,7 @@ public class BuildingMenu extends UiComponent {
 		createButtons(engine, BuildingList.getRoot());
 		addCategoryName(curCategory, engine);
 		this.setInteractable(true, engine);
+		this.tooltip = new ItemTooltip();
 	}
 	
 	@Override
@@ -112,6 +116,9 @@ public class BuildingMenu extends UiComponent {
 	}
 	
 	public void show() {
+		this.tooltip.close();
+		MainApp.menuFocused = false;
+		
 		if(curCategory != BuildingList.getRoot() && isHovering()) {
 			clearButtons();
 			BuildingCategory cat = curCategory.getParent();
@@ -136,9 +143,9 @@ public class BuildingMenu extends UiComponent {
 		this.categoryBacking = new UiComponent(4);
 		this.categoryBacking.setColor(0.15f);
 		UiConstraints backCons = categoryBacking.getConstraints();
-		backCons.setX(new AlignX(HorizontalAlignment.CENTER));
+		backCons.setX(new AlignX(XAlign.CENTER));
 		float height = 0.5f;
-		backCons.setY(new AlignY(VerticalAlignment.TOP, -height * 2.0f));
+		backCons.setY(new AlignY(YAlign.TOP, -height * 2.0f));
 		backCons.setHeight(new RelativeScale(height));
 		backCons.setWidth(new RelativeScale(0.2f));
 		this.addComponent(categoryBacking);	
@@ -146,7 +153,7 @@ public class BuildingMenu extends UiComponent {
 		this.categoryName = new Text(curCategory.getName(), 1.0f, 4);
 		this.categoryName.setColor(1.0f);
 		UiConstraints textCons = categoryName.getConstraints();
-		textCons.setY(new AlignY(VerticalAlignment.MIDDLE, 0.0f));
+		textCons.setY(new AlignY(YAlign.MIDDLE, 0.0f));
 		categoryBacking.addComponent(categoryName);
 		
 		LanguageManager.addText("buildMenu_" + curCategory.getName().toLowerCase(), categoryName);
@@ -162,10 +169,10 @@ public class BuildingMenu extends UiComponent {
 			BuildingItem item = null;
 			if(isBuilding) {
 				Building building = category.getChildBuildings().get(i - category.getChildCategories().size());
-				item = new BuildingItem(building);
+				item = new BuildingItem(building, this);
 			} else {
 				BuildingCategory newCat = category.getChildCategories().get(i);
-				item = new BuildingItem(newCat);
+				item = new BuildingItem(newCat, this);
 			}
 			
 			item.setInteractable(true, engine);
@@ -190,14 +197,18 @@ public class BuildingMenu extends UiComponent {
 	
 	private void createPanel() {
 		UiConstraints cons = new UiConstraints();
-		cons.setX(new AlignX(HorizontalAlignment.CENTER));
-		cons.setY(new AlignY(VerticalAlignment.BOTTOM, 0.0f));
+		cons.setX(new AlignX(XAlign.CENTER));
+		cons.setY(new AlignY(YAlign.BOTTOM, 0.0f));
 		cons.setLayout(new HorizontalLayout(-0.05f, 0.05f));
 		this.setConstraints(cons);
 		this.setScale(0.75f, 0.075f);
 		this.setColor(0.15f);
 		
 		this.yValue = new SmoothFloat(-0.25f);
+	}
+
+	public ItemTooltip getTooltip() {
+		return tooltip;
 	}
 
 	public boolean isOpen() {

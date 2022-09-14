@@ -4,16 +4,25 @@ import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 
 public class Node {
 	
-	//Pos
+	//Position data of the node
 	private Vector3f nodePoint;
+	public int gridX, gridZ;
+	
+	//Cost and availability of movement
 	public boolean isWalkable;
 	public float gCost, hCost;
-	public int gridX, gridZ;
+	
+	//Parent node to move to
 	public Node parent;
 	
 	public Node(Vector3f nodePoint, boolean isWalkable) {
 		this.nodePoint = nodePoint;
 		this.isWalkable = isWalkable;
+	}
+	
+	public boolean equalsNode(Node node) {
+		//Check if the two nodes grid positions are the same
+		return(node.getGridX() == gridX && node.getGridZ() == gridZ);
 	}
 
 	public int getGridX() {
@@ -50,10 +59,6 @@ public class Node {
 
 	public void setNodePoint(Vector3f nodePoint) {
 		this.nodePoint = nodePoint;
-	}
-
-	public boolean equalsNode(Node node) {
-		return(node.getGridX() == gridX && node.getGridZ() == gridZ);
 	}
 
 }

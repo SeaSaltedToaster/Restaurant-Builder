@@ -4,6 +4,7 @@ import com.seaSaltedToaster.restaurantGame.objects.TableComponent;
 
 public class CleanRequest {
 	
+	//The table and seat that must be cleaned
 	private TableComponent tableComp;
 	private int claimedSeat;
 

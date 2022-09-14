@@ -10,37 +10,41 @@ import com.seaSaltedToaster.simpleEngine.entity.Entity;
 
 public class WaitForChefOrder extends Action {
 	
-	//Waiter
+	//Information on the chef entity and component
 	private ChefComponent chef;
 	private Entity chefEntity;
 	
-	//Order
+	//Order that we are getting
 	private ItemOrder order = null;
 	
 	public WaitForChefOrder(Entity chefEntity) {
-		this.order = null;
 		this.chefEntity = chefEntity;
+		this.chef = (ChefComponent) chefEntity.getComponent("Chef");
 	}
 	
 	@Override
 	public void start() {
-		this.chef = (ChefComponent) chefEntity.getComponent("Chef");
+		//Nothing
 	}
 
 	@Override
 	public void update() {
+		//Check if the logic body has available orders to fill
 		Restaurant restaurant = MainApp.restaurant;
 		if(restaurant.chefOrders.size() > 0) {
+			//Loop all available chef orders
 			for(ItemOrder newOrder : restaurant.chefOrders) {
+				if(newOrder == null) return;
+				
+				//If it isnt cooked, cook it!
 				if(!newOrder.isCooked()) {
-					System.out.println("Starting to cook order");
+					//We found our order, add it to the chef task
 					this.order = newOrder;
-					this.order.setCookingLocation(chef.getWorkstation().getTransform().getPosition());
 					restaurant.chefOrders.remove(order);
 					chef.setOrder(order);
 					break;
 				} else {
-					//if cooked, give to waiter
+					//If cooked, we dont cook it again
 				}
 			}
 		}
@@ -48,13 +52,19 @@ public class WaitForChefOrder extends Action {
 
 	@Override
 	public boolean isDone() {
+		//If the order is found (not null)
 		boolean isDone = (order != null);
+		
+		//if it is found
 		if(isDone) {		
+			//Add the next steps to the action list
 			ActionComponent comp = (ActionComponent) chefEntity.getComponent("Action");
-			comp.getActions().add(new PrepareFood(order));
+			comp.getActions().add(new PrepareFood(order, chef));
 			comp.getActions().add(new WaitForChefOrder(chefEntity));
 			
 		}
+		
+		//Return isDone
 		return isDone;
 	}
 

@@ -3,6 +3,7 @@ package com.seaSaltedToaster.restaurantGame.building;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.seaSaltedToaster.MainApp;
 import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
 import com.seaSaltedToaster.simpleEngine.entity.Transform;
@@ -10,14 +11,17 @@ import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 
 public class AdvancedBuilder {
 	
+	//Placment
 	private Building object;
 	private Entity start, end;
 	private List<Entity> placeTiles;
 	
+	//Last
 	private Vector3f lastChange;
 	
+	//Index
 	private boolean isPlacing = false;
-	private int buildingIndex = 0;
+	public static int buildingIndex = 0;
 	
 	public AdvancedBuilder(Building object) {
 		this.object = object;
@@ -37,7 +41,7 @@ public class AdvancedBuilder {
 	public void increasePlacement(Vector3f position) {
 		if(!lastChange.equals(position) && isPlacing) {
 			end.getTransform().setPosition(position);
-			//calculateBox();
+			calculateBox();
 		} else if(!isPlacing) {
 			start.getTransform().setPosition(position);
 			end.getTransform().setPosition(position);
@@ -51,6 +55,7 @@ public class AdvancedBuilder {
 			entity.getTransform().getPosition().setY(layer.getLayerId() * BuildLayer.HEIGHT_OFFSET);
 			if(!layer.isBuildingAt(entity.getTransform().getPosition(), object.type)) {
 				layer.addBuilding(entity, object, buildingIndex);
+				payForBuilding(entity, object);
 				buildingIndex++;
 			}
 		}
@@ -60,6 +65,10 @@ public class AdvancedBuilder {
 		end.getTransform().setPosition(lastChange);
 	}
 	
+	private void payForBuilding(Entity entity, Building object2) {
+		MainApp.restaurant.money -= object2.getPrice();
+	}
+
 	private void calculateBox() {
 		//Axis bounding
 		Vector3f startPos = start.getTransform().getPosition();

@@ -1,6 +1,6 @@
 package com.seaSaltedToaster.simpleEngine.uis.constraints;
 
-public enum HorizontalAlignment {
+public enum XAlign {
 	
 	LEFT, CENTER, RIGHT
 

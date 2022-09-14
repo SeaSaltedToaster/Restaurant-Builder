@@ -6,7 +6,7 @@ public class Timer {
 	
 	//Length of timer
 	private float length = 0;
-	private boolean finished;
+	private boolean finished, isRunning = false;
 	
 	//Current timer options
 	private double startTime;
@@ -21,6 +21,7 @@ public class Timer {
 		this.startTime = GLFW.glfwGetTime();
 		this.currentTime = GLFW.glfwGetTime();
 		this.endTime = startTime + length;
+		isRunning = true;
 	}
 	
 	public void update(double delta) {
@@ -32,6 +33,7 @@ public class Timer {
 		this.startTime = 0;
 		this.currentTime = 0;
 		this.endTime = 0;
+		isRunning = false;
 	}
 	
 	private boolean checkFinished() {
@@ -40,6 +42,26 @@ public class Timer {
 
 	public boolean isFinished() {
 		return finished;
+	}
+
+	public boolean isRunning() {
+		return isRunning;
+	}
+
+	public float getLength() {
+		return length;
+	}
+
+	public double getStartTime() {
+		return startTime;
+	}
+
+	public double getCurrentTime() {
+		return currentTime;
+	}
+
+	public double getEndTime() {
+		return endTime;
 	}
 
 }

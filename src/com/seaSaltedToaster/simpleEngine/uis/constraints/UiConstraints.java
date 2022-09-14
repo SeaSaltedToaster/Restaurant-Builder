@@ -43,7 +43,7 @@ public class UiConstraints {
 	}
 	
 	public static UiConstraints getCentered() {
-		return new UiConstraints().setX(new AlignX(HorizontalAlignment.CENTER)).setY(new AlignY(VerticalAlignment.MIDDLE));
+		return new UiConstraints().setX(new AlignX(XAlign.CENTER)).setY(new AlignY(YAlign.MIDDLE));
 	}
 	
 	public static UiConstraints getFill() {
@@ -51,7 +51,7 @@ public class UiConstraints {
 	}
 	
 	public static UiConstraints getFillCenter() {
-		return new UiConstraints().setWidth(new RelativeScale(1.0f)).setHeight(new RelativeScale(1.0f)).setX(new AlignX(HorizontalAlignment.CENTER)).setY(new AlignY(VerticalAlignment.MIDDLE));
+		return new UiConstraints().setWidth(new RelativeScale(1.0f)).setHeight(new RelativeScale(1.0f)).setX(new AlignX(XAlign.CENTER)).setY(new AlignY(YAlign.MIDDLE));
 	}
 
 	public UiConstraint getXConstraint() {

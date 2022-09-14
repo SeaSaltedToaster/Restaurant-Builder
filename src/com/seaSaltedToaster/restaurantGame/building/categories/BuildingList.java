@@ -23,13 +23,13 @@ public class BuildingList {
 	public static void register(Building bld, String categoryName) {
 		System.out.println("Registered new model with the id : " + buildingIndex);
 		BuildingCategory category = getCategory(categoryName);
-		category.addChild(bld);
+		if(category != null)
+			category.addChild(bld);
 		buildingIndex++;
 	}
 	
 	public static BuildingCategory getCategory(String name) {
 		for(BuildingCategory category : rootCategory.getChildCategories()) {
-			System.out.println(category.getName() + " : " + name);
 			if(category.getName().equals(name)) {
 				return category;
 			}

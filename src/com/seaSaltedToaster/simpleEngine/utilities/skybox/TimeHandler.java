@@ -6,19 +6,21 @@ public class TimeHandler {
 	
 	//Timing
 	public static float DAY_VALUE = 1;
+	public static float BRIGHTNESS = 1;
+	
 	public static float hour, minute;
 	public static int dayNumber = 0;
-	private float daySpeed = 100f;
+	private float daySpeed = 2f;
 	
 	//Times for color
 	private float midnightNew = 0; //new day
 	private float midday = 12;
-	private float evening = 17;
+	private float evening = 18;
 	private float midnightLate = 24; //old day
 
 	public TimeHandler() {
 		TimeHandler.hour = 8f;
-		TimeHandler.minute = 30;
+		TimeHandler.minute = 30f;
 	}
 	
 	public void updateTime() {
@@ -49,7 +51,8 @@ public class TimeHandler {
 			newValue = (1 - value);
 		}
 		//Set
-		TimeHandler.DAY_VALUE = (1.0f - newValue) - 0.125f;
+		TimeHandler.DAY_VALUE = 0.0f;
+		TimeHandler.BRIGHTNESS = (1.0f - newValue) - 0.125f;
 	}
 	
 }

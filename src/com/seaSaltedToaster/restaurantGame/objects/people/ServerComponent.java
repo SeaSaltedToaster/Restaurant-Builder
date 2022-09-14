@@ -1,7 +1,9 @@
 package com.seaSaltedToaster.restaurantGame.objects.people;
 
 import com.seaSaltedToaster.MainApp;
+import com.seaSaltedToaster.restaurantGame.building.BuildingId;
 import com.seaSaltedToaster.restaurantGame.building.categories.BuildingList;
+import com.seaSaltedToaster.restaurantGame.objects.Restaurant;
 import com.seaSaltedToaster.restaurantGame.objects.food.ItemOrder;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
 import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.Component;
@@ -17,12 +19,21 @@ public class ServerComponent extends Employee {
 	public void init() {
 		MainApp.restaurant.servers.add(this);
 		super.name = "Waiter " + waitersCreated++;
-		this.model = BuildingList.getBuilding("waiter1").getEntity().getModel();
+		this.model = BuildingList.getBuilding("Waiter").getEntity().getModel();
 	}
-
+	
 	@Override
-	public void update() {
+	public void fireEmployee() {
+		//Remove tasks and restaurant logic
+		Restaurant restaurant = MainApp.restaurant;
+		if(order != null) {
+			restaurant.orders.add(order);
+		}
+		restaurant.servers.remove(this);
 		
+		//Delete entity
+		BuildingId id = (BuildingId) this.entity.getComponent("BuildingId");
+		id.getLayer().remove(entity);
 	}
 	
 	public Entity getWorkstation() {

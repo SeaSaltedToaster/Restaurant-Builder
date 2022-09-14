@@ -1,4 +1,4 @@
-package com.seaSaltedToaster.simpleEngine.rendering;
+package com.seaSaltedToaster.simpleEngine.renderer;
 
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
@@ -35,7 +35,7 @@ public abstract class Renderer {
 			OpenGL.setDepthTest(true);
 			OpenGL.clearColor();
 			OpenGL.clearDepth();
-			OpenGL.clearColor(new Vector3f(1.0f), 0.0f);
+			OpenGL.clearColor(new Vector3f(0.0f, 0.25f, 0.25f), 1.0f);
 		}
 	}
 	

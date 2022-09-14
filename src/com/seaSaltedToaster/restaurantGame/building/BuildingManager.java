@@ -6,8 +6,10 @@ import java.util.List;
 import org.lwjgl.glfw.GLFW;
 
 import com.seaSaltedToaster.MainApp;
+import com.seaSaltedToaster.restaurantGame.ai.PathfindingWorld;
 import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
 import com.seaSaltedToaster.restaurantGame.building.renderer.BuildingRenderer;
+import com.seaSaltedToaster.restaurantGame.building.renderer.SelectionRenderer;
 import com.seaSaltedToaster.restaurantGame.ground.Ground;
 import com.seaSaltedToaster.restaurantGame.tools.Raycaster;
 import com.seaSaltedToaster.simpleEngine.Engine;
@@ -32,10 +34,19 @@ public class BuildingManager implements KeyListener {
 	
 	//Building
 	private BuildingRenderer renderer;
+	private SelectionRenderer selectRenderer;
+	
+	//Pathfinding
+	private PathfindingWorld pathWorld;
+	
+	//Placement
 	private AdvancedBuilder builder;
 	
 	public BuildingManager(Engine engine, Ground ground, Raycaster raycaster, Building preview) {
 		this.renderer = new BuildingRenderer(this, engine);
+		this.selectRenderer = new SelectionRenderer(this, engine);
+		
+		this.pathWorld = new PathfindingWorld((int) Ground.worldSize * 2);
 		this.builder = new AdvancedBuilder(preview);
 		createLayers();
 		engine.getKeyboard().addKeyListener(this);
@@ -44,7 +55,7 @@ public class BuildingManager implements KeyListener {
 	private void createLayers() {
 		this.layers = new ArrayList<BuildLayer>();
 		for(int i = 0; i < layerCount; i++) {
-			BuildLayer layer = new BuildLayer(i);
+			BuildLayer layer = new BuildLayer(this, i);
 			this.layers.add(layer);
 			MainApp.restaurant.layers.add(layer);
 		}
@@ -52,7 +63,18 @@ public class BuildingManager implements KeyListener {
 	}
 
 	public void updateFrame() {
-		this.renderer.render();
+		for(BuildLayer layer : getLayers()) {
+			layer.updateLayer();
+		}
+		this.renderer.prepare();
+		this.renderer.render(null);
+		this.renderer.endRender();
+	}
+	
+	public void renderSelection() {
+		this.selectRenderer.prepare();
+		this.selectRenderer.render(null);
+		this.selectRenderer.endRender();
 	}
 	
 	public boolean startPlacement(Vector3f placePosition) {
@@ -140,6 +162,7 @@ public class BuildingManager implements KeyListener {
 				comp.reset();
 			}
 			layer.getBuildings().remove(entity);
+			pathWorld.removeBuilding(entity, layer);
 		}
 	}
 	
@@ -166,10 +189,6 @@ public class BuildingManager implements KeyListener {
 	public void setBuilding(boolean isBuilding) {
 		BuildingManager.isBuilding = isBuilding;
 		builder.showPreview(isBuilding);
-//		if(preview != null) {
-//			Transform trans = preview.getEntity().getTransform();
-//			trans.setScale(isBuilding ? 1 : 0);	
-//		}
 	}
 
 	public Entity getSelectedEntity() {
@@ -184,9 +203,20 @@ public class BuildingManager implements KeyListener {
 		return layers;
 	}
 
+	public BuildingRenderer getRenderer() {
+		return renderer;
+	}
+
+	public SelectionRenderer getSelectRenderer() {
+		return selectRenderer;
+	}
 
 	public AdvancedBuilder getBuilder() {
 		return builder;
+	}
+
+	public PathfindingWorld getPathWorld() {
+		return pathWorld;
 	}
 
 	public Building getPreview() {

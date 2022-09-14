@@ -30,8 +30,10 @@ public class Restaurant {
 	//Layers
 	public List<BuildLayer> layers;
 	
+	//Money
+	public int money = 0;
+	
 	//Locations
-	public Vector3f exit;
 	public Engine engine;
 
 	public Restaurant(Engine engine) {
@@ -43,8 +45,30 @@ public class Restaurant {
 		this.payRequests = new ArrayList<PayRequest>();
 		this.chefs = new ArrayList<ChefComponent>();
 		this.chefOrders = new ArrayList<ItemOrder>();
-		this.exit = new Vector3f(0.0f);
+		this.money = 2500;
 		this.engine = engine;
+	}
+
+	public void update() {
+		for(ChefComponent chef : chefs) {
+			chef.update();
+		}
+		for(ServerComponent server : servers) {
+			server.update();
+		}
+	}
+	
+	public boolean isBankrupt() {
+		return money < 0;
+	}
+
+	public boolean atCapacity() {
+		for(TableComponent table : tables) {
+			if(!table.isTaken()) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

@@ -39,6 +39,12 @@ public class Vector3f {
 		set(x, x, x);
 	}
 	
+	public Vector3f(double x, double y, double z) {
+		this.x = (float) x;
+		this.y = (float) y;
+		this.z = (float) z;	
+	}
+
 	public void set(float x, float y) {
 		this.x = x;
 		this.y = y;
@@ -242,6 +248,10 @@ public class Vector3f {
 		if (x == other.x && y == other.y && z == other.z) return true;
 		
 		return false;
+	}
+
+	public Vector3f round() {
+		return new Vector3f(Math.round(x), Math.round(y), Math.round(z));
 	}
 	
 }

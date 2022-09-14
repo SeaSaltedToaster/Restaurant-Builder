@@ -60,6 +60,8 @@ public class Text extends UiComponent {
 	}
 	
 	public void loadText() {
+		if(this.textMeshVao != null)
+			this.textMeshVao.delete();
 		FontType font = getFont();
         TextMeshData data = font.loadText(this);
         Vao vao = VaoLoader.loadToVAO(data.getVertexPositions(), data.getTextureCoords());

@@ -4,6 +4,7 @@ import com.seaSaltedToaster.simpleEngine.renderer.shader.Shader;
 import com.seaSaltedToaster.simpleEngine.renderer.shader.uniforms.UniformFloat;
 import com.seaSaltedToaster.simpleEngine.renderer.shader.uniforms.UniformInteger;
 import com.seaSaltedToaster.simpleEngine.renderer.shader.uniforms.UniformMatrix4f;
+import com.seaSaltedToaster.simpleEngine.renderer.shader.uniforms.UniformSampler;
 
 public class GroundShader extends Shader {
 
@@ -13,7 +14,10 @@ public class GroundShader extends Shader {
 	protected UniformMatrix4f transformation = new UniformMatrix4f("transformationMatrix");
 	protected UniformMatrix4f viewMatrix = new UniformMatrix4f("viewMatrix");
 	protected UniformMatrix4f projectionMatrix = new UniformMatrix4f("projectionMatrix");
-
+	
+	protected UniformMatrix4f toShadowMapSpace = new UniformMatrix4f("toShadowMapSpace");
+	protected UniformSampler shadowMap = new UniformSampler("shadowMap");
+	
 	protected UniformInteger selected = new UniformInteger("selected");
 	protected UniformFloat dayValue = new UniformFloat("dayValue");
 	
@@ -24,8 +28,15 @@ public class GroundShader extends Shader {
 		super.locateUniform(projectionMatrix);
 		super.locateUniform(selected);
 		super.locateUniform(dayValue);
+		
+		super.locateUniform(toShadowMapSpace);
+		super.locateUniform(shadowMap);
 	}
 	
+	public UniformMatrix4f getToShadowMapSpace() {
+		return toShadowMapSpace;
+	}
+
 	public UniformFloat getDayValue() {
 		return dayValue;
 	}
