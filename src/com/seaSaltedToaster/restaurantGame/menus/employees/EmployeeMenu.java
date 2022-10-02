@@ -4,6 +4,7 @@ import com.seaSaltedToaster.MainApp;
 import com.seaSaltedToaster.restaurantGame.objects.Restaurant;
 import com.seaSaltedToaster.restaurantGame.objects.people.ChefComponent;
 import com.seaSaltedToaster.restaurantGame.objects.people.ServerComponent;
+import com.seaSaltedToaster.restaurantGame.tools.ColorPalette;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.input.listeners.ScrollListener;
 import com.seaSaltedToaster.simpleEngine.renderer.Window;
@@ -104,7 +105,7 @@ public class EmployeeMenu extends UiComponent implements ScrollListener {
 		cons.setWidth(new RelativeScale(0.2f));
 		cons.setHeight(new RelativeScale(0.5f));
 		cons.setLayout(new VerticalLayout(-0.33f, 0.033f));
-		this.setColor(0.15f);
+		this.setColor(ColorPalette.MAIN_LIGHT);
 		addEmployees();
 		
 		UiConstraints titleBackCons = new UiConstraints();
@@ -114,7 +115,7 @@ public class EmployeeMenu extends UiComponent implements ScrollListener {
 		titleBackCons.setY(new AlignY(YAlign.TOP, 0.0f));
 		this.titleBacker = new UiComponent(5);
 		this.titleBacker.setConstraints(titleBackCons);
-		this.titleBacker.setColor(0.25f);
+		this.titleBacker.setColor(ColorPalette.MAIN_SHADE);
 		this.addComponent(titleBacker);
 		
 		UiConstraints textCons = new UiConstraints();

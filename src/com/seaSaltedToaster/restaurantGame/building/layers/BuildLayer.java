@@ -19,7 +19,6 @@ import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 public class BuildLayer {
 	
 	//Buildings list
-	private List<Entity> buildingsToAdd;
 	private List<Entity> buildings;
 	
 	//Data
@@ -46,7 +45,6 @@ public class BuildLayer {
 		this.layerId = layerId;
 		
 		this.buildings = new ArrayList<Entity>();
-		this.buildingsToAdd = new ArrayList<Entity>();
 		
 		this.isOn = false;
 		this.scaleAnim = new SmoothFloat(0.0f);
@@ -62,9 +60,6 @@ public class BuildLayer {
 	}
 	
 	public void updateLayer() {
-		buildings.addAll(buildingsToAdd);
-		buildingsToAdd.clear();
-		
 		scaleAnim.update(Window.DeltaTime);
 		float scale = scaleAnim.getValue();
 		if(isClosing)
@@ -112,69 +107,30 @@ public class BuildLayer {
 		//Add building comps
 		preview.addComponent(new BuildingId(buildingIndex, object, this));
 		preview.addComponent(new PlaceAnimation());
-		this.buildingsToAdd.add(preview);
+		this.buildings.add(preview);
 		for(Component comp : object.getBuildingComponents()) {
 			preview.addComponent(comp.copyInstance());
 		}
+		System.out.println(buildings.size());
 		
 		//AI
 		manager.getPathWorld().addBuilding(object, preview.getTransform().getPosition());
-		
-		//Old AI
-//		int indexX = getTileX(preview);
-//		int indexZ = getTileZ(preview);
-//		int walkable = getWalkableType(object, indexX, indexZ).ordinal();
-//		walkableMap[indexX][indexZ] = walkable;
 	}
 	
 	public void remove(Entity entity) {
 		this.buildings.remove(entity);
-	}
-
-	private WalkableType getWalkableType(Building preview, int indexX, int indexZ) {
-		//Is a floor
-		if(preview.isFloor()) {
-			if(walkableMap[indexX][indexZ] != WalkableType.OBSTRUCTED.ordinal()) {
-				return WalkableType.WALKABLE;
-			} else {
-				return WalkableType.OBSTRUCTED;
-			}
-		}
-		//Is a piece of furniture
-		if(preview.isObstructive()) {
-			return WalkableType.OBSTRUCTED;
-		}
-		//Is a wall
-		if(preview.isWall()) {
-			//TODO add wall list
-			int value = (int) walkableMap[indexX][indexZ];
-			return WalkableType.values()[value];
-		}
-		return WalkableType.UNWALKABLE;
+		this.manager.getPathWorld().removeBuilding(entity, this);
 	}
 	
 	public List<Entity> getTables() {
 		List<Entity> tables = new ArrayList<Entity>();
 		for(Entity entity : buildings) {
 			if(entity == null) continue;
-			BuildingId id = (BuildingId) entity.getComponent("BuildingId");
-			if(id.getType().isTable()) {
+			if(entity.hasComponent("Table")) {
 				tables.add(entity);
 			}
 		}
 		return tables;
-	}
-
-	private int getTileX(Entity entity) {
-		int pos = (int) entity.getTransform().getPosition().x;
-		int normalized = pos + (worldScale / 2);
-		return normalized;
-	}
-	
-	private int getTileZ(Entity entity) {
-		int pos = (int) entity.getTransform().getPosition().z;
-		int normalized = pos + (worldScale / 2);
-		return normalized;
 	}
 
 	public BuildingManager getManager() {

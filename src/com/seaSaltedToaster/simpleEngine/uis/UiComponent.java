@@ -61,7 +61,7 @@ public class UiComponent implements MouseListener, MousePosListener {
 		if(isActive) {
 			updateSelf();
 			animator.update(this);
-			if(isHovering)
+			if(isHovering())
 				this.whileHover();
 		}
 		for(UiComponent component : children) {
@@ -116,13 +116,29 @@ public class UiComponent implements MouseListener, MousePosListener {
         		position.x + scale.x > mouseCoordinatesX &&
         		position.x - scale.x < mouseCoordinatesX  && isActive) {
         	whileHover(); 
-        	if(!isHovering && isActive)
+        	if(!isHovering && isActive) {
+            	isHovering = true;
         		onHover(); 
+        	}
         	isHovering = true;
         } else if(isHovering) {
         	stopHover();
         	isHovering = false;
         }
+	}
+	
+	public boolean childHovering() {	
+		if(isHovering())
+			return true;
+		
+		for(UiComponent child : children) {
+			if(child.isHovering())
+				return true;
+			if(child.childHovering())
+				return true;
+		}
+		
+		return false;
 	}
 	
 	protected void onClickOff() {
@@ -153,10 +169,10 @@ public class UiComponent implements MouseListener, MousePosListener {
 		float x = position.x - (scale.x / 2);
 		float y = position.y - (scale.y / 2);
 		
-		int xPixels = (int) Math.round(x * Window.getCurrentWidth());
-	    int yPixels = (int) (Window.getCurrentHeight() - Math.round((y + scale.y) * Window.getCurrentHeight()));
-	    int widthPixels = (int) Math.round(scale.x * Window.getCurrentWidth());
-	    int heightPixels = (int) Math.round(scale.y * Window.getCurrentHeight());
+		int xPixels = (int) Math.round(x * Window.getWidth());
+	    int yPixels = (int) (Window.getHeight() - Math.round((y + scale.y) * Window.getHeight()));
+	    int widthPixels = (int) Math.round(scale.x * Window.getWidth());
+	    int heightPixels = (int) Math.round(scale.y * Window.getHeight());
 	    if (this.clippingBounds == null) {
 	    	int[] bounds = { xPixels, yPixels, widthPixels, heightPixels };
 	    	setChildrenClippingBounds(bounds);
@@ -170,10 +186,10 @@ public class UiComponent implements MouseListener, MousePosListener {
 	
 
 	public void setClippingBounds(float x, float y, float width, float height) {
-	    int xPixels = (int) Math.round(x * Window.getCurrentWidth());
-	    int yPixels = (int) (Window.getCurrentHeight() - Math.round((y + height) * Window.getCurrentHeight()));
-	    int widthPixels = (int) Math.round(width * Window.getCurrentWidth());
-	    int heightPixels = (int) Math.round(height * Window.getCurrentHeight());
+	    int xPixels = (int) Math.round(x * Window.getWidth());
+	    int yPixels = (int) (Window.getHeight() - Math.round((y + height) * Window.getHeight()));
+	    int widthPixels = (int) Math.round(width * Window.getWidth());
+	    int heightPixels = (int) Math.round(height * Window.getHeight());
 	    if (this.clippingBounds == null) {
 	      int[] bounds = { xPixels, yPixels, widthPixels, heightPixels };
 	      setChildrenClippingBounds(bounds);

@@ -1,0 +1,11 @@
+name=Tiled Floor
+type=Floor
+price=10
+iconZoom=0.66
+category=General
+model=basic/tiledFloor
+primary=1,1,1
+secondary=0,0,0
+components{
+
+}

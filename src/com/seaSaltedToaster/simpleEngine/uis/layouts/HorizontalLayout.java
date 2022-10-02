@@ -16,7 +16,6 @@ public class HorizontalLayout extends UiLayout {
 	@Override
 	public void update(UiComponent component, List<UiComponent> children) {
 		float spacing = (component.getPosition().x - component.getScale().x) + (edgeSpace * component.getScale().x);
-		spacing += children.get(0).getScale().x;
 		
 		for(UiComponent child : children) {
 			if(hasExistingConstraints(child)) continue;

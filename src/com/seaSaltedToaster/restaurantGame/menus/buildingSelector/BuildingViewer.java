@@ -1,11 +1,14 @@
 package com.seaSaltedToaster.restaurantGame.menus.buildingSelector;
 
 import com.seaSaltedToaster.restaurantGame.building.BuildingId;
-import com.seaSaltedToaster.restaurantGame.menus.iconMaker.IconMaker;
-import com.seaSaltedToaster.restaurantGame.tools.ColorPalette;
+import com.seaSaltedToaster.restaurantGame.menus.buildingSelector.colorPicker.ColorPicker;
+import com.seaSaltedToaster.restaurantGame.menus.buildingSelector.subMenus.ColorButton;
+import com.seaSaltedToaster.restaurantGame.menus.buildingSelector.subMenus.ColorDisplay;
+import com.seaSaltedToaster.restaurantGame.menus.buildingSelector.subMenus.DeleteButton;
+import com.seaSaltedToaster.restaurantGame.menus.buildingSelector.subMenus.InfoButton;
+import com.seaSaltedToaster.restaurantGame.menus.buildingSelector.subMenus.ValueDisplay;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
-import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.ModelComponent;
 import com.seaSaltedToaster.simpleEngine.renderer.Window;
 import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.UiConstraints;
@@ -15,31 +18,40 @@ import com.seaSaltedToaster.simpleEngine.uis.constraints.position.AlignX;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.position.AlignY;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.scale.AspectRatio;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.scale.RelativeScale;
+import com.seaSaltedToaster.simpleEngine.uis.layouts.HorizontalLayout;
 import com.seaSaltedToaster.simpleEngine.uis.layouts.VerticalLayout;
 import com.seaSaltedToaster.simpleEngine.uis.text.Text;
 import com.seaSaltedToaster.simpleEngine.utilities.SmoothFloat;
-import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 
 public class BuildingViewer extends UiComponent {
 	
 	//Current
 	private Entity currentObject;
 	
-	//Info
+	//Title bar
 	private Text title;
-	private ColorPicker primary;
+	private UiComponent titleBar;
 	
-	//Display
-	private IconMaker iconMaker;
-	private UiComponent iconBacker, iconDisplay;
-	private int icon;
+	//Bar buttons
+	private InfoButton infoButton;
+	private ColorButton colorButton;
+	private DeleteButton deleteButton;
 	
-	//Animation
+	//Info panel
+	private UiComponent infoPanel;
+	private ValueDisplay name, cost;
+	
+	//Color change panel
+	private UiComponent colorPanel;
+	private ColorDisplay primary, secondary;
+	private ColorPicker picker;
+	
+	//Animation for pop up
 	private SmoothFloat yValue; 
 	private float closed = -1.5f, open = 0;
 
 	public BuildingViewer(Engine engine) {
-		super(6);
+		super(9);
 		createPanel(engine);
 		this.yValue = new SmoothFloat(closed);
 		this.setInteractable(true, engine);
@@ -51,20 +63,15 @@ public class BuildingViewer extends UiComponent {
 		this.open = -1.0f + (this.getScale().y);
 		this.yValue.update(Window.DeltaTime);
 		this.getPosition().y = yValue.getValue();
-		
-		this.iconDisplay.setTexture(1);
-		if(currentObject != null && this.isActive() && this.getPosition().y > closed) {
-			ModelComponent comp = (ModelComponent) currentObject.getComponent("Model");
-			this.iconMaker.increaseYAngle((float) (25f * Window.DeltaTime));
-			this.icon = iconMaker.createIcon(comp.getMesh(), 1);
-			iconDisplay.setTexture(icon);
-		}
 	}
 	
 	@Override
 	public void onClickOff() {
-		if(this.getPosition().y == open)
+		if(isHovering || this.childHovering()) return;
+		
+		if(this.getPosition().y >= -1.0f) {
 			this.open(null);
+		}
 	}
 
 	public void open(Entity selected) {
@@ -72,12 +79,14 @@ public class BuildingViewer extends UiComponent {
 		if(selected == null) {
 			this.yValue.setTarget(closed);
 			currentObject = null;
+			this.picker.setActive(false);
 			return;
 		}
 		//If current, close
 		if(selected == currentObject) {
 			this.yValue.setTarget(closed);
 			currentObject = null;
+			this.picker.setActive(false);
 			return;
 		}
 		//If new, change
@@ -91,61 +100,120 @@ public class BuildingViewer extends UiComponent {
 	}
 	
 	private void addDetails(Entity currentObject) {
-		//Set icon
-		ModelComponent comp = (ModelComponent) currentObject.getComponent("Model");
-		this.iconMaker.setYAngle(0.0f);
-		this.icon = iconMaker.createIcon(comp.getMesh(), 1);
 		BuildingId id = (BuildingId) currentObject.getComponent("BuildingId");
 		this.title.setTextString(id.getType().name);
+		
+		this.name.setText("Name", id.getType().name);
+		this.cost.setText("Cost", "$" + id.getType().getPrice());
+		
+		this.primary.setColor(id.getPrimary());
+		this.secondary.setColor(id.getSecondary());
+	}
+	
+	public void openInfoPanel() {
+		this.colorPanel.setActive(false);
+		this.infoPanel.setActive(true);
+		this.picker.setActive(false);
+	}
+	
+	public void openColorPanel() {
+		this.infoPanel.setActive(false);
+		this.colorPanel.setActive(true);
 	}
 
 	private void createPanel(Engine engine) {
 		//Color
-		float panelColor = ColorPalette.MAIN_SHADE;
-		this.setColor(panelColor);
+		this.setColor(0.2f);
 		
 		//Size (and the shape? foo fighters reference?!?!)
 		UiConstraints cons = this.getConstraints();
-		cons.setWidth(new RelativeScale(0.15f));
-		cons.setHeight(new AspectRatio(1.5f));
+		cons.setWidth(new RelativeScale(0.2f));
+		cons.setHeight(new AspectRatio(0.6f));
 		cons.setX(new AlignX(XAlign.RIGHT));
 		cons.setLayout(new VerticalLayout(-0.0f, 0.033f));
 		
-		//Title
-		this.title = new Text("item_name", 1.0f, 6);
-		this.title.setColor(1.0f);
-		UiConstraints textCons = title.getConstraints();
-		textCons.setX(new AlignX(XAlign.CENTER));
-		this.addComponent(title);
-				
-		//Colors
-		this.primary = new ColorPicker("Primary Color");
-		this.addComponent(primary);
+		//Title bar
+		addTitleBar();
 		
-		//Icon builder
-		addIcon(engine);
+		//Info buttons
+		this.infoButton = new InfoButton(this);
+		this.infoButton.setInteractable(true, engine);
+		this.titleBar.addComponent(infoButton);
+		
+		this.colorButton = new ColorButton(this);
+		this.colorButton.setInteractable(true, engine);
+		this.titleBar.addComponent(colorButton);
+		
+		this.deleteButton = new DeleteButton(this);
+		this.deleteButton.setInteractable(true, engine);
+		this.titleBar.addComponent(deleteButton);
+		
+		//Info panel
+		this.infoPanel = new UiComponent(7);
+		this.infoPanel.setAlpha(0.0f);
+		this.infoPanel.setConstraints(getPanelConstraints());
+		this.addComponent(infoPanel);
+		
+		this.name = new ValueDisplay();
+		this.infoPanel.addComponent(name);
+		
+		this.cost = new ValueDisplay();
+		this.infoPanel.addComponent(cost);
+		
+		//Color panel
+		this.colorPanel = new UiComponent(7);
+		this.colorPanel.setAlpha(0.0f);
+		this.colorPanel.setActive(false);
+		this.colorPanel.setConstraints(getPanelConstraints());
+		this.addComponent(colorPanel);
+		
+		this.primary = new ColorDisplay("Primary", this);
+		this.colorPanel.addComponent(primary);
+		
+		this.secondary = new ColorDisplay("Secondary", this);
+		this.colorPanel.addComponent(secondary);
+		
+		this.picker = new ColorPicker();
+		this.picker.setInteractable(true, engine);
+		this.addComponent(picker);
 	}
 
-	private void addIcon(Engine engine) {
-		this.iconMaker = new IconMaker(engine);
-		this.iconMaker.setClear(new Vector3f(0.1f, 0.15f, 0.2f));
-		
-		this.iconBacker = new UiComponent(6);
-		this.iconBacker.setColor(0.2f);
-		UiConstraints cons = this.iconBacker.getConstraints();
-		cons.setWidth(new RelativeScale(0.75f));
-		cons.setHeight(new AspectRatio(1.0f));
+	private UiConstraints getPanelConstraints() {
+		UiConstraints cons = new UiConstraints();
+		cons.setWidth(new RelativeScale(1.0f));
+		cons.setHeight(new RelativeScale(0.75f));
 		cons.setX(new AlignX(XAlign.CENTER));
-		cons.setY(new AlignY(YAlign.BOTTOM, 0.075f));
-		this.addComponent(iconBacker);
+		cons.setY(new AlignY(YAlign.BOTTOM));
+		cons.setLayout(new VerticalLayout(-0.085f, 0.0f));
+		this.addComponent(titleBar);		
+		return cons;
+	}
+
+	private void addTitleBar() {
+		this.titleBar = new UiComponent(7);
+		this.titleBar.setColor(0.15f);
+		UiConstraints cons = this.titleBar.getConstraints();
+		cons.setWidth(new RelativeScale(1.0f));
+		cons.setHeight(new AspectRatio(0.15f));
+		cons.setX(new AlignX(XAlign.CENTER));
+		cons.setY(new AlignY(YAlign.TOP));
+		cons.setLayout(new HorizontalLayout(1.125f, 0.066f));
+		this.addComponent(titleBar);
 		
-		this.iconDisplay = new UiComponent(6);
-		UiConstraints cons2 = this.iconDisplay.getConstraints();
-		cons2.setWidth(new RelativeScale(1.0f));
-		cons2.setHeight(new RelativeScale(1.0f));
-		cons2.setX(new AlignX(XAlign.CENTER));
-		cons2.setY(new AlignY(YAlign.MIDDLE));
-		this.iconBacker.addComponent(iconDisplay);
+		this.title = new Text("object_name", 1.0f, 7);
+		this.title.setColor(1.0f);
+		UiConstraints cons2 = this.title.getConstraints();
+		cons2.setX(new AlignX(XAlign.LEFT, 0.125f));
+		cons2.setY(new AlignY(YAlign.TOP, 0.4f));
+		this.titleBar.addComponent(title);
+	}
+
+	public ColorPicker getPicker() {
+		return picker;
+	}
+
+	public Entity getCurrentObject() {
+		return currentObject;
 	}
 
 }

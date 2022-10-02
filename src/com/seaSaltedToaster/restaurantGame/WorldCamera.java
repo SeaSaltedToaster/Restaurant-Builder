@@ -77,6 +77,7 @@ public class WorldCamera extends Camera implements ScrollListener, MousePosListe
 		smoothPitch.update(delta);
 		this.pitch = smoothPitch.getValue();
 		lastClick += delta;
+		
 	}
 	
 	@Override
@@ -121,11 +122,11 @@ public class WorldCamera extends Camera implements ScrollListener, MousePosListe
 		//Move with middle mouse
 		boolean isMiddleDown = GLFW.glfwGetMouseButton(Window.windowID, GLFW.GLFW_MOUSE_BUTTON_MIDDLE) == GLFW.GLFW_PRESS;
 		if(isMiddleDown) {
-			float theta = -smoothYaw.getValue();
-			float offsetX = (float) (xChange * 10 * Math.sin(Math.toRadians(theta+90)));
-			float offsetZ = (float) (yChange * 10 * Math.cos(Math.toRadians(theta)));
-			Vector3f change = new Vector3f(offsetX, 0, offsetZ).scale(0.0025f);
-			focus.setPosition(focus.getPosition().add(change));
+	        float rotation = -smoothYaw.getValue() + 90;
+	        float distanceX = (float) (xChange * Window.DeltaTime);
+	        float dx = (float) (distanceX * Math.sin(Math.toRadians(rotation)));
+	        float dz = (float) (distanceX * Math.cos(Math.toRadians(rotation)));
+	        focus.getPosition().increase(dx, 0, dz);
 		}
 		
 		//Reset
@@ -172,10 +173,6 @@ public class WorldCamera extends Camera implements ScrollListener, MousePosListe
 		engine.getMouse().getMousePositionCallback().addListener(this);
 		engine.getMouse().getMouseButtonCallback().addListener(this);
 		engine.setCamera(this);		
-	}
-		
-	public void delete() {
-		
 	}
 	
 }

@@ -253,5 +253,11 @@ public class Vector3f {
 	public Vector3f round() {
 		return new Vector3f(Math.round(x), Math.round(y), Math.round(z));
 	}
+
+	public void increase(float dx, int dy, float dz) {
+		this.x += dx;
+		this.y += dy;
+		this.z += dz;
+	}
 	
 }

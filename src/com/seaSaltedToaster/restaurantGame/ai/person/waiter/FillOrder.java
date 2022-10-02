@@ -13,12 +13,12 @@ import com.seaSaltedToaster.simpleEngine.entity.Entity;
 
 public class FillOrder extends Action {
 	
-	//Objects
+	//The waiter entity and component
 	private Entity waiterEntity;
-	
 	private ServerComponent server;
-	private ChefComponent chef;
 	
+	//The chef we are delivering it to, and whether we are on our way
+	private ChefComponent chef;
 	private boolean orderDelivering = false;
 	
 	public FillOrder(Entity waiterEntity) {
@@ -28,20 +28,34 @@ public class FillOrder extends Action {
 
 	@Override
 	public void start() {
+		//Get any available chefs
 		Restaurant restaurant = MainApp.restaurant;
 		if(restaurant.chefs.size() > 0) {
+			//Get the first available chef
 			this.chef = restaurant.chefs.get(0); //TODO get any random chef
+			
+			//Check if they found their station yet
 			if(chef.getWorkstation() != null) {
+				//Get the waiter's action component
 				ActionComponent comp = (ActionComponent) waiterEntity.getComponent("Action");
+				
+				//Wait and then go to the chef personally
 				comp.getActions().add(new WaitAction(3));
 				comp.getActions().add(new GoToAction(chef.getEntity().getTransform().getPosition(), waiterEntity, true));
+				
+				//Wait and then give the chef the order
 				comp.getActions().add(new WaitAction(3));
-				comp.getActions().add(new GiveChefOrder(chef, server, waiterEntity));
+				comp.getActions().add(new GiveChefOrder(server));
+				
+				//Go back to the waiter station
 				comp.getActions().add(new GoToAction(server.getWorkstation().getTransform().getPosition(), waiterEntity, false));
 				comp.getActions().add(new WaitAction(1));
+				
+				//Wait for next order, set delivered to true
 				comp.getActions().add(new WaitForOrder(waiterEntity));
 				this.orderDelivering = true;
 				
+				//Add exp to the waiter
 				Employee employee = (Employee) server;
 				employee.addExp(5);
 			}
@@ -50,13 +64,14 @@ public class FillOrder extends Action {
 
 	@Override
 	public void update() {
+		//If we didnt find a chef, check again
 		if(!orderDelivering)
 			start();
 	}
 
 	@Override
 	public boolean isDone() {
-		System.out.println("Going to chef");
+		//Return if we found a chef to give an order to
 		return orderDelivering;
 	}
 

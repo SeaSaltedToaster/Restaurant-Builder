@@ -5,6 +5,7 @@ import org.lwjgl.glfw.GLFW;
 import com.seaSaltedToaster.MainApp;
 import com.seaSaltedToaster.restaurantGame.menus.buildingSelector.BuildingMenu;
 import com.seaSaltedToaster.restaurantGame.objects.people.Employee;
+import com.seaSaltedToaster.restaurantGame.tools.ColorPalette;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.input.Keyboard;
 import com.seaSaltedToaster.simpleEngine.input.listeners.KeyEventData;
@@ -23,7 +24,7 @@ import com.seaSaltedToaster.simpleEngine.uis.text.Text;
 public class EmployeeButton extends UiComponent implements KeyListener {
 	
 	//Settings
-	private float WIDTH = 0.825f;
+	private float WIDTH = 0.9f;
 	private Employee employee;
 	
 	//Icon
@@ -123,8 +124,8 @@ public class EmployeeButton extends UiComponent implements KeyListener {
 		UiConstraints cons = this.getConstraints();
 		cons.setWidth(new RelativeScale(WIDTH));
 		cons.setHeight(new AspectRatio(0.33f));
-		cons.setLayout(new HorizontalLayout(-0.25f, -0.45f));
-		this.setColor(0.25f);
+		cons.setLayout(new HorizontalLayout(-0.14f, -0.45f));
+		this.setColor(ColorPalette.MAIN_SHADE);
 		
 		UiConstraints backerCons = new UiConstraints();
 		backerCons.setWidth(new RelativeScale(0.15f));

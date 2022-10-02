@@ -28,6 +28,8 @@ public class AdvancedBuilder {
 		this.lastChange = new Vector3f(0.0f);
 		
 		this.start = object.getEntity().copyEntity();
+		this.start.addComponent(new BuildingId(-1, object, MainApp.restaurant.layers.get(0)));
+		
 		this.end = object.getEntity().copyEntity();
 		this.placeTiles = new ArrayList<Entity>();
 		showPreview(false);

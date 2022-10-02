@@ -1,6 +1,11 @@
 package com.seaSaltedToaster.restaurantGame.objects.people;
 
 import com.seaSaltedToaster.MainApp;
+import com.seaSaltedToaster.restaurantGame.ai.person.ActionComponent;
+import com.seaSaltedToaster.restaurantGame.ai.person.GoToAction;
+import com.seaSaltedToaster.restaurantGame.ai.person.waiter.PayRequest;
+import com.seaSaltedToaster.restaurantGame.ai.person.waiter.TakePayment;
+import com.seaSaltedToaster.restaurantGame.ai.person.waiter.WaitForOrder;
 import com.seaSaltedToaster.restaurantGame.building.BuildingId;
 import com.seaSaltedToaster.restaurantGame.building.categories.BuildingList;
 import com.seaSaltedToaster.restaurantGame.objects.Restaurant;
@@ -34,6 +39,13 @@ public class ServerComponent extends Employee {
 		//Delete entity
 		BuildingId id = (BuildingId) this.entity.getComponent("BuildingId");
 		id.getLayer().remove(entity);
+	}
+	
+	public void executePayBranch(PayRequest payRequest) {
+		ActionComponent comp = (ActionComponent) this.entity.getComponent("Action");
+		comp.getActions().add(new GoToAction(payRequest.getTable().getEntity().getTransform().getPosition(), this.entity, true));
+		comp.getActions().add(new TakePayment(payRequest, this));
+		comp.getActions().add(new WaitForOrder(this.entity));
 	}
 	
 	public Entity getWorkstation() {

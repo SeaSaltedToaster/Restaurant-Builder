@@ -59,22 +59,22 @@ public class Mouse {
 	}
 	
 	public static double getMouseCoordsX() {
-		double x = -1.0 + 2.0 * mouseX / Window.getCurrentWidth();
+		double x = -1.0 + 2.0 * mouseX / Window.getWidth();
 		return x;
 	}
 	    
 	public static double getMouseCoordsY() {
-	    double y = 1.0 - 2.0 * mouseY / Window.getCurrentHeight();
+	    double y = 1.0 - 2.0 * mouseY / Window.getHeight();
 	    return y;
 	}
 	
 	public static double normalizeMouseCoordX(double x) {
-		double x2 = -1.0 + 2.0 * x / Window.getCurrentWidth();
+		double x2 = -1.0 + 2.0 * x / Window.getWidth();
 		return x2;
 	}
 	    
 	public static double normalizeMouseCoordY(double y) {
-		double y2 = 1.0 - 2.0 * y / Window.getCurrentHeight();
+		double y2 = 1.0 - 2.0 * y / Window.getHeight();
 	    return y2;
 	}
 	

@@ -3,9 +3,11 @@ package com.seaSaltedToaster.restaurantGame.tools;
 import org.lwjgl.glfw.GLFW;
 
 import com.seaSaltedToaster.MainApp;
+import com.seaSaltedToaster.restaurantGame.building.BuildingId;
 import com.seaSaltedToaster.restaurantGame.building.BuildingManager;
 import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
 import com.seaSaltedToaster.restaurantGame.ground.Ground;
+import com.seaSaltedToaster.restaurantGame.menus.PaintMenu;
 import com.seaSaltedToaster.restaurantGame.menus.buildingSelector.BuildingViewer;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
@@ -19,6 +21,7 @@ public class Raycaster implements MouseListener, MousePosListener {
 
 	//Objects
 	private Engine engine;
+	public static RayMode mode;
 	
 	//Raycasting
 	private MousePicker picker;
@@ -26,8 +29,9 @@ public class Raycaster implements MouseListener, MousePosListener {
 	
 	//Building
 	public BuildingManager builder;
+	public PaintMenu paint;
 	
-	//Selected object
+	//Viewer
 	private BuildingViewer viewer;
 	
 	//Action objects
@@ -42,6 +46,7 @@ public class Raycaster implements MouseListener, MousePosListener {
 		this.viewer = new BuildingViewer(engine);
 		engine.addUi(viewer);
 		viewer.open(null);
+		Raycaster.mode = RayMode.DEFAULT;
 	}
 	
 	@Override
@@ -64,7 +69,19 @@ public class Raycaster implements MouseListener, MousePosListener {
 		
 		Vector3f placePosition = new Vector3f(Math.round(ray.x), Math.round(ray.y), Math.round(ray.z));
 		lastRay = placePosition;
+		
+		if(builder.getSelectedEntity() != null) {
+			ground.selectAt(null);
+		}
 		ground.selectAt(placePosition);
+	}
+
+	private void pickColor(Entity selectedEntity) {
+		if(selectedEntity == null) return;
+		BuildingId id = (BuildingId) selectedEntity.getComponent("BuildingId");
+		if(id == null) return;
+		paint.setPrimary(id.getPrimary());
+		paint.setSecondary(id.getSecondary());
 	}
 
 	@Override
@@ -78,16 +95,44 @@ public class Raycaster implements MouseListener, MousePosListener {
 		boolean isLeftDown = eventData.getKey() == GLFW.GLFW_MOUSE_BUTTON_LEFT;
 		boolean isPlaceDown = eventData.getAction() == GLFW.GLFW_PRESS;
 		
-		//Check if building is in the way
+		switch(mode) {
+			case DEFAULT:
+				this.placeDefault(eventData);
+				break;
+			case DELETE:
+				if(!isLeftDown || !isPlaceDown || builder.getSelectedEntity() == null) break;
+				BuildingId id = (BuildingId) builder.getSelectedEntity().getComponent("BuildingId");
+				if(id == null) return;
+				
+				id.getLayer().remove(builder.getSelectedEntity());
+				break;
+			case PAINT:
+				if(!isLeftDown || !isPlaceDown || builder.getSelectedEntity() == null) break;
+				BuildingId id2 = (BuildingId) builder.getSelectedEntity().getComponent("BuildingId");
+				if(id2 == null) return;
+				id2.setPrimary(paint.getPrimary());
+				id2.setSecondary(paint.getSecondary());
+				break;
+			case PICKER:
+				this.pickColor(builder.getSelectedEntity());
+				break;
+			default:
+				break;
+		}
+	}
+	
+	private void placeDefault(MouseEventData eventData) {
+		//Key states
+		boolean isLeftDown = eventData.getKey() == GLFW.GLFW_MOUSE_BUTTON_LEFT;
+		boolean isPlaceDown = eventData.getAction() == GLFW.GLFW_PRESS;
+		
+		//Check for object viewer
 		if(builder.getSelectedEntity() != null && isLeftDown && isPlaceDown && !builder.isBuilding()) {
 			Entity selected = builder.getSelectedEntity();
 			viewer.open(selected);
-			//builder.delete(selected);
 			return;
-		} else if(isLeftDown && isPlaceDown) {
-			viewer.open(null);
 		}
-		
+
 		//Get raycast
 		Vector3f ray = picker.getCurrentTerrainPoint();
 		if(ray == null) return;

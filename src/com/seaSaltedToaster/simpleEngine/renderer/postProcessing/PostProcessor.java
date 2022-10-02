@@ -24,7 +24,7 @@ public class PostProcessor extends Renderer {
 	public PostProcessor(Engine engine) {
 		super(new PostShader(), engine);
 		int fboQuality = 4;
-		this.fbo = new Fbo(Window.getCurrentWidth()*fboQuality, Window.getCurrentHeight()*fboQuality, Fbo.DEPTH_RENDER_BUFFER);
+		this.fbo = new Fbo(Window.getWidth()*fboQuality, Window.getHeight()*fboQuality, Fbo.DEPTH_RENDER_BUFFER);
 		this.quad = engine.getLoader().loadToVAO(POSITIONS, 2);
 	}
 
@@ -44,8 +44,8 @@ public class PostProcessor extends Renderer {
 		
 		//Uniforms
 		super.prepareFrame(false);
-		shader.loadUniform(-TimeHandler.BRIGHTNESS / 2.0f + 0.75f, "brightness");
-		shader.loadUniform(1.1f, "contrast");
+		shader.loadUniform(-TimeHandler.BRIGHTNESS / 5f + 0.66f, "brightness");
+		shader.loadUniform(1.0f, "contrast");
 		
 		//Color Tex
 		int texture = fbo.getColourTexture();

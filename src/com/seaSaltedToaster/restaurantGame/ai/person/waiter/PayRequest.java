@@ -4,6 +4,7 @@ import com.seaSaltedToaster.restaurantGame.objects.TableComponent;
 
 public class PayRequest {
 	
+	//Table being paid at, and the pay amount
 	private TableComponent table;
 	private int payAmount;
 

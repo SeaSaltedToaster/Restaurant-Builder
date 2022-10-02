@@ -1,6 +1,10 @@
 package com.seaSaltedToaster.restaurantGame.building.renderer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.seaSaltedToaster.restaurantGame.building.AdvancedBuilder;
+import com.seaSaltedToaster.restaurantGame.building.Building;
 import com.seaSaltedToaster.restaurantGame.building.BuildingId;
 import com.seaSaltedToaster.restaurantGame.building.BuildingManager;
 import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
@@ -18,11 +22,15 @@ public class BuildingRenderer extends Renderer {
 	private BuildingManager manager;
 	private Matrix4f transform;
 	private int selectedId = -127;
+	
+	//Other objects
+	private List<Entity> foods;
 
 	public BuildingRenderer(BuildingManager manager, Engine engine) {
 		super(new BuildingShader(), engine);
 		this.manager = manager;
 		this.transform = new Matrix4f();
+		this.foods = new ArrayList<Entity>();
 	}
 	
 	@Override
@@ -33,34 +41,42 @@ public class BuildingRenderer extends Renderer {
 	
 	@Override
 	public void render(Object obj) {
-		//Objects pass
+		//Check if our we are selecting an object
 		if(manager.getSelectedEntity() == null)
 			this.selectedId = -127;
-		int index = 0;
+		
+		//Loop through all layers to render them
+		int index = 0; //id of the object
 		for(BuildLayer layer : manager.getLayers()) {
+			//If the layer is off, go to the next
 			if(!layer.isOn()) {
 				continue;
 			}
-			for(Entity entity : layer.getBuildings()) {
-				if(entity == null) continue;
-				entity.updateComponents();
+			
+			//List of buildings
+			List<Entity> buildingsEntities = layer.getBuildings();
+			
+			//Update all components
+			for(Entity building : buildingsEntities) {
+				if(building == null) continue;
+				building.updateComponents();
 			}
-			layer.getBuildings().remove(null);
-			for(Entity entity : layer.getBuildings()) {
+			
+			for(Entity entity : buildingsEntities) {
 				if(entity == null) continue;
 				renderEntity(entity, index, selectedId);
 				index++;
 			}
 		}
 		
+//		//Render foods
+//		for(Entity foodItem : foods) {
+//			renderEntity(foodItem, -99, selectedId);
+//		}
+		
 		//Preview pass
 		AdvancedBuilder builder = manager.getBuilder();
-		for(Entity entity : builder.getPreviews()) {
-			if(entity != null)
-				renderEntity(entity, -1, selectedId);
-		}
 		renderEntity(builder.getStart(), -1, selectedId);
-		renderEntity(builder.getEnd(), -1, selectedId);
 	}
 
 	private void renderEntity(Entity entity, int index, int curId) {
@@ -83,7 +99,14 @@ public class BuildingRenderer extends Renderer {
 		//Load id related
 		BuildingId buildingId = (BuildingId) entity.getComponent("BuildingId");
 		if(buildingId != null) {
-			shader.loadUniform(buildingId.getCustomColor(), "customColor");
+			shader.loadUniform(buildingId.getPrimary(), "primaryColor");
+			shader.loadUniform(buildingId.getSecondary(), "secondaryColor");
+			
+			if(index == -1) {
+				Building building = buildingId.getType();
+				shader.loadUniform(building.getDefPrimary(), "primaryColor");
+				shader.loadUniform(building.getDefSecondary(), "secondaryColor");
+			}
 		}
 		
 		//Render
@@ -94,6 +117,10 @@ public class BuildingRenderer extends Renderer {
 	@Override
 	public void endRender() {
 		super.endRendering();
+	}
+
+	public List<Entity> getFoods() {
+		return foods;
 	}
 
 }

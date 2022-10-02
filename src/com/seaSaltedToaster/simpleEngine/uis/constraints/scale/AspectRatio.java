@@ -15,11 +15,12 @@ public class AspectRatio extends UiConstraint {
 	
 	@Override
 	protected void update(UiComponent component, ConstraintType type) {
-		float displayRatio = (float) Window.getAspectRatio();
-		
 		if(type == ConstraintType.HEIGHT) {
+			float displayRatio = (float) Window.getAspectRatio();
 			component.getScale().setY(component.getScale().x * aspect * displayRatio);
-		} else if(type == ConstraintType.WIDTH) {
+		}
+		if(type == ConstraintType.WIDTH) {
+			float displayRatio = (float) (Window.getHeight() / Window.getWidth());
 			component.getScale().setX(component.getScale().y * aspect * displayRatio);
 		}
 	}

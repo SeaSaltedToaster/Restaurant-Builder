@@ -47,8 +47,9 @@ public class BuildingManager implements KeyListener {
 		this.selectRenderer = new SelectionRenderer(this, engine);
 		
 		this.pathWorld = new PathfindingWorld((int) Ground.worldSize * 2);
-		this.builder = new AdvancedBuilder(preview);
 		createLayers();
+		
+		this.builder = new AdvancedBuilder(preview);
 		engine.getKeyboard().addKeyListener(this);
 	}
 	

@@ -1,5 +1,7 @@
 package com.seaSaltedToaster.restaurantGame.menus.iconMaker;
 
+import com.seaSaltedToaster.restaurantGame.building.Building;
+import com.seaSaltedToaster.restaurantGame.building.BuildingId;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.entity.Camera;
 import com.seaSaltedToaster.simpleEngine.entity.Transform;
@@ -18,8 +20,12 @@ public class IconMaker {
 	
 	//FBO
 	private Fbo[] fbos;
-	private int fboQuality = 1280;
+	private int fboQuality = 100;
 	private Camera camera;
+	
+	//Default icon tint
+	private Vector3f primary = new Vector3f(0,1,0);
+	private Vector3f secondary = new Vector3f(0,0,1);
 	
 	//Details
 	private float yAngle = 0.0f;
@@ -40,6 +46,38 @@ public class IconMaker {
 		OpenGL.clearColor(clear, 0.0f);
 	}
 	
+	public int createIcon(Vao vao, Building building) {
+		if(vao == null) return 0;
+		
+		calculateCameraPosition(building.getIconZoom());
+		camera.getPosition().y = -0.5f;
+		
+		int fboId = vao.id;
+		Fbo fbo = getFbo(fboId);
+		
+		prePrepare(fbo);
+		fbo.bindFrameBuffer();
+		this.shader.useProgram();
+		prepareFrame();
+		
+		Transform transform = new Transform();
+		transform.getRotation().x = 180f;
+		transform.getRotation().y = 90 + yAngle;
+		
+		shader.getPrimaryColor().loadValue(building.getDefPrimary());
+		shader.getSecondaryColor().loadValue(building.getDefSecondary());
+		
+		Matrix4f transformationMatrix = utils.createTransformationMatrix(transform.getPosition(), transform.getRotation().x, transform.getRotation().y, transform.getRotation().z, transform.getScale());
+		shader.getTransformation().loadValue(transformationMatrix);
+		shader.getViewMatrix().loadValue(utils.createViewMatrix(camera));
+		shader.getProjectionMatrix().loadValue(utils.createProjectionMatrix(90, 0.1f, 1000f, fboQuality, fboQuality));
+		
+		vao.render();
+		this.shader.stopProgram();
+		fbo.unbindFrameBuffer();
+		return fbo.getColourTexture();
+	}
+	
 	public int createIcon(Vao vao, float camDist) {
 		if(vao == null) return 0;
 		calculateCameraPosition(camDist);
@@ -52,13 +90,19 @@ public class IconMaker {
 		fbo.bindFrameBuffer();
 		this.shader.useProgram();
 		prepareFrame();
+		
 		Transform transform = new Transform();
 		transform.getRotation().x = 180f;
 		transform.getRotation().y = 90 + yAngle;
+		
+		shader.getPrimaryColor().loadValue(primary);
+		shader.getSecondaryColor().loadValue(secondary);
+		
 		Matrix4f transformationMatrix = utils.createTransformationMatrix(transform.getPosition(), transform.getRotation().x, transform.getRotation().y, transform.getRotation().z, transform.getScale());
 		shader.getTransformation().loadValue(transformationMatrix);
 		shader.getViewMatrix().loadValue(utils.createViewMatrix(camera));
 		shader.getProjectionMatrix().loadValue(utils.createProjectionMatrix(90, 0.1f, 1000f, fboQuality, fboQuality));
+		
 		vao.render();
 		this.shader.stopProgram();
 		fbo.unbindFrameBuffer();

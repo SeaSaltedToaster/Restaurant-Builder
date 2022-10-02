@@ -3,7 +3,8 @@ package com.seaSaltedToaster.restaurantGame.objects.people;
 import java.util.List;
 
 import com.seaSaltedToaster.MainApp;
-import com.seaSaltedToaster.restaurantGame.objects.Restaurant;
+import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
+import com.seaSaltedToaster.restaurantGame.building.renderer.BuildingRenderer;
 import com.seaSaltedToaster.restaurantGame.objects.food.ItemOrder;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
 import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.Component;
@@ -28,7 +29,6 @@ public class ChefStation extends Component {
 	
 	@Override
 	public void init() {
-		Restaurant restaurant = MainApp.restaurant;
 		float shelfHeight = 0.7f;
 		float plateDist = 0.33f;
 		float plateDistFromChef = -0.35f;
@@ -54,9 +54,13 @@ public class ChefStation extends Component {
 			
 			Vector3f combinedPos = chefPos.add(newSpot);
 			entity.getTransform().setPosition(combinedPos);
-			
-			restaurant.engine.addEntity(entity);
 			this.foodDisplays[i] = entity;
+		}
+		
+		BuildLayer layer = MainApp.restaurant.layers.get(0);
+		BuildingRenderer render = layer.getManager().getRenderer();
+		for(Entity food : foodDisplays) {
+			render.getFoods().add(food);
 		}
 	}
 

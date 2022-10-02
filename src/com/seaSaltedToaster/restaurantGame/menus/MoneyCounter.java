@@ -2,6 +2,7 @@ package com.seaSaltedToaster.restaurantGame.menus;
 
 import com.seaSaltedToaster.MainApp;
 import com.seaSaltedToaster.restaurantGame.objects.Restaurant;
+import com.seaSaltedToaster.restaurantGame.tools.ColorPalette;
 import com.seaSaltedToaster.simpleEngine.renderer.Window;
 import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.UiConstraints;
@@ -19,7 +20,7 @@ public class MoneyCounter extends UiComponent {
 	//Time text
 	private Text display;
 	private int lastDisplay = 0;
-	private String prefix = "$ ";
+	private String prefix = " $ ";
 	
 	//Animation
 	private Timer timer;
@@ -90,7 +91,7 @@ public class MoneyCounter extends UiComponent {
 		cons.setY(new AlignY(YAlign.TOP));
 		cons.setWidth(new RelativeScale(0.1125f));
 		cons.setHeight(new AspectRatio(0.2f));
-		this.setColor(0.15f);
+		this.setColor(ColorPalette.MAIN_SHADE);
 	}
 
 }

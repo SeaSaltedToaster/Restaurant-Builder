@@ -1,0 +1,11 @@
+name=Booth
+type=Object
+price=10
+iconZoom=1.0
+category=Furniture
+model=basic/basicBooth
+primary=0.75,0.0,0.0
+secondary=0.375,0.1875,0.0
+components{
+
+}

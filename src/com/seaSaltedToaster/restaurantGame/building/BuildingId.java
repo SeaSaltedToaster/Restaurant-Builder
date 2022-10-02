@@ -7,7 +7,7 @@ import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 public class BuildingId extends Component {
 
 	private int id;
-	private Vector3f customColor;
+	private Vector3f primary, secondary;
 	
 	private Building type;
 	private BuildLayer layer;
@@ -16,15 +16,26 @@ public class BuildingId extends Component {
 		this.id = id;
 		this.type = preview;
 		this.layer = buildLayer;
-		this.customColor = new Vector3f(Math.random(), Math.random(), Math.random());
-	}
-	
-	public Vector3f getCustomColor() {
-		return customColor;
+		
+		//new Vector3f(Math.random(), Math.random(), Math.random());
+		this.primary = preview.getDefPrimary();
+		this.secondary = preview.getDefSecondary();
 	}
 
-	public void setCustomColor(Vector3f customColor) {
-		this.customColor = customColor;
+	public Vector3f getPrimary() {
+		return primary;
+	}
+
+	public void setPrimary(Vector3f primary) {
+		this.primary = primary;
+	}
+
+	public Vector3f getSecondary() {
+		return secondary;
+	}
+
+	public void setSecondary(Vector3f secondary) {
+		this.secondary = secondary;
 	}
 
 	public Building getType() {

@@ -21,8 +21,8 @@ public class ScreenshotUtils implements KeyListener {
 
 	public void screenshot() {
         GL11.glReadBuffer(GL11.GL_FRONT);
-        int width = (int) Window.getCurrentWidth();
-        int height= (int) Window.getCurrentHeight();
+        int width = (int) Window.getWidth();
+        int height= (int) Window.getHeight();
         int bpp = 4;
         ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * bpp);
         GL11.glReadPixels(0, 0, width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer );

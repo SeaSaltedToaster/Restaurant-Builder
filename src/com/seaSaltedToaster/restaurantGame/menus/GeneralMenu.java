@@ -4,6 +4,7 @@ import org.lwjgl.glfw.GLFW;
 
 import com.seaSaltedToaster.restaurantGame.menus.buildingSelector.BuildingMenu;
 import com.seaSaltedToaster.restaurantGame.menus.employees.EmployeeMenu;
+import com.seaSaltedToaster.restaurantGame.tools.ColorPalette;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.input.listeners.KeyEventData;
 import com.seaSaltedToaster.simpleEngine.input.listeners.KeyListener;
@@ -22,9 +23,11 @@ public class GeneralMenu extends UiComponent implements KeyListener {
 	//Other menus
 	private BuildingMenu building;
 	private EmployeeMenu employee;
+	private PaintMenu paint;
+	private DeleteTool delete;
 	
 	//Objects
-	private int buttonCount = 4;
+	private int buttonCount = 6;
 	private int[] buttonIcons;
 	private UiComponent[] buttons;
 	
@@ -35,6 +38,11 @@ public class GeneralMenu extends UiComponent implements KeyListener {
 		addButtons(engine);
 		this.setInteractable(true, engine);
 		engine.getKeyboard().addKeyListener(this);
+	}
+	
+	@Override
+	public void updateSelf() {
+		delete.update();
 	}
 	
 	@Override
@@ -61,8 +69,19 @@ public class GeneralMenu extends UiComponent implements KeyListener {
 			closeOthers();
 			employee.show();
 		}
-		//Settings
+		//Paint
 		if(buttons[3].isHovering()) {
+			closeOthers();
+			paint.show();
+			
+		}
+		//Delete
+		if(buttons[4].isHovering()) {
+			closeOthers();
+			delete.show(buttons[4]);
+		}
+		//Settings
+		if(buttons[5].isHovering()) {
 			closeOthers();
 		}
 	}
@@ -72,9 +91,9 @@ public class GeneralMenu extends UiComponent implements KeyListener {
 		for(UiComponent button : buttons) {
 			if(button == null) return;
 			if(button.isHovering())
-				button.setColor(0.25f);
+				button.setColor(ColorPalette.BUTTON_HIGHLIGHT);
 			else
-				button.setColor(0.15f);
+				button.setColor(ColorPalette.BUTTON_BASE);
 		}
 	}
 	
@@ -82,7 +101,7 @@ public class GeneralMenu extends UiComponent implements KeyListener {
 	public void stopHover() {
 		for(UiComponent button : buttons) {
 			if(button == null) return;
-			button.setColor(0.15f);
+			button.setColor(ColorPalette.BUTTON_BASE);
 		}
 	}
 	
@@ -93,6 +112,12 @@ public class GeneralMenu extends UiComponent implements KeyListener {
 		if(employee.isOpen() ) {
 			employee.show();
 		}
+		if(paint.isOpen()) {
+			paint.show();
+		}
+		if(delete.isDeleting()) {
+			delete.show(buttons[4]);
+		}
 	}
 
 	private void addButtons(Engine engine) {
@@ -100,13 +125,13 @@ public class GeneralMenu extends UiComponent implements KeyListener {
 		for(int i = 0; i < buttonCount; i++) {
 			//Button
 			UiComponent button = new UiComponent(4);
-			button.setColor(0.15f);
+			button.setColor(ColorPalette.BUTTON_BASE);
 			button.setInteractable(true, engine);
 			this.addComponent(button);
 			buttons[i] = button;
 			UiConstraints cons = new UiConstraints();
 			cons.setX(new AlignX(XAlign.CENTER));
-			cons.setWidth(new RelativeScale(0.66f));
+			cons.setWidth(new RelativeScale(0.66f * 3));
 			cons.setHeight(new AspectRatio(1.0f));
 			button.setConstraints(cons);
 			
@@ -128,12 +153,14 @@ public class GeneralMenu extends UiComponent implements KeyListener {
 		this.buttonIcons[0] = engine.getTextureLoader().loadTexture("/uis/general");
 		this.buttonIcons[1] = engine.getTextureLoader().loadTexture("/uis/building");
 		this.buttonIcons[2] = engine.getTextureLoader().loadTexture("/uis/employees");
-		this.buttonIcons[3] = engine.getTextureLoader().loadTexture("/uis/settings");
+		this.buttonIcons[3] = engine.getTextureLoader().loadTexture("/uis/paint");
+		this.buttonIcons[4] = engine.getTextureLoader().loadTexture("/uis/delete");
+		this.buttonIcons[5] = engine.getTextureLoader().loadTexture("/uis/settings");
 	}
 
 	private void createBacking() {
 		UiConstraints cons = new UiConstraints();
-		cons.setX(new AlignX(XAlign.LEFT, 0.0125f));
+		cons.setX(new AlignX(XAlign.LEFT, 0.025f));
 		cons.setY(new AlignY(YAlign.TOP, 0.5f));
 		cons.setWidth(new AspectRatio(0.05f));
 		cons.setLayout(new VerticalLayout(-0.066f, 0.025f));
@@ -141,6 +168,10 @@ public class GeneralMenu extends UiComponent implements KeyListener {
 		this.setScale(0.066f, 0.4f);
 		this.setColor(0.15f);
 		this.setAlpha(0.0f);
+	}
+
+	public UiComponent[] getButtons() {
+		return buttons;
 	}
 
 	public BuildingMenu getBuilding() {
@@ -157,6 +188,22 @@ public class GeneralMenu extends UiComponent implements KeyListener {
 
 	public void setEmployee(EmployeeMenu employee) {
 		this.employee = employee;
+	}
+
+	public PaintMenu getPaint() {
+		return paint;
+	}
+
+	public void setPaint(PaintMenu paint) {
+		this.paint = paint;
+	}
+
+	public DeleteTool getDelete() {
+		return delete;
+	}
+
+	public void setDelete(DeleteTool delete) {
+		this.delete = delete;
 	}
 
 }

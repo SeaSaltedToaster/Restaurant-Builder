@@ -51,13 +51,14 @@ public class Fbo {
 	
 	public void unbindFrameBuffer() {
 		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
-		GL11.glViewport(0, 0, (int) Window.getCurrentWidth(), (int) Window.getCurrentHeight());
+		GL11.glViewport(0, 0, (int) Window.getWidth(), (int) Window.getHeight());
 	}
+	
 	public void bindToRead() {
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, frameBuffer);
 		GL11.glReadBuffer(GL30.GL_COLOR_ATTACHMENT0);
-		GL11.glViewport(0, 0, (int) Window.getCurrentWidth(), (int) Window.getCurrentHeight());
+		GL11.glViewport(0, 0, width, height);
 	}
 
 	public int getColourTexture() {
@@ -69,6 +70,7 @@ public class Fbo {
 	}
 
 	private void initialiseFrameBuffer(int type) {
+		System.out.println(width + " : " + height);
 		createFrameBuffer();
 		createTextureAttachment();
 		if (type == DEPTH_RENDER_BUFFER) {
@@ -86,7 +88,7 @@ public class Fbo {
 	}
 
 
-	private void createTextureAttachment() {
+	public void createTextureAttachment() {
 		colourTexture = GL11.glGenTextures();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, colourTexture);
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE,
@@ -98,8 +100,15 @@ public class Fbo {
 		GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0, GL11.GL_TEXTURE_2D, colourTexture,
 				0);
 	}
+	
+	public void resizeTexture() {
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, colourTexture);
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE,
+				(ByteBuffer) null);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+	}
 
-	private void createDepthTextureAttachment() {
+	public void createDepthTextureAttachment() {
 		depthTexture = GL11.glGenTextures();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, depthTexture);
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL14.GL_DEPTH_COMPONENT24, width, height, 0, GL11.GL_DEPTH_COMPONENT,

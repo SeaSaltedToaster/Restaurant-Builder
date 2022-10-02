@@ -2,35 +2,38 @@ package com.seaSaltedToaster.restaurantGame.ai.person.waiter;
 
 import com.seaSaltedToaster.MainApp;
 import com.seaSaltedToaster.restaurantGame.ai.person.Action;
-import com.seaSaltedToaster.restaurantGame.objects.people.ChefComponent;
 import com.seaSaltedToaster.restaurantGame.objects.people.Employee;
 import com.seaSaltedToaster.restaurantGame.objects.people.ServerComponent;
-import com.seaSaltedToaster.simpleEngine.entity.Entity;
 
 public class GiveChefOrder extends Action {
 	
+	//Server with the order ready
 	private ServerComponent server;
 
-	public GiveChefOrder(ChefComponent chef, ServerComponent server, Entity waiterEntity) {
+	public GiveChefOrder(ServerComponent server) {
 		this.server = server;
 	}
 
 	@Override
 	public void start() {
+		//Add the order to the chef list and remove it from the waiter
 		MainApp.restaurant.chefOrders.add(server.getOrder());
 		server.setOrder(null);
 		
+		
+		//Add 5 waiter exp
 		Employee employee = (Employee) server;
 		employee.addExp(5);
 	}
 
 	@Override
 	public void update() {
-		
+		//Nothing
 	}
 
 	@Override
 	public boolean isDone() {
+		//Nothing, all is done in start(), return true
 		return true;
 	}
 

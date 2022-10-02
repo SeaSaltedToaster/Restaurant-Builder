@@ -1,6 +1,8 @@
 package com.seaSaltedToaster.restaurantGame.objects;
 
 import com.seaSaltedToaster.MainApp;
+import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
+import com.seaSaltedToaster.restaurantGame.building.renderer.BuildingRenderer;
 import com.seaSaltedToaster.restaurantGame.objects.food.Food;
 import com.seaSaltedToaster.restaurantGame.objects.food.FoodRegistry;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
@@ -44,6 +46,11 @@ public class TableComponent extends Component {
 			break;
 		default:
 			break;
+		}
+		BuildLayer layer = MainApp.restaurant.layers.get(0);
+		BuildingRenderer render = layer.getManager().getRenderer();
+		for(Entity food : foodSpots) {
+			render.getFoods().add(food);
 		}
 	}
 	
@@ -89,7 +96,6 @@ public class TableComponent extends Component {
 		entity.addComponent(new ModelComponent(null));
 		Vector3f spotPos = MathUtils.rotatePointAtCenter(vector3f, this.entity.getTransform().getRotation().y);
 		entity.getTransform().setPosition(spotPos.add(this.entity.getTransform().getPosition()));
-		MainApp.restaurant.engine.addEntity(entity);
 		return entity;
 	}
 

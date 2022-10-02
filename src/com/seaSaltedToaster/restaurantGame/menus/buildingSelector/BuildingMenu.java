@@ -7,6 +7,7 @@ import com.seaSaltedToaster.restaurantGame.building.categories.BuildingCategory;
 import com.seaSaltedToaster.restaurantGame.building.categories.BuildingList;
 import com.seaSaltedToaster.restaurantGame.menus.iconMaker.IconMaker;
 import com.seaSaltedToaster.restaurantGame.menus.languages.LanguageManager;
+import com.seaSaltedToaster.restaurantGame.tools.ColorPalette;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.renderer.Window;
 import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
@@ -57,9 +58,7 @@ public class BuildingMenu extends UiComponent {
 	}
 	
 	@Override
-	public void updateSelf() {
-		categoryName.setPosition(categoryBacking.getPosition());
-		
+	public void updateSelf() {		
 		yValue.update(Window.DeltaTime);
 		float newY = yValue.getValue();
 		AlignY align = (AlignY) this.getConstraints().getYConstraint();
@@ -100,10 +99,12 @@ public class BuildingMenu extends UiComponent {
 	public void whileHover() {
 		for(UiComponent button : buttons) {
 			if(button == null) return;
-			if(button.isHovering())
-				button.setColor(0.5f);
+			
+			BuildingItem item = (BuildingItem) button;
+			if(item.isHovering())
+				item.hover();
 			else
-				button.setColor(0.0f);
+				item.unHover();
 		}
 	}
 	
@@ -111,7 +112,8 @@ public class BuildingMenu extends UiComponent {
 	public void stopHover() {
 		for(UiComponent button : buttons) {
 			if(button == null) return;
-			button.setColor(0.0f);
+			BuildingItem item = (BuildingItem) button;
+			item.unHover();
 		}
 	}
 	
@@ -144,19 +146,18 @@ public class BuildingMenu extends UiComponent {
 		this.categoryBacking.setColor(0.15f);
 		UiConstraints backCons = categoryBacking.getConstraints();
 		backCons.setX(new AlignX(XAlign.CENTER));
-		float height = 0.5f;
+		float height = 0.33f;
 		backCons.setY(new AlignY(YAlign.TOP, -height * 2.0f));
-		backCons.setHeight(new RelativeScale(height));
-		backCons.setWidth(new RelativeScale(0.2f));
+		backCons.setHeight(new RelativeScale(0.33f));
+		backCons.setWidth(new RelativeScale(1.0f));
 		this.addComponent(categoryBacking);	
 		
-		this.categoryName = new Text(curCategory.getName(), 1.0f, 4);
+		this.categoryName = new Text(curCategory.getName(), 0.825f, 4);
 		this.categoryName.setColor(1.0f);
 		UiConstraints textCons = categoryName.getConstraints();
-		textCons.setY(new AlignY(YAlign.MIDDLE, 0.0f));
+		textCons.setX(new AlignX(XAlign.LEFT, 0.025f));
+		textCons.setY(new AlignY(YAlign.TOP, -0.2f));
 		categoryBacking.addComponent(categoryName);
-		
-		LanguageManager.addText("buildMenu_" + curCategory.getName().toLowerCase(), categoryName);
 	}
 		
 	private void createButtons(Engine engine, BuildingCategory category) {
@@ -199,10 +200,10 @@ public class BuildingMenu extends UiComponent {
 		UiConstraints cons = new UiConstraints();
 		cons.setX(new AlignX(XAlign.CENTER));
 		cons.setY(new AlignY(YAlign.BOTTOM, 0.0f));
-		cons.setLayout(new HorizontalLayout(-0.05f, 0.05f));
+		cons.setLayout(new HorizontalLayout(0.0f, 0.05f));
 		this.setConstraints(cons);
 		this.setScale(0.75f, 0.075f);
-		this.setColor(0.15f);
+		this.setColor(ColorPalette.MAIN_LIGHT);
 		
 		this.yValue = new SmoothFloat(-0.25f);
 	}

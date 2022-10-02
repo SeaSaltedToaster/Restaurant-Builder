@@ -6,6 +6,7 @@ import java.util.List;
 import com.seaSaltedToaster.restaurantGame.building.categories.BuildingCategory;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
 import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.Component;
+import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 
 public class Building {
 	
@@ -16,6 +17,9 @@ public class Building {
 	//Category
 	private BuildingCategory category;
 	public BuildingType type;
+	
+	//Colors (default)
+	private Vector3f defPrimary, defSecondary;
 	
 	//Settings
 	private boolean isWall = false, isFloor = false, isObstructive = false, isTable = false;
@@ -29,6 +33,8 @@ public class Building {
 		this.isWall = isWall;
 		this.isFloor = isFloor;
 		this.type = type;
+		this.defPrimary = new Vector3f();
+		this.defSecondary = new Vector3f();
 	}
 
 	public Building(Entity entity) {
@@ -36,6 +42,24 @@ public class Building {
 		this.buildingComponents = new ArrayList<Component>();
 		this.isWall = false;
 		this.isFloor = false;
+		this.defPrimary = new Vector3f();
+		this.defSecondary = new Vector3f();
+	}
+
+	public Vector3f getDefPrimary() {
+		return defPrimary;
+	}
+
+	public void setDefPrimary(Vector3f defPrimary) {
+		this.defPrimary = defPrimary;
+	}
+
+	public Vector3f getDefSecondary() {
+		return defSecondary;
+	}
+
+	public void setDefSecondary(Vector3f defSecondary) {
+		this.defSecondary = defSecondary;
 	}
 
 	public Entity getEntity() {

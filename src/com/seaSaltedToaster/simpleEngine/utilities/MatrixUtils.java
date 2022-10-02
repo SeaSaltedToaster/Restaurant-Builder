@@ -81,7 +81,7 @@ public class MatrixUtils {
 	 public Matrix4f createProjectionMatrix(float FOV, float NEAR_PLANE, float FAR_PLANE, Engine engine) {
 		Matrix4f projectionMatrix = new Matrix4f();
 		projectionMatrix.setIdentity();
-		float aspectRatio = (float) Window.getCurrentWidth() / (float) Window.getCurrentHeight();
+		float aspectRatio = (float) Window.getWidth() / (float) Window.getHeight();
 		float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))));
 		float x_scale = y_scale / aspectRatio;
 		float frustum_length = FAR_PLANE - NEAR_PLANE;

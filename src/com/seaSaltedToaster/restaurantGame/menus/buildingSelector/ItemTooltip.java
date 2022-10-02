@@ -41,9 +41,9 @@ public class ItemTooltip extends UiComponent {
 		this.setAlpha(1.0f);
 		UiConstraints cons = this.getConstraints();
 		cons.setX(new AlignX(XAlign.CENTER));
-		cons.setY(new AlignY(YAlign.TOP, -5.0f));
-		cons.setHeight(new RelativeScale(2.5f));
-		cons.setWidth(new AspectRatio(0.25f));
+		cons.setY(new AlignY(YAlign.TOP, -4.0f));
+		cons.setHeight(new RelativeScale(2.0f));
+		cons.setWidth(new AspectRatio(1.0f));
 		cons.setLayout(new VerticalLayout(-0.0f, 0.025f));
 		this.setColor(0.15f);
 		

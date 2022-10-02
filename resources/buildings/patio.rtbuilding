@@ -1,0 +1,11 @@
+name=Patio
+type=Floor
+price=10
+iconZoom=0.66
+category=General
+model=basic/patio
+primary=0.375,0.375,0.375
+secondary=0,0,0
+components{
+
+}

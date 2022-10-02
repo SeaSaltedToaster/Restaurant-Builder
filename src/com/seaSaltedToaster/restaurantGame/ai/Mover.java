@@ -49,6 +49,7 @@ public class Mover {
 	public void stop() {
 		//Stop movement
 		this.isMoving = false;
+		entity.getTransform().setPosition(target.copy().scale(1.0f));
 	}
 	
 	public boolean reachedTarget() {

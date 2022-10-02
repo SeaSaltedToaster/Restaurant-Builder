@@ -19,8 +19,9 @@ public class BuildingShader extends Shader {
 	protected UniformInteger selectedId = new UniformInteger("selectedId");
 	protected UniformFloat dayValue = new UniformFloat("dayValue");
 	
-	protected UniformVec3 customColor = new UniformVec3("customColor");
-
+	protected UniformVec3 primaryColor = new UniformVec3("primaryColor");
+	protected UniformVec3 secondaryColor = new UniformVec3("secondaryColor");
+	
 	public BuildingShader() {
 		super(vertexShader, fragmentShader, "position", "color", "normal");
 		super.locateUniform(transformation);
@@ -29,11 +30,16 @@ public class BuildingShader extends Shader {
 		super.locateUniform(currentId);
 		super.locateUniform(selectedId);
 		super.locateUniform(dayValue);
-		super.locateUniform(customColor);
+		super.locateUniform(primaryColor);
+		super.locateUniform(secondaryColor);
 	}
 	
-	public UniformVec3 getCustomColor() {
-		return customColor;
+	public UniformVec3 getPrimaryColor() {
+		return primaryColor;
+	}
+
+	public UniformVec3 getsecondaryColor() {
+		return secondaryColor;
 	}
 
 	public UniformFloat getDayValue() {

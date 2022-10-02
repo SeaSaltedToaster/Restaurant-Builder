@@ -1,0 +1,11 @@
+name=Trimmed Wall
+type=Wall
+price=10
+iconZoom=0.66
+category=General
+model=basic/trimmedWall
+primary=0.375,0.1875,0.0
+secondary=0.63,0.63,0.63
+components{
+
+}

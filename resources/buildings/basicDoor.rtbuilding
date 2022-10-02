@@ -1,0 +1,11 @@
+name=Basic Door
+type=Wall
+price=20
+iconZoom=0.66
+category=General
+model=basic/basicDoor
+primary=0.78,0.72,0.43
+secondary=0.9,0.06,0.07
+components{
+
+}

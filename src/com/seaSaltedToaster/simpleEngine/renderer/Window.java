@@ -1,8 +1,5 @@
 package com.seaSaltedToaster.simpleEngine.renderer;
 
-import java.nio.IntBuffer;
-
-import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
@@ -16,8 +13,12 @@ public class Window {
 	public static double DeltaTime;
 	private static double lastFrameTime;
 	
+	public static double width, height;
+	
 	public void createWindow(int width, int height, String title) {
 		boolean initState = GLFW.glfwInit();
+		Window.width = width;
+		Window.height = height;
 		
 		if(initState == false) {
 			throw new IllegalStateException("Could not create GLFW");
@@ -58,28 +59,16 @@ public class Window {
 		return delta;
 	}
 	
-	public static double getCurrentWidth() {
-		IntBuffer posX = BufferUtils.createIntBuffer(1);
-	    GLFW.glfwGetWindowSize(windowID, posX, null);
-	    return posX.get(0);
-	}
-	
 	public static double getWidth() {
-		return Window.getCurrentWidth();
+		return width;
 	}
 
-	public static double getCurrentHeight() {
-		IntBuffer posY = BufferUtils.createIntBuffer(1);
-		GLFW.glfwGetWindowSize(windowID, null, posY);
-	    return posY.get(0);
-	}
-	
 	public static double getHeight() {
-		return Window.getCurrentHeight();
+		return height;
 	}
-	
+
 	public static double getAspectRatio() {
-		return getCurrentWidth() / getCurrentHeight();
+		return getWidth() / getHeight();
 	}
 		
 	public void closeWindow() {

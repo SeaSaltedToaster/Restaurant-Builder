@@ -6,9 +6,11 @@ import com.seaSaltedToaster.restaurantGame.WorldCamera;
 import com.seaSaltedToaster.restaurantGame.building.BuildingManager;
 import com.seaSaltedToaster.restaurantGame.building.categories.BuildingList;
 import com.seaSaltedToaster.restaurantGame.ground.Ground;
+import com.seaSaltedToaster.restaurantGame.menus.DeleteTool;
 import com.seaSaltedToaster.restaurantGame.menus.GeneralMenu;
 import com.seaSaltedToaster.restaurantGame.menus.LayerMenu;
 import com.seaSaltedToaster.restaurantGame.menus.MoneyCounter;
+import com.seaSaltedToaster.restaurantGame.menus.PaintMenu;
 import com.seaSaltedToaster.restaurantGame.menus.TimeDisplay;
 import com.seaSaltedToaster.restaurantGame.menus.buildingSelector.BuildingMenu;
 import com.seaSaltedToaster.restaurantGame.menus.employees.EmployeeMenu;
@@ -33,15 +35,18 @@ public class MainApp {
 	
 	public static void main(String[] args) {
 		//Engine
-		Engine engine = new Engine("Restaurant Game v0.0.4m", ClientConfigs.WINDOW_X, ClientConfigs.WINDOW_Y);
+		Engine engine = new Engine("Restaurant Game v0.0.5s", ClientConfigs.WINDOW_X, ClientConfigs.WINDOW_Y);
 		engine.setCamera(new WorldCamera(engine));
 		engine.getKeyboard().addKeyListener(new ScreenshotUtils());
+		
+		//Restaurant
+		MainApp.restaurant = new Restaurant(engine);
 		
 		//Assets
 		Fonts.loadFonts(engine);
 		AudioMaster.init(engine);
 		BuildingList.create();
-		
+				
 		//Languages
 		System.out.println("Loading Language Files");
 		LanguageReader languageReader = new LanguageReader("" + "/lang/");
@@ -49,9 +54,6 @@ public class MainApp {
 				
 		//Set defualt language
 		LanguageManager.start(languages, "english");
-		
-		//Restaurant
-		MainApp.restaurant = new Restaurant(engine);
 		
 		//Buildings
 		BuildingRepository repository = new BuildingRepository();
@@ -84,6 +86,14 @@ public class MainApp {
 		general.setBuilding(building);
 		general.setEmployee(employee);
 		engine.addUi(general);
+		
+		PaintMenu paint = new PaintMenu();
+		ray.paint = paint;
+		general.setPaint(paint);
+		general.getButtons()[3].addComponent(paint);
+		
+		DeleteTool delete = new DeleteTool();
+		general.setDelete(delete);
 		
 		TimeDisplay timeDisplay = new TimeDisplay();
 		engine.addUi(timeDisplay);

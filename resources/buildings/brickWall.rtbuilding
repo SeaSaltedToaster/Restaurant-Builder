@@ -1,0 +1,11 @@
+name=Brick Wall
+type=Wall
+price=10
+iconZoom=0.66
+category=General
+model=basic/brickWall
+primary=0.7,0.3,0.25
+secondary=0,0,0
+components{
+
+}

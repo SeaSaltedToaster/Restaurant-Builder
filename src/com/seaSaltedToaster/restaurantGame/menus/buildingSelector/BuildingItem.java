@@ -1,7 +1,9 @@
 package com.seaSaltedToaster.restaurantGame.menus.buildingSelector;
 
 import com.seaSaltedToaster.restaurantGame.building.Building;
+import com.seaSaltedToaster.restaurantGame.building.BuildingId;
 import com.seaSaltedToaster.restaurantGame.building.categories.BuildingCategory;
+import com.seaSaltedToaster.restaurantGame.tools.ColorPalette;
 import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.ModelComponent;
 import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.XAlign;
@@ -52,7 +54,7 @@ public class BuildingItem extends UiComponent {
 		if(building != null) {
 			ModelComponent comp = (ModelComponent) building.getEntity().getComponent("Model");
 			menu.getIconMaker().increaseYAngle(1.0f);
-			this.spinningIcon = menu.getIconMaker().createIcon(comp.getMesh(), building.getIconZoom());
+			this.spinningIcon = menu.getIconMaker().createIcon(comp.getMesh(), building);
 			if((Integer) spinningIcon != null)
 				this.iconComp.setTexture(spinningIcon);
 		}
@@ -63,7 +65,7 @@ public class BuildingItem extends UiComponent {
 		if(building != null) {
 			ModelComponent compModel = (ModelComponent) building.getEntity().getComponent("Model");
 			menu.getIconMaker().setYAngle(0.0f);
-			icon = BuildingMenu.iconMaker.createIcon(compModel.getMesh(), building.getIconZoom());
+			icon = BuildingMenu.iconMaker.createIcon(compModel.getMesh(), building);
 		}
 		this.iconComp.setTexture(icon);
 		menu.getTooltip().close();
@@ -74,7 +76,7 @@ public class BuildingItem extends UiComponent {
 		UiConstraints cons = this.getConstraints();
 		cons.setY(new AlignY(YAlign.MIDDLE));
 		cons.setHeight(new RelativeScale(0.75f));
-		cons.setWidth(new AspectRatio(0.33f));
+		cons.setWidth(new AspectRatio(1.0f));
 		
 		this.iconComp = new UiComponent(5);
 		UiConstraints iconCons = iconComp.getConstraints();
@@ -86,21 +88,26 @@ public class BuildingItem extends UiComponent {
 		
 		menu.getIconMaker().setYAngle(0.0f);
 		if(building != null) {
-			ModelComponent compModel = (ModelComponent) building.getEntity().getComponent("Model");
-			icon = BuildingMenu.iconMaker.createIcon(compModel.getMesh(), building.getIconZoom());
+			ModelComponent compModel = (ModelComponent) building.getEntity().getComponent("Model");			
+			icon = BuildingMenu.iconMaker.createIcon(compModel.getMesh(), building);
 		}
 		if(category != null) {
 			icon = category.getIcon();
 			this.setAlpha(1.0f);
+			this.setColor(ColorPalette.MAIN_SHADE);
 		}
-		this.iconComp.setTexture(icon);
-		
-		
+		this.iconComp.setTexture(icon);	
 	}
 	
-	@Override
+	public void unHover() {
+		this.setColor(ColorPalette.MAIN_SHADE);
+	}
+
+	public void hover() {
+		this.setColor(0.5f);
+	}
+	
 	public void setColor(float color) {
-		this.iconComp.setColor(color);
 		this.color.set(color, color, color);;
 	}
 

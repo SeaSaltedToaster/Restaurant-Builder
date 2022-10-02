@@ -59,8 +59,8 @@ public class GoToTable extends Action {
 		ActionComponent comp = (ActionComponent) entity.getComponent("Action");
 		
 		//Check if we are close enough to the table
-		float tableDist = getTargetDistance();
-		boolean atTable = (tableDist < 1.0f && tableDist > -1.0f);
+		float tableDist = getTableDist();
+		boolean atTable = (tableDist <= 1.25f && tableDist >= -1.25f);
 		
 		//If we are at the table
 		if(atTable) {
@@ -72,6 +72,7 @@ public class GoToTable extends Action {
 		//If we are not
 		if(!atTable && pathfinder.reachedEnd()) {
 			//Repeat going to the table
+			System.out.println("Distance : " + tableDist);
 			comp.getActions().add(new GoToTable(entity, table, seat));
 			return true;
 		}
@@ -80,13 +81,14 @@ public class GoToTable extends Action {
 		return atTable;
 	}
 
-	private float getTargetDistance() {
+	private float getTableDist() {
 		//Get target position and person position
-		Vector3f targetPos = table.getPosition().copy();
-		Vector3f personPos = entity.getPosition();
+		Vector3f tablePos = table.getTransform().getPosition().copy();
+		tablePos.scale(-1.0f);
+		Vector3f personPos = entity.getTransform().getPosition();
 		
 		//Get and return the distance bewteen the points
-		float dist = targetPos.subtract(personPos).length();
+		float dist = tablePos.subtract(personPos).length();
 		return Math.abs(dist);
 	}
 	
