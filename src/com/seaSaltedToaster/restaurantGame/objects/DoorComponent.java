@@ -1,9 +1,9 @@
 package com.seaSaltedToaster.restaurantGame.objects;
 
 import com.seaSaltedToaster.MainApp;
-import com.seaSaltedToaster.restaurantGame.building.AdvancedBuilder;
 import com.seaSaltedToaster.restaurantGame.building.Building;
 import com.seaSaltedToaster.restaurantGame.building.categories.BuildingList;
+import com.seaSaltedToaster.restaurantGame.building.objects.ObjectBuilder;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
 import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.Component;
 import com.seaSaltedToaster.simpleEngine.renderer.Window;
@@ -27,26 +27,30 @@ public class DoorComponent extends Component {
 		
 		Restaurant restaurant = MainApp.restaurant;
 		if(timer.isFinished() && !restaurant.atCapacity()) {
-			//Random
-			float random = (float) Math.abs(Math.random());
-			if(random < 0.75f) {
-				timer.stop();
-				timer.start();
-				return;
-			}
-			
-			//Create entity
-			Building spawn = BuildingList.getBuilding("Customer_TEST");
-			Entity newEnt = spawn.getEntity().copyEntity();
-			newEnt.getTransform().setPosition(entity.getTransform().getPosition().copy());
-			
-			//Get layer
-			restaurant.layers.get(0).addBuilding(newEnt, spawn, AdvancedBuilder.buildingIndex++);
-			
-			//Timer
+			spawnPerson(restaurant); //TODO SPAWN PEOPLE
+		}
+	}
+
+	private void spawnPerson(Restaurant restaurant) {
+		//Random
+		float random = (float) Math.abs(Math.random());
+		if(random < 0.75f) {
 			timer.stop();
 			timer.start();
+			return;
 		}
+		
+		//Create entity
+		Building spawn = BuildingList.getBuilding("Customer_TEST");
+		Entity newEnt = spawn.getEntity().copyEntity();
+		newEnt.getTransform().setPosition(entity.getTransform().getPosition().copy());
+		
+		//Get layer
+		restaurant.layers.get(0).addBuilding(newEnt, spawn, ObjectBuilder.buildingIndex++);
+		
+		//Timer
+		timer.stop();
+		timer.start();		
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import org.lwjgl.glfw.GLFW;
 import com.seaSaltedToaster.MainApp;
 import com.seaSaltedToaster.restaurantGame.building.BuildingId;
 import com.seaSaltedToaster.restaurantGame.building.BuildingManager;
+import com.seaSaltedToaster.restaurantGame.building.BuildingType;
 import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
 import com.seaSaltedToaster.restaurantGame.ground.Ground;
 import com.seaSaltedToaster.restaurantGame.menus.PaintMenu;
@@ -20,68 +21,88 @@ import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 public class Raycaster implements MouseListener, MousePosListener {
 
 	//Objects
-	private Engine engine;
 	public static RayMode mode;
-	
+	public static Vector3f lastRay;
+
 	//Raycasting
 	private MousePicker picker;
-	public static Vector3f lastRay;
+	private Engine engine;
 	
-	//Building
+	//Building and ground
+	public Ground ground;
 	public BuildingManager builder;
+	
+	//Menus used with mouse
+	private BuildingViewer viewer;
 	public PaintMenu paint;
 	
-	//Viewer
-	private BuildingViewer viewer;
-	
-	//Action objects
-	public Ground ground;
-	
+	private float MAX_DIST = 250f;
+
 	public Raycaster(Engine engine) {
-		this.engine = engine;
-		this.engine.getMouse().getMouseButtonCallback().addListener(this);
-		this.engine.getMouse().getMousePositionCallback().addListener(this);
+		register(engine);
 		this.picker = new MousePicker(engine);
-		
 		this.viewer = new BuildingViewer(engine);
 		engine.addUi(viewer);
 		viewer.open(null);
+		
 		Raycaster.mode = RayMode.DEFAULT;
 	}
 	
+	private void register(Engine engine) {
+		this.engine = engine;
+		this.engine.getMouse().getMouseButtonCallback().addListener(this);
+		this.engine.getMouse().getMousePositionCallback().addListener(this);		
+	}
+
 	@Override
 	public void notifyButton(MousePosData eventData) {
+		//If we are in a menu, do nothing
 		if(MainApp.menuFocused) {
-			ground.selectAt(null);
+			this.ground.selectAt(null);
 			return;
 		}
 		
-		//Update picker
+		//Get layer height
 		float groundHeight = BuildLayer.HEIGHT_OFFSET * builder.getCurLayer();
-		picker.update(groundHeight);
+		this.picker.update(groundHeight);
 		
-		//Get raycast
+		//If we are not on the ground (0), do nothing
+		if(groundHeight > 0) {
+			this.ground.selectAt(null);
+		}
+		
+		//Get raycast point
 		Vector3f ray = picker.getCurrentTerrainPoint();
-		ground.getRenderer().setHighlight(-1);
+		Raycaster.lastRay = ray;
 		if(ray == null) return;
 		
-		builder.movePreview(ray);
-		
-		Vector3f placePosition = new Vector3f(Math.round(ray.x), Math.round(ray.y), Math.round(ray.z));
-		lastRay = placePosition;
-		
 		if(builder.getSelectedEntity() != null) {
-			ground.selectAt(null);
+			BuildingId id = (BuildingId) builder.getSelectedEntity().getComponent("BuildingId");
+			if(id.getType().type != BuildingType.WallObject) {
+				
+			}
+			else {
+				float rayLength = ray.length();
+				float dist = builder.getSelectedEntity().getPosition().copy().subtract(engine.getCamera().getPosition().copy()).length();
+				if(rayLength > dist) {
+					float multi = dist / rayLength;
+					ray = ray.scale(multi - 0.5f);
+				}
+			}
 		}
-		ground.selectAt(placePosition);
-	}
 
-	private void pickColor(Entity selectedEntity) {
-		if(selectedEntity == null) return;
-		BuildingId id = (BuildingId) selectedEntity.getComponent("BuildingId");
-		if(id == null) return;
-		paint.setPrimary(id.getPrimary());
-		paint.setSecondary(id.getSecondary());
+		/*
+		 * BUILDING UPDATE
+		 */
+		this.builder.movePreview(ray);
+		
+		/*
+		 * GROUND UPDATE
+		 */
+		if(builder.getSelectedEntity() != null || builder.isBuilding() || groundHeight != 0)
+			this.ground.selectAt(null);
+		else
+			this.ground.selectAt(ray.round());
 	}
 
 	@Override
@@ -97,7 +118,7 @@ public class Raycaster implements MouseListener, MousePosListener {
 		
 		switch(mode) {
 			case DEFAULT:
-				this.placeDefault(eventData);
+				this.click(eventData);
 				break;
 			case DELETE:
 				if(!isLeftDown || !isPlaceDown || builder.getSelectedEntity() == null) break;
@@ -110,6 +131,7 @@ public class Raycaster implements MouseListener, MousePosListener {
 				if(!isLeftDown || !isPlaceDown || builder.getSelectedEntity() == null) break;
 				BuildingId id2 = (BuildingId) builder.getSelectedEntity().getComponent("BuildingId");
 				if(id2 == null) return;
+				
 				id2.setPrimary(paint.getPrimary());
 				id2.setSecondary(paint.getSecondary());
 				break;
@@ -117,47 +139,39 @@ public class Raycaster implements MouseListener, MousePosListener {
 				this.pickColor(builder.getSelectedEntity());
 				break;
 			default:
+				this.click(eventData);
 				break;
 		}
 	}
 	
-	private void placeDefault(MouseEventData eventData) {
-		//Key states
-		boolean isLeftDown = eventData.getKey() == GLFW.GLFW_MOUSE_BUTTON_LEFT;
-		boolean isPlaceDown = eventData.getAction() == GLFW.GLFW_PRESS;
+	private void pickColor(Entity selectedEntity) {
+		if(selectedEntity == null || !selectedEntity.hasComponent("BuildingId")) return;
 		
-		//Check for object viewer
-		if(builder.getSelectedEntity() != null && isLeftDown && isPlaceDown && !builder.isBuilding()) {
-			Entity selected = builder.getSelectedEntity();
-			viewer.open(selected);
+		BuildingId id = (BuildingId) selectedEntity.getComponent("BuildingId");
+		paint.setPrimary(id.getPrimary());
+		paint.setSecondary(id.getSecondary());
+	}
+	
+	private void click(MouseEventData eventData) {
+		//Key states
+		boolean leftClicked = (eventData.getAction() == GLFW.GLFW_PRESS && eventData.getKey() == GLFW.GLFW_MOUSE_BUTTON_LEFT);
+		
+		//Check if we clicked on an object
+		boolean selectedExistingObject = (leftClicked && !builder.isBuilding() && builder.getSelectedEntity() != null);
+		if(selectedExistingObject) {
+			viewer.open(builder.getSelectedEntity());
 			return;
 		}
-
+		
 		//Get raycast
 		Vector3f ray = picker.getCurrentTerrainPoint();
 		if(ray == null) return;
-		Vector3f placePosition = new Vector3f(Math.round(ray.x), Math.round(ray.y), Math.round(ray.z));
 		
-		//Place
-		if(isPlaceDown && isLeftDown) {
-			if(builder.isBuilding()) {
-				boolean placed = builder.startPlacement(placePosition);
-			}
+		//Place object on the ground, if you havent selected another
+		boolean canPlace = (leftClicked && builder.isBuilding());
+		if(canPlace) {
+			this.builder.place(ray);
 		}
-		
-		if(eventData.getAction() != GLFW.GLFW_PRESS) return;
-		
-		//Check for delete
-		if(builder.getSelectedEntity() != null && !builder.isBuilding() && eventData.getKey() == GLFW.GLFW_KEY_X) {
-			Entity selected = builder.getSelectedEntity();
-			builder.delete(selected);
-			return;
-		}
-		
-		if(eventData.getKey() != GLFW.GLFW_MOUSE_BUTTON_LEFT) return;
-		//Update picker
-		float groundHeight = BuildLayer.HEIGHT_OFFSET * builder.getCurLayer();
-		picker.update(groundHeight);
 	}
 		
 }

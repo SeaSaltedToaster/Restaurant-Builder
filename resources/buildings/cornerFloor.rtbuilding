@@ -1,0 +1,11 @@
+name=Corner Floor
+type=Floor
+price=10
+iconZoom=0.66
+category=General
+model=basic/cornerFloor
+primary=1,1,1
+secondary=0,0,0
+components{
+
+}

@@ -27,6 +27,10 @@ public class Keyboard {
 	public void addKeyListener(KeyListener keyListener) {
 		keyCallback.addListener(keyListener);
 	}
+	
+	public void clearListeners() {
+		keyCallback.getListeners().clear();
+	}
 		
 	//Update mouse value
 	public void updateInput() {

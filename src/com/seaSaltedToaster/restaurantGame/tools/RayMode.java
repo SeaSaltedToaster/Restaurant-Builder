@@ -2,6 +2,6 @@ package com.seaSaltedToaster.restaurantGame.tools;
 
 public enum RayMode {
 	
-	DEFAULT, DELETE, PAINT, PICKER;
+	DEFAULT, WALL, DELETE, PAINT, PICKER;
 
 }

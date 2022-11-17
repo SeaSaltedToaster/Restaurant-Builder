@@ -14,19 +14,19 @@ public class FontShader extends Shader {
     private UniformFloat alpha = new UniformFloat("alpha");
     
     private UniformVec2 translation = new UniformVec2("translation");
-    private UniformVec2 bounds = new UniformVec2("bounds");
+    private UniformFloat scale = new UniformFloat("scale");
      
     public FontShader() {
         super(VERTEX_FILE, FRAGMENT_FILE, "position", "textureCoords");
-        super.locateUniforms(color, translation, alpha, bounds);
+        super.locateUniforms(color, translation, alpha, scale);
     }
 
 	public UniformVec3 getColor() {
 		return color;
 	}
 	
-	public UniformVec2 getBounds() {
-		return bounds;
+	public UniformFloat getScale() {
+		return scale;
 	}
 
 	public UniformVec2 getTranslation() {

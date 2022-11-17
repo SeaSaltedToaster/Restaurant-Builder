@@ -30,7 +30,7 @@ public class BuildingList {
 	
 	public static BuildingCategory getCategory(String name) {
 		for(BuildingCategory category : rootCategory.getChildCategories()) {
-			if(category.getName().equals(name)) {
+			if(category.getName().equalsIgnoreCase(name)) {
 				return category;
 			}
 		}

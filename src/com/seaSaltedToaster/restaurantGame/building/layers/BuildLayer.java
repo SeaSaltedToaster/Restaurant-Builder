@@ -20,6 +20,7 @@ public class BuildLayer {
 	
 	//Buildings list
 	private List<Entity> buildings;
+	private List<Entity> buildingsToAdd;
 	
 	//Data
 	private boolean isOn;
@@ -45,6 +46,7 @@ public class BuildLayer {
 		this.layerId = layerId;
 		
 		this.buildings = new ArrayList<Entity>();
+		this.buildingsToAdd = new ArrayList<Entity>();
 		
 		this.isOn = false;
 		this.scaleAnim = new SmoothFloat(0.0f);
@@ -60,6 +62,9 @@ public class BuildLayer {
 	}
 	
 	public void updateLayer() {
+		buildings.addAll(buildingsToAdd);
+		buildingsToAdd.clear();
+		
 		scaleAnim.update(Window.DeltaTime);
 		float scale = scaleAnim.getValue();
 		if(isClosing)
@@ -107,11 +112,10 @@ public class BuildLayer {
 		//Add building comps
 		preview.addComponent(new BuildingId(buildingIndex, object, this));
 		preview.addComponent(new PlaceAnimation());
-		this.buildings.add(preview);
+		this.buildingsToAdd.add(preview);
 		for(Component comp : object.getBuildingComponents()) {
 			preview.addComponent(comp.copyInstance());
 		}
-		System.out.println(buildings.size());
 		
 		//AI
 		manager.getPathWorld().addBuilding(object, preview.getTransform().getPosition());

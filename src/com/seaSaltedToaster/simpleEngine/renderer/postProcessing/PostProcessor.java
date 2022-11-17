@@ -15,7 +15,7 @@ public class PostProcessor extends Renderer {
 
 	//Framebuffer
 	private Fbo fbo;
-	private boolean doProcessing = true;
+	private boolean doProcessing = false;
 	
 	//Quad
 	private final float[] POSITIONS = { -1, 1, -1, -1, 1, 1, 1, -1 };

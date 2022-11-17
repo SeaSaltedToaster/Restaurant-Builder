@@ -1,5 +1,9 @@
 example_text_id,Example;
-buildMenu_general,Allgemein;
-buildMenu_furniture,Mobel;
-buildMenu_plants,Pflanzen;
-buildMenu_workstations,Arbeitsplatze;
+display_settings,Anzeige Einstellungen;
+graphics_settings,Grafik Einstellungen;
+audio_settings,Audio Einstellungen;
+language_settings,Sprache Eeinstellungen;
+control_settings,Steuerelementbindungen;
+menu_play,Spielen;
+menu_settings,Einstellungen;
+menu_quit,Verlassen;

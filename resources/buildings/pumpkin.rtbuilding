@@ -1,0 +1,11 @@
+name=Pumpkin
+type=Object
+price=10
+iconZoom=0.66
+category=Event
+model=pumpkin
+primary=0.875,0.4375,0.0
+secondary=0.0,0.625,0.0
+components{
+
+}

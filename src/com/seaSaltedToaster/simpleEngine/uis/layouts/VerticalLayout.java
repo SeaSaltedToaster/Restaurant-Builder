@@ -16,7 +16,7 @@ public class VerticalLayout extends UiLayout {
 	@Override
 	public void update(UiComponent component, List<UiComponent> children) {
 		float spacing = (component.getPosition().y + component.getScale().y) - edgeSpace;
-		spacing -= children.get(0).getScale().y; // + component.getScale().y * componentSpace;
+		spacing -= children.get(0).getScale().y; // + (component.getScale().y * componentSpace);
 		
 		for(UiComponent child : children) {
 			if(hasExistingConstraints(child)) continue;

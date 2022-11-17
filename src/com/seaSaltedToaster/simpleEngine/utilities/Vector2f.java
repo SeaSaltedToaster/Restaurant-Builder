@@ -59,7 +59,12 @@ public class Vector2f {
         this.y = y;
     }
 
-    /**
+    public Vector2f(Vector2f scale) {
+    	this.x = scale.x;
+    	this.y = scale.y;
+	}
+
+	/**
      * Calculates the squared length of the vector.
      *
      * @return Squared length of this vector

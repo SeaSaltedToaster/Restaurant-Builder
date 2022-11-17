@@ -2,9 +2,9 @@ package com.seaSaltedToaster.restaurantGame.menus;
 
 import org.lwjgl.glfw.GLFW;
 
+import com.seaSaltedToaster.MainApp;
 import com.seaSaltedToaster.restaurantGame.menus.buildingSelector.BuildingMenu;
 import com.seaSaltedToaster.restaurantGame.menus.employees.EmployeeMenu;
-import com.seaSaltedToaster.restaurantGame.tools.ColorPalette;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.input.listeners.KeyEventData;
 import com.seaSaltedToaster.simpleEngine.input.listeners.KeyListener;
@@ -15,7 +15,6 @@ import com.seaSaltedToaster.simpleEngine.uis.constraints.YAlign;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.position.AlignX;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.position.AlignY;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.scale.AspectRatio;
-import com.seaSaltedToaster.simpleEngine.uis.constraints.scale.RelativeScale;
 import com.seaSaltedToaster.simpleEngine.uis.layouts.VerticalLayout;
 
 public class GeneralMenu extends UiComponent implements KeyListener {
@@ -54,7 +53,7 @@ public class GeneralMenu extends UiComponent implements KeyListener {
 	}
 		
 	@Override
-	public void onClick() {
+	public void onClick() {		
 		//General
 		if(buttons[0].isHovering()) {
 			closeOthers();
@@ -87,29 +86,20 @@ public class GeneralMenu extends UiComponent implements KeyListener {
 	}
 
 	@Override
-	public void whileHover() {
-		for(UiComponent button : buttons) {
-			if(button == null) return;
-			if(button.isHovering())
-				button.setColor(ColorPalette.BUTTON_HIGHLIGHT);
-			else
-				button.setColor(ColorPalette.BUTTON_BASE);
-		}
+	public void onHover() {
+		MainApp.menuFocused = true;
 	}
 	
 	@Override
 	public void stopHover() {
-		for(UiComponent button : buttons) {
-			if(button == null) return;
-			button.setColor(ColorPalette.BUTTON_BASE);
-		}
+		MainApp.menuFocused = false;
 	}
 	
 	private void closeOthers() {
 		if(building.isOpen()) {
 			building.show();
 		}
-		if(employee.isOpen() ) {
+		if(employee.isOpen()) {
 			employee.show();
 		}
 		if(paint.isOpen()) {
@@ -124,27 +114,9 @@ public class GeneralMenu extends UiComponent implements KeyListener {
 		this.buttons = new UiComponent[buttonCount];
 		for(int i = 0; i < buttonCount; i++) {
 			//Button
-			UiComponent button = new UiComponent(4);
-			button.setColor(ColorPalette.BUTTON_BASE);
-			button.setInteractable(true, engine);
+			GeneralButton button = new GeneralButton(buttonIcons[i], engine);
 			this.addComponent(button);
 			buttons[i] = button;
-			UiConstraints cons = new UiConstraints();
-			cons.setX(new AlignX(XAlign.CENTER));
-			cons.setWidth(new RelativeScale(0.66f * 3));
-			cons.setHeight(new AspectRatio(1.0f));
-			button.setConstraints(cons);
-			
-			//Icon
-			UiComponent icon = new UiComponent(4);
-			icon.setTexture(buttonIcons[i]);
-			UiConstraints iconCons = new UiConstraints();
-			iconCons.setX(new AlignX(XAlign.CENTER));
-			iconCons.setY(new AlignY(YAlign.MIDDLE));
-			iconCons.setWidth(new RelativeScale(0.75f));
-			iconCons.setHeight(new AspectRatio(1.0f));
-			icon.setConstraints(iconCons);
-			button.addComponent(icon);
 		}
 	}
 	

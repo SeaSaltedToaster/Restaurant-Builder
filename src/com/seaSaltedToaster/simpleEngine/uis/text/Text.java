@@ -10,7 +10,7 @@ public class Text extends UiComponent {
 
 	//Text and font settings
 	private String textString;
-	private float fontSize;
+	private float fontSize, textSize = 1.0f;
 	private FontType font;
 	    	
 	private float lineMaxSize;
@@ -42,12 +42,14 @@ public class Text extends UiComponent {
 	
 	@Override
 	public void updateComponent(Engine engine) {
-		if(!isActive) return;
-		this.updateSelf();
-		this.constraints.updateConstraints(this);
-		
-		for(UiComponent childComponent : children) {
-			childComponent.updateComponent(engine);
+		constraints.updateConstraints(this);
+		if(isActive) {
+			updateSelf();
+			if(isHovering())
+				this.whileHover();
+		}
+		for(UiComponent component : children) {
+			component.updateComponent(engine);
 		}
 	}
 	
@@ -72,6 +74,14 @@ public class Text extends UiComponent {
 	
 	public void reset() {
 		TextMaster.loadText(this);
+	}
+
+	public float getTextSize() {
+		return textSize;
+	}
+
+	public void setTextSize(float textSize) {
+		this.textSize = textSize;
 	}
 
 	public void setNumberOfLines(int numberOfLines) {

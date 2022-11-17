@@ -2,7 +2,7 @@ package com.seaSaltedToaster.restaurantGame.ai.person.customer;
 
 import com.seaSaltedToaster.MainApp;
 import com.seaSaltedToaster.restaurantGame.ai.person.Action;
-import com.seaSaltedToaster.restaurantGame.ai.person.waiter.CleanRequest;
+import com.seaSaltedToaster.restaurantGame.ai.person.versionPre.CleanRequest;
 import com.seaSaltedToaster.restaurantGame.objects.TableComponent;
 
 public class RequestTableClean extends Action {

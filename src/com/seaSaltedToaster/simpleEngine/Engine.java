@@ -3,6 +3,7 @@ package com.seaSaltedToaster.simpleEngine;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.seaSaltedToaster.Scene;
 import com.seaSaltedToaster.simpleEngine.entity.Camera;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
 import com.seaSaltedToaster.simpleEngine.input.Keyboard;
@@ -47,6 +48,9 @@ public class Engine {
 	
 	//Entities
 	private List<Entity> entities;
+	
+	//Current scene
+	private Scene currentScene;
 	
 	//Rendering
 	private SkyboxRenderer skybox;
@@ -99,6 +103,14 @@ public class Engine {
 		this.advRenderer = new AdvancedRenderer(this);
 	}
 	
+	public void renderScene() {
+		this.currentScene.renderScene(this);
+	}
+	
+	public void updateScene() {
+		this.currentScene.updateScene(this);
+	}
+	
 	private UiComponent createMainUi() {
 		UiComponent ui = new UiComponent(0);
 		ui.setScale(1f,1f);
@@ -121,7 +133,7 @@ public class Engine {
 		this.projectionMatrix = utils.createProjectionMatrix(70, 0.1f, 1000f, this);
 		
 		this.advRenderer.prepare();
-		for(Entity entity : entities) {
+		for(Entity entity : this.currentScene.getBatches()) {
 			this.advRenderer.render(entity);
 		}
 		this.advRenderer.endRender();
@@ -145,7 +157,7 @@ public class Engine {
 	}
 	
 	public void renderUis() {
-		for(UiComponent ui : uis) {
+		for(UiComponent ui : this.currentScene.getComponents()) {
 			ui.updateComponent(this);
 			ui.renderUI(this);
 		}
@@ -156,17 +168,28 @@ public class Engine {
 		this.window.updateWindow();
 	}
 	
+	public Scene getCurrentScene() {
+		return currentScene;
+	}
+
+	public void setCurrentScene(Scene newScene) {
+		if(this.currentScene != null)
+			this.currentScene.unloadScene(this);
+		
+		this.currentScene = newScene;
+		this.currentScene.loadScene(this);
+	}
+
 	public void addEntity(Entity entity) {
-		this.entities.add(entity);
+		this.currentScene.getBatches().add(entity);
 	}
 	
 	public List<Entity> getEntities() {
-		return entities;
+		return this.currentScene.getBatches();
 	}
 
 	public void addUi(UiComponent ui) {
-		this.mainParent.addComponent(ui);
-		this.uis.add(ui);
+		this.currentScene.addComponent(ui);
 	}
 	
 	public List<UiComponent> getUis() {

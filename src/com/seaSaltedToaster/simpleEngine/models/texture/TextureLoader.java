@@ -2,7 +2,10 @@ package com.seaSaltedToaster.simpleEngine.models.texture;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,17 +26,27 @@ public class TextureLoader {
 	}
 	
 	public int loadTexture(String fileName) {
-		Texture tex = getTextureData(fileName+".png");
+		Texture tex = getTextureData(fileName+".png", true);
 		GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
-		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, -0.4f);
+		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, 0.0f);
+		int textureID = tex.getID();
+		textureCache.add(textureID);
+		return textureID;
+	}
+	
+	public int loadTexture(String fileName, boolean stream) {
+		Texture tex = getTextureData(fileName+".png", stream);
+		GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
+		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, 0.0f);
 		int textureID = tex.getID();
 		textureCache.add(textureID);
 		return textureID;
 	}
 	
 	public int loadTexture(String fileName, float bias) {
-		Texture tex = getTextureData(fileName+".png");
+		Texture tex = getTextureData(fileName+".png", true);
 		GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
 		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, bias);
@@ -42,11 +55,20 @@ public class TextureLoader {
 		return textureID;
 	}
 	
-	private Texture getTextureData(String fileName) {
+	private Texture getTextureData(String fileName, boolean isStream) {
 		Texture texture = new Texture(0);
 		
 		BufferedImage bi = null;
-		BufferedInputStream stream = new BufferedInputStream(TextureLoader.class.getResourceAsStream(fileName));
+		BufferedInputStream stream = null;
+		if(isStream)
+			stream = new BufferedInputStream(TextureLoader.class.getResourceAsStream(fileName));
+		else
+			try {
+				stream = new BufferedInputStream(new FileInputStream(fileName));
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
+			}
+			
 		try {
 			bi = ImageIO.read(stream);
 			

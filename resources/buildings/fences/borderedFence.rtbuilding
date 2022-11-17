@@ -1,0 +1,11 @@
+name=Bordered Fence
+type=Wall
+price=10
+iconZoom=0.66
+category=Garden
+model=basic/fences/borderedFence
+primary=0.25,0.25,0.25
+secondary=0.375,0.1875,0.0
+components{
+
+}

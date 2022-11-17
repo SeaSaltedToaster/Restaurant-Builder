@@ -53,6 +53,34 @@ public class ScreenshotUtils implements KeyListener {
         } catch (IOException e) { e.printStackTrace(); }
 	}
 	
+	public static void screenshot(File file, int width, int height) {
+        GL11.glReadBuffer(GL11.GL_FRONT);
+        int bpp = 4;
+        ByteBuffer buffer = BufferUtils.createByteBuffer((int) (Window.getWidth() * Window.getHeight()) * bpp);
+        int halfX = (int) (Window.getWidth()/2);
+        int halfY = (int) (Window.getHeight()/2);
+        GL11.glReadPixels(halfX - (width/2), halfY - (height/2), width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer );
+        
+        String format = "png";
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+           
+        for(int x = 0; x < width; x++)
+        {
+            for(int y = 0; y < height; y++)
+            {
+                int i = (x + (width * y)) * bpp;
+                int r = buffer.get(i) & 0xFF;
+                int g = buffer.get(i + 1) & 0xFF;
+                int b = buffer.get(i + 2) & 0xFF;
+                image.setRGB(x, height - (y + 1), (0xFF << 24) | (r << 16) | (g << 8) | b);
+            }
+        }
+           
+        try {
+            ImageIO.write(image, format, file);
+        } catch (IOException e) { e.printStackTrace(); }
+	}
+	
 	@Override
 	public void notifyButton(KeyEventData eventData) {
 		if(eventData.getKey() == GLFW.GLFW_KEY_F2 && eventData.getAction() == GLFW.GLFW_PRESS) {

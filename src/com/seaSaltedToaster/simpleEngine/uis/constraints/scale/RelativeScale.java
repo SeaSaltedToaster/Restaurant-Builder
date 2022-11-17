@@ -29,4 +29,12 @@ public class RelativeScale extends UiConstraint {
 		}
 	}
 
+	public float getRelativeScale() {
+		return relativeScale;
+	}
+
+	public void setRelativeScale(float relativeScale) {
+		this.relativeScale = relativeScale;
+	}
+
 }

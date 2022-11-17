@@ -13,15 +13,11 @@ uniform bool hasTexture;
 
 void main(void){
 
-	vec4 textureColor = texture(guiTexture,textureCoords);
-
-	if(textureColor.a < 0.25) {
-		discard;
-	}
-
+	vec4 textureColor = texture(guiTexture,textureCoords);	
 	out_Color = textureColor;
-
-	out_Color += vec4(color,1);
-	out_Color.a = alpha;
-
+	
+	out_Color += vec4(color,0);
+	
+	if(alpha != 1.0f)
+		out_Color.a = alpha;
 }

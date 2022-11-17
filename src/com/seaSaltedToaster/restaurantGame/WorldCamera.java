@@ -15,6 +15,7 @@ import com.seaSaltedToaster.simpleEngine.input.listeners.MousePosData;
 import com.seaSaltedToaster.simpleEngine.input.listeners.MousePosListener;
 import com.seaSaltedToaster.simpleEngine.input.listeners.ScrollListener;
 import com.seaSaltedToaster.simpleEngine.renderer.Window;
+import com.seaSaltedToaster.simpleEngine.utilities.MathUtils;
 import com.seaSaltedToaster.simpleEngine.utilities.SmoothFloat;
 import com.seaSaltedToaster.simpleEngine.utilities.SmoothVector;
 import com.seaSaltedToaster.simpleEngine.utilities.SmoothVector3;
@@ -122,11 +123,13 @@ public class WorldCamera extends Camera implements ScrollListener, MousePosListe
 		//Move with middle mouse
 		boolean isMiddleDown = GLFW.glfwGetMouseButton(Window.windowID, GLFW.GLFW_MOUSE_BUTTON_MIDDLE) == GLFW.GLFW_PRESS;
 		if(isMiddleDown) {
-	        float rotation = -smoothYaw.getValue() + 90;
-	        float distanceX = (float) (xChange * Window.DeltaTime);
-	        float dx = (float) (distanceX * Math.sin(Math.toRadians(rotation)));
-	        float dz = (float) (distanceX * Math.cos(Math.toRadians(rotation)));
-	        focus.getPosition().increase(dx, 0, dz);
+			float cap = 250.0f;
+			Vector3f belowCam = new Vector3f(position.x, 0, position.z);
+			Vector3f direction = focus.getPosition().copy().subtract(belowCam);
+			
+			Vector3f rotDir = MathUtils.rotatePointAtCenter(direction.copy(), focus.getRotation().y + 90);
+	        focus.getPosition().increase((xChange * rotDir.x) / cap, 0, (xChange * rotDir.z) / cap);
+	        focus.getPosition().increase((yChange * -direction.x) / cap, 0, (yChange * -direction.z) / cap);
 		}
 		
 		//Reset
@@ -174,5 +177,35 @@ public class WorldCamera extends Camera implements ScrollListener, MousePosListe
 		engine.getMouse().getMouseButtonCallback().addListener(this);
 		engine.setCamera(this);		
 	}
+	
+	@Override
+	public void setYaw(float yaw) {
+		this.yaw = yaw;
+		this.smoothYaw.setTarget(yaw);
+	}
+	
+	@Override
+	public void setPitch(float pitch) {
+		this.pitch = pitch;
+		this.smoothPitch.setTarget(pitch);
+	}
+
+	public float getCamDist() {
+		return camDist;
+	}
+
+	public void setCamDist(float camDist) {
+		this.camDist = camDist;
+		this.smoothZoom.setTarget(camDist);
+	}
+
+	public float getOuterAngle() {
+		return outerAngle;
+	}
+
+	public void setOuterAngle(float outerAngle) {
+		this.outerAngle = outerAngle;
+	}
+
 	
 }

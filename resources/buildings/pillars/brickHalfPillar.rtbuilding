@@ -1,0 +1,11 @@
+name=Brick Half Pillar
+type=Pillar
+price=20
+iconZoom=0.66
+category=Garden
+model=basic/pillars/brickHalfPillar
+primary=0.7,0.3,0.25
+secondary=0.0,0.0,0.0
+components{
+
+}

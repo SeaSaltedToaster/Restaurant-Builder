@@ -1,0 +1,11 @@
+name=Roof Corner
+type=Floor
+price=10
+iconZoom=0.66
+category=Event
+model=basic/simpleRoofCorner
+primary=0.4375,0.1875,0.15625
+secondary=0,0,0
+components{
+
+}

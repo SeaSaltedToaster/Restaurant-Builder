@@ -8,9 +8,10 @@ import com.seaSaltedToaster.simpleEngine.renderer.Renderer;
 import com.seaSaltedToaster.simpleEngine.uis.text.FontType;
 import com.seaSaltedToaster.simpleEngine.uis.text.Text;
 import com.seaSaltedToaster.simpleEngine.utilities.OpenGL;
+import com.seaSaltedToaster.simpleEngine.utilities.Vector2f;
 
 public class FontRenderer extends Renderer {
-	 
+	 	
 	public FontRenderer(Engine engine) {
 		super(new FontShader(), engine);
     }
@@ -37,10 +38,11 @@ public class FontRenderer extends Renderer {
     	FontType font = text.getFont();
     	GL13.glActiveTexture(GL13.GL_TEXTURE0);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, font.getTextureAtlas());
+        
         shader.loadUniform(text.getColor(), "color");
         shader.loadUniform(text.getAlpha(), "alpha");
         shader.loadUniform(text.getPosition(), "translation");
-        shader.loadUniform(text.getScale(), "bounds");
+        shader.loadUniform(text.getScaleMultiplier(), "scale");
         setScissorTest(text.getClippingBounds());
         
         //Render

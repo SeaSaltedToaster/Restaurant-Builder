@@ -59,7 +59,10 @@ public class Pathfinder {
 			List<Node> neighbors = getNeighbours(node, grid);
 			for(Node neighbour : neighbors) {
 				//If the neighbor is unusable, return to the next one
-				if(!neighbour.isWalkable || closedSet.contains(neighbour) || wallObstruction(layer, node.getNodePoint(), neighbour.getNodePoint())) {
+				boolean wallBlock = wallObstruction(layer, node.getNodePoint(), neighbour.getNodePoint());
+				if(!neighbour.isWalkable || closedSet.contains(neighbour) || hasObstruction(layer, neighbour.getNodePoint()) || wallBlock) {
+					if(wallBlock)
+						continue;
 					if(neighbour != endNode)
 						continue;
 				}
@@ -76,6 +79,15 @@ public class Pathfinder {
 			}
 		}
 		return RetracePath(startNode, lastNode);
+	}
+	
+	private boolean hasObstruction(BuildLayer layer, Vector3f location) {
+		//Get the pathfinding world list
+		PathfindingWorld world = layer.getManager().getPathWorld();
+		
+		//Return state of wall obstruction
+		boolean obs = world.hasObstruction(location);
+		return obs;
 	}
 	
 	private boolean wallObstruction(BuildLayer layer, Vector3f start, Vector3f end) {

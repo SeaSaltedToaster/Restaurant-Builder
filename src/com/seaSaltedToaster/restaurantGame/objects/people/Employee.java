@@ -24,13 +24,17 @@ public abstract class Employee extends Component {
 
 	@Override
 	public void update() {
+		increaseXP();
+	}
+	
+	protected void increaseXP() {
 		progress += Math.abs(Math.random()) / 100.0f;
 		if(progress >= 100) {
 			level++;
 			progress = progress - 100.0f;
-		}
+		}		
 	}
-	
+
 	public void addExp(float exp) {
 		this.progress += exp;
 	}

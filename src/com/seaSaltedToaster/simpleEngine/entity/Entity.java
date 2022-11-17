@@ -108,4 +108,8 @@ public class Entity {
 		this.components = components;
 	}
 
+	public void setPosition(Vector3f placePosition) {
+		this.transform.setPosition(placePosition);
+	}
+
 }

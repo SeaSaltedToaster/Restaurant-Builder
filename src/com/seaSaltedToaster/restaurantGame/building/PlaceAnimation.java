@@ -1,5 +1,6 @@
 package com.seaSaltedToaster.restaurantGame.building;
 
+import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
 import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.Component;
 import com.seaSaltedToaster.simpleEngine.renderer.Window;
 import com.seaSaltedToaster.simpleEngine.utilities.SmoothFloat;
@@ -13,7 +14,9 @@ public class PlaceAnimation extends Component {
 	
 	@Override
 	public void init() {
-		float curY = this.getEntity().getTransform().getPosition().y;
+		BuildingId id = (BuildingId) this.entity.getComponent("BuildingId");
+		
+		float curY = entity.getPosition().y + (id.getLayer().getLayerId() * BuildLayer.HEIGHT_OFFSET);
 		this.popup = new SmoothFloat(0);
 		this.popup.setValue(HEIGHT + curY);
 		this.popup.setTarget(curY);

@@ -17,7 +17,7 @@ public class ItemTooltip extends UiComponent {
 	private Text name, price, type;
 	
 	public ItemTooltip() {
-		super(7);
+		super(9);
 		createPanel();
 	}
 	

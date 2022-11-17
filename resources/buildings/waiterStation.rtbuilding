@@ -1,0 +1,11 @@
+name=Waiter Station
+type=Object
+price=35
+iconZoom=0.4
+category=Workstations
+model=basic/waiterStation
+primary=0.5,0.25,0.0
+secondary=0.75,0.0,0.0
+components{
+
+}

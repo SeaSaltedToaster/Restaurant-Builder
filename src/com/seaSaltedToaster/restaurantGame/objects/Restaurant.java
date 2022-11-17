@@ -3,12 +3,12 @@ package com.seaSaltedToaster.restaurantGame.objects;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.seaSaltedToaster.restaurantGame.ai.person.waiter.CleanRequest;
-import com.seaSaltedToaster.restaurantGame.ai.person.waiter.PayRequest;
+import com.seaSaltedToaster.restaurantGame.ai.person.versionPre.CleanRequest;
+import com.seaSaltedToaster.restaurantGame.ai.person.versionPre.PayRequest;
+import com.seaSaltedToaster.restaurantGame.ai.person.waiter.ServerComponent;
 import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
 import com.seaSaltedToaster.restaurantGame.objects.food.ItemOrder;
 import com.seaSaltedToaster.restaurantGame.objects.people.ChefComponent;
-import com.seaSaltedToaster.restaurantGame.objects.people.ServerComponent;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 

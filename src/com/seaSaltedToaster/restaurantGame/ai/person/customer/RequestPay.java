@@ -2,7 +2,7 @@ package com.seaSaltedToaster.restaurantGame.ai.person.customer;
 
 import com.seaSaltedToaster.MainApp;
 import com.seaSaltedToaster.restaurantGame.ai.person.Action;
-import com.seaSaltedToaster.restaurantGame.ai.person.waiter.PayRequest;
+import com.seaSaltedToaster.restaurantGame.ai.person.versionPre.PayRequest;
 import com.seaSaltedToaster.restaurantGame.objects.TableComponent;
 import com.seaSaltedToaster.restaurantGame.objects.food.ItemOrder;
 import com.seaSaltedToaster.restaurantGame.objects.people.CustomerComponent;

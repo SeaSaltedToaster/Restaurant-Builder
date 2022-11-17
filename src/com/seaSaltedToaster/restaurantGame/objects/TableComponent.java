@@ -2,7 +2,7 @@ package com.seaSaltedToaster.restaurantGame.objects;
 
 import com.seaSaltedToaster.MainApp;
 import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
-import com.seaSaltedToaster.restaurantGame.building.renderer.BuildingRenderer;
+import com.seaSaltedToaster.restaurantGame.building.objects.BuildingRenderer;
 import com.seaSaltedToaster.restaurantGame.objects.food.Food;
 import com.seaSaltedToaster.restaurantGame.objects.food.FoodRegistry;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;

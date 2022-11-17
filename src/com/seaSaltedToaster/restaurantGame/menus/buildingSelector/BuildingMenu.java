@@ -6,7 +6,6 @@ import com.seaSaltedToaster.restaurantGame.building.BuildingManager;
 import com.seaSaltedToaster.restaurantGame.building.categories.BuildingCategory;
 import com.seaSaltedToaster.restaurantGame.building.categories.BuildingList;
 import com.seaSaltedToaster.restaurantGame.menus.iconMaker.IconMaker;
-import com.seaSaltedToaster.restaurantGame.menus.languages.LanguageManager;
 import com.seaSaltedToaster.restaurantGame.tools.ColorPalette;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.renderer.Window;
@@ -63,9 +62,6 @@ public class BuildingMenu extends UiComponent {
 		float newY = yValue.getValue();
 		AlignY align = (AlignY) this.getConstraints().getYConstraint();
 		align.setGap(newY);
-		
-		if(isOpen)
-			MainApp.menuFocused = isHovering;	
 	}
 	
 	@Override
@@ -77,7 +73,6 @@ public class BuildingMenu extends UiComponent {
 				boolean isBuilding = curCategory.isIndexBuilding(index);
 				if(isBuilding) {
 					Building build = curCategory.getChildBuildings().get(index - curCategory.getChildCategories().size());
-					manager.setBuilding(true);
 					manager.setCurrentBuilding(build);
 				} else {
 					BuildingCategory newCategory = curCategory.getChildCategories().get(index);
@@ -93,6 +88,7 @@ public class BuildingMenu extends UiComponent {
 	@Override
 	public void onHover() {
 		manager.setBuilding(false);
+		MainApp.menuFocused = true;
 	}
 	
 	@Override
@@ -106,12 +102,14 @@ public class BuildingMenu extends UiComponent {
 			else
 				item.unHover();
 		}
+		MainApp.menuFocused = true;
 	}
 	
 	@Override
 	public void stopHover() {
+		MainApp.menuFocused = false;
 		for(UiComponent button : buttons) {
-			if(button == null) return;
+			if(button == null) continue;
 			BuildingItem item = (BuildingItem) button;
 			item.unHover();
 		}
@@ -119,7 +117,6 @@ public class BuildingMenu extends UiComponent {
 	
 	public void show() {
 		this.tooltip.close();
-		MainApp.menuFocused = false;
 		
 		if(curCategory != BuildingList.getRoot() && isHovering()) {
 			clearButtons();
@@ -163,7 +160,7 @@ public class BuildingMenu extends UiComponent {
 	private void createButtons(Engine engine, BuildingCategory category) {
 		this.curCategory = category;
 		int count = category.getChildCategories().size() + category.getChildBuildings().size();
-		this.buttons = new UiComponent[16];
+		this.buttons = new UiComponent[32];
 		for(int i = 0; i < count; i++) {
 			boolean isBuilding = category.isIndexBuilding(i);
 			
@@ -204,6 +201,7 @@ public class BuildingMenu extends UiComponent {
 		this.setConstraints(cons);
 		this.setScale(0.75f, 0.075f);
 		this.setColor(ColorPalette.MAIN_LIGHT);
+		this.setClippingBounds(0.125f, 0, 0.75f, 1.0f);
 		
 		this.yValue = new SmoothFloat(-0.25f);
 	}

@@ -30,6 +30,7 @@ public class UiComponent implements MouseListener, MousePosListener {
 	
 	protected int level;
 	private float alpha = 1.0f;
+	private float scaleMultiplier = 1.0f;
 	
 	private UiAnimator animator;
 	
@@ -103,7 +104,7 @@ public class UiComponent implements MouseListener, MousePosListener {
 	
 	@Override
 	public void notifyButton(MousePosData eventData) {
-		if(!isActive) return;
+		if(!isActive) return; //|| !MainApp.restaurant.engine.getCurrentScene().getComponents().contains(this)) return;
 		updateClick(eventData.getMouseX(), eventData.getMouseY());
 	}
 	
@@ -111,10 +112,10 @@ public class UiComponent implements MouseListener, MousePosListener {
         double mouseCoordinatesX = Mouse.normalizeMouseCoordX(x);
         double mouseCoordinatesY = Mouse.normalizeMouseCoordY(y);
         
-        if (position.y + scale.y > mouseCoordinatesY && 
-        		position.y - scale.y < mouseCoordinatesY &&
-        		position.x + scale.x > mouseCoordinatesX &&
-        		position.x - scale.x < mouseCoordinatesX  && isActive) {
+        if (position.y + (scale.y*scaleMultiplier) > mouseCoordinatesY && 
+        		position.y - (scale.y*scaleMultiplier) < mouseCoordinatesY &&
+        		position.x + (scale.x*scaleMultiplier) > mouseCoordinatesX &&
+        		position.x - (scale.x*scaleMultiplier) < mouseCoordinatesX  && isActive) {
         	whileHover(); 
         	if(!isHovering && isActive) {
             	isHovering = true;
@@ -236,6 +237,17 @@ public class UiComponent implements MouseListener, MousePosListener {
 		if(component == null) return;
 		this.children.remove(component);
 		component.setParentComponent(null);
+	}
+
+	public float getScaleMultiplier() {
+		return scaleMultiplier;
+	}
+
+	public void setScaleMultiplier(float scaleMultiplier) {
+		this.scaleMultiplier = scaleMultiplier;
+		for(UiComponent child : this.getChildren()) {
+			child.setScaleMultiplier(scaleMultiplier);
+		}
 	}
 
 	public UiAnimator getAnimator() {

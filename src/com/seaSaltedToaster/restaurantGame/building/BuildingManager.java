@@ -8,9 +8,12 @@ import org.lwjgl.glfw.GLFW;
 import com.seaSaltedToaster.MainApp;
 import com.seaSaltedToaster.restaurantGame.ai.PathfindingWorld;
 import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
-import com.seaSaltedToaster.restaurantGame.building.renderer.BuildingRenderer;
-import com.seaSaltedToaster.restaurantGame.building.renderer.SelectionRenderer;
+import com.seaSaltedToaster.restaurantGame.building.objects.BuildingRenderer;
+import com.seaSaltedToaster.restaurantGame.building.objects.ObjectBuilder;
+import com.seaSaltedToaster.restaurantGame.building.objects.SelectionRenderer;
+import com.seaSaltedToaster.restaurantGame.building.walls.WallBuilder;
 import com.seaSaltedToaster.restaurantGame.ground.Ground;
+import com.seaSaltedToaster.restaurantGame.tools.RayMode;
 import com.seaSaltedToaster.restaurantGame.tools.Raycaster;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
@@ -30,26 +33,34 @@ public class BuildingManager implements KeyListener {
 	
 	//Layers
 	private List<BuildLayer> layers;
-	private int curLayer = 0, layerCount = 10;
+	public static int curLayer = 0, layerCount = 10;
 	
-	//Building
+	//Walls related
+	private WallBuilder wallBuilder;
+	
+	//Floors related
+	private PathfindingWorld pathWorld;
+	
+	//Objects related
+	private ObjectBuilder objectBuilder;
 	private BuildingRenderer renderer;
 	private SelectionRenderer selectRenderer;
 	
-	//Pathfinding
-	private PathfindingWorld pathWorld;
-	
-	//Placement
-	private AdvancedBuilder builder;
-	
 	public BuildingManager(Engine engine, Ground ground, Raycaster raycaster, Building preview) {
+		createLayers();
+
+		//Floors related
+		this.pathWorld = new PathfindingWorld((int) Ground.worldSize * 2);
+		
+		//Walls related
+		this.wallBuilder = new WallBuilder();
+		
+		//Objects related
+		this.objectBuilder = new ObjectBuilder(this, preview);
 		this.renderer = new BuildingRenderer(this, engine);
 		this.selectRenderer = new SelectionRenderer(this, engine);
 		
-		this.pathWorld = new PathfindingWorld((int) Ground.worldSize * 2);
-		createLayers();
-		
-		this.builder = new AdvancedBuilder(preview);
+		//Engine
 		engine.getKeyboard().addKeyListener(this);
 	}
 	
@@ -63,6 +74,35 @@ public class BuildingManager implements KeyListener {
 		layers.get(curLayer).show();
 	}
 
+	public void place(Vector3f position) {
+		BuildLayer layer = layers.get(curLayer);
+		switch(Raycaster.mode) {
+		case DEFAULT:
+			this.objectBuilder.placeAt(layer);
+			break;
+		case WALL:
+			this.wallBuilder.click(position);
+			break;
+		default:
+			this.objectBuilder.placeAt(layer);
+			break;
+		}
+	}
+
+	public void movePreview(Vector3f rawPosition) {
+		switch(Raycaster.mode) {
+		case DEFAULT:
+			this.objectBuilder.movePreview(rawPosition);
+			break;
+		case WALL:
+			this.wallBuilder.update(rawPosition);
+			break;
+		default:
+			break;
+		}
+
+	}
+	
 	public void updateFrame() {
 		for(BuildLayer layer : getLayers()) {
 			layer.updateLayer();
@@ -78,62 +118,27 @@ public class BuildingManager implements KeyListener {
 		this.selectRenderer.endRender();
 	}
 	
-	public boolean startPlacement(Vector3f placePosition) {
-		if(MainApp.menuFocused) return false;
-		this.builder.startPlacement();
-		endPlacement();
-		return true;
-	}
-
-	public void movePreview(Vector3f rawPosition) {
-		Vector3f newPos = calculatePlacePosition(rawPosition.copy());
-		builder.increasePlacement(newPos);
-	}
-	
-	public boolean endPlacement() {
-		if(MainApp.menuFocused) return false;
-		BuildLayer layer = layers.get(curLayer);
-		this.builder.endPlacement(layer);
-		return true;
-	}
-
 	@Override
 	public void notifyButton(KeyEventData eventData) {
 		if(eventData.getAction() != GLFW.GLFW_PRESS) return;
 		int key = eventData.getKey();
+		float rotate = 45.0f;
+		
 		if(key == GLFW.GLFW_KEY_R) {
-			Transform previewTransform = builder.getStart().getTransform();
-			previewTransform.getRotation().y += 90;
-			if(previewTransform.getRotation().y >= 360)
-				previewTransform.getRotation().y = 0;
-			movePreview(previewTransform.getPosition());
-			
-			Transform previewTransform2 = builder.getEnd().getTransform();
-			previewTransform2.getRotation().y += 90;
-			if(previewTransform2.getRotation().y >= 360)
-				previewTransform2.getRotation().y = 0;
-			movePreview(previewTransform2.getPosition());
+			Transform trans = objectBuilder.getPreview().getTransform();
+			trans.getRotation().y += rotate;
 		}
 		if(key == GLFW.GLFW_KEY_ESCAPE) {
 			setBuilding(false);
-		}
-	}
-	
-	private Vector3f calculatePlacePosition(Vector3f placement) {
-		Vector3f snapPosition = null;
-		if(builder.getObject().isWall()) {
-			float yRot = builder.getStart().getTransform().getRotation().y;
-			float offset = Ground.getTileSize() / 2;
-			if(yRot == 0 || yRot == 180) {
-				snapPosition = new Vector3f(Math.round(placement.x - offset) + offset, Math.round(placement.y), Math.round(placement.z));
-			} else if(yRot == 90 || yRot == 270) {
-				snapPosition = new Vector3f(Math.round(placement.x), Math.round(placement.y), Math.round(placement.z - offset) + offset);
+			switch(Raycaster.mode) {
+			case DEFAULT:
+				break;
+			case WALL:
+				break;
+			default:
+				break;
 			}
-		} else {
-			snapPosition = new Vector3f(Math.round(placement.x), Math.round(placement.y), Math.round(placement.z));
 		}
-		snapPosition.y = curLayer * BuildLayer.HEIGHT_OFFSET;
-		return snapPosition;
 	}
 	
 	public Entity getBuilding(int index) {
@@ -144,7 +149,7 @@ public class BuildingManager implements KeyListener {
 			if(index < (curCount + buildingsOnLayer)) {
 				return layer.getBuildings().get(index - curCount);
 			} else {
-				curCount += layer.getBuildings().size()-1;
+				curCount += layer.getBuildings().size();
 				continue;
 			}
 		}
@@ -152,8 +157,19 @@ public class BuildingManager implements KeyListener {
 	}
 	
 	public void setCurrentBuilding(Building building) {
-		this.builder.setObject(building);
-		movePreview(Raycaster.lastRay);
+		BuildingType type = building.type;
+		switch(type) {
+		case Wall:
+			Raycaster.mode = RayMode.WALL;
+			break;
+		default:
+			Raycaster.mode = RayMode.DEFAULT;
+			this.objectBuilder.setObject(building);
+			this.objectBuilder.showPreview(true);
+			movePreview(Raycaster.lastRay);
+			break;
+		
+		}
 		setBuilding(true);
 	}
 	
@@ -173,7 +189,7 @@ public class BuildingManager implements KeyListener {
 	
 	public void setLayer(int newLayer) {
 		if(newLayer < 0) return;
-		this.curLayer = newLayer;
+		BuildingManager.curLayer = newLayer;
 		for(BuildLayer layer : layers) {
 			if(layer.getLayerId() > newLayer)
 				layer.hide();
@@ -189,7 +205,25 @@ public class BuildingManager implements KeyListener {
 
 	public void setBuilding(boolean isBuilding) {
 		BuildingManager.isBuilding = isBuilding;
-		builder.showPreview(isBuilding);
+		if(!isBuilding) {
+			this.objectBuilder.showPreview(false);
+		}
+	}
+
+	public WallBuilder getWallBuilder() {
+		return wallBuilder;
+	}
+
+	public void setWallBuilder(WallBuilder wallBuilder) {
+		this.wallBuilder = wallBuilder;
+	}
+
+	public ObjectBuilder getObjectBuilder() {
+		return objectBuilder;
+	}
+
+	public void setObjectBuilder(ObjectBuilder objectBuilder) {
+		this.objectBuilder = objectBuilder;
 	}
 
 	public Entity getSelectedEntity() {
@@ -212,8 +246,8 @@ public class BuildingManager implements KeyListener {
 		return selectRenderer;
 	}
 
-	public AdvancedBuilder getBuilder() {
-		return builder;
+	public ObjectBuilder getBuilder() {
+		return objectBuilder;
 	}
 
 	public PathfindingWorld getPathWorld() {
@@ -221,7 +255,7 @@ public class BuildingManager implements KeyListener {
 	}
 
 	public Building getPreview() {
-		return builder.getObject();
+		return objectBuilder.getObject();
 	}
 
 }

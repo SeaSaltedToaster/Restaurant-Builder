@@ -1,5 +1,10 @@
 example_text_id,Example;
-buildMenu_general,General;
-buildMenu_furniture,Furniture;
-buildMenu_plants,Plants;
-buildMenu_workstations,Workstations;
+display_settings,Display Settings;
+graphics_settings,Graphics Settings;
+audio_settings,Audio Settings;
+language_settings,Language Preference;
+control_settings,Control Bindings;
+menu_play,Play;
+menu_settings,Settings;
+menu_quit,Quit;
+saves_title,Saves;

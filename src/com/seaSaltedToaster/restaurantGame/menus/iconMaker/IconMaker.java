@@ -35,7 +35,7 @@ public class IconMaker {
 		this.shader = new IconShader();
 		this.utils = new MatrixUtils();		
 		this.camera = new Camera();
-		int max_models = 512;
+		int max_models = 1024;
 		this.fbos = new Fbo[max_models]; 
 	}
 	

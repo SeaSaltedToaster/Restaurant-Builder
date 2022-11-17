@@ -1,10 +1,10 @@
-#version 140
+#version 400
 
 in vec3 position;
 in vec3 color;
 in vec3 normal;
 
-out flat vec3 pass_color;
+out vec3 pass_color;
 
 uniform mat4 transformationMatrix;
 uniform mat4 viewMatrix;

@@ -56,7 +56,7 @@ public class LanguageReader {
 		BufferedReader bufferedReader;
 		
 		//Open file
-		System.out.println("Loaded language file: " + file + " : " + file);
+		System.out.println("Loaded langauge file " + file);
 		isr = new InputStreamReader(LanguageReader.class.getResourceAsStream(file));
 		bufferedReader = new BufferedReader(isr);
 		

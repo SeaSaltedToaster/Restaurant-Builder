@@ -3,6 +3,7 @@ package com.seaSaltedToaster.restaurantGame.objects;
 import com.seaSaltedToaster.restaurantGame.ai.PathfinderComponent;
 import com.seaSaltedToaster.restaurantGame.ai.person.ActionComponent;
 import com.seaSaltedToaster.restaurantGame.ai.person.PersonType;
+import com.seaSaltedToaster.restaurantGame.ai.person.waiter.ServerComponent;
 import com.seaSaltedToaster.restaurantGame.building.Building;
 import com.seaSaltedToaster.restaurantGame.building.BuildingType;
 import com.seaSaltedToaster.restaurantGame.building.ObjectLoader;
@@ -14,7 +15,6 @@ import com.seaSaltedToaster.restaurantGame.objects.people.ChefComponent;
 import com.seaSaltedToaster.restaurantGame.objects.people.ChefStation;
 import com.seaSaltedToaster.restaurantGame.objects.people.CustomerComponent;
 import com.seaSaltedToaster.restaurantGame.objects.people.HostStand;
-import com.seaSaltedToaster.restaurantGame.objects.people.ServerComponent;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
 import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.ModelComponent;
@@ -31,71 +31,92 @@ public class BuildingRepository {
 		loadCategory("Furniture", "/uis/furniture", engine);
 		loadCategory("Garden", "/uis/plant", engine);
 		loadCategory("Workstations", "/uis/workstations", engine);
-		loadCategory("WorkInProgress", "/uis/cafe", engine);
+		loadCategory("WorkInProgress", "/uis/employees", engine);
+		loadCategory("Event", "/uis/spooky", engine);
 		
 		/*
 		 * FINISHED BUILDINGS
 		 */
 		Building basicWall = this.loader.loadObject("basicWall", engine);
-		Building basicWindow = this.loader.loadObject("basicWindow", engine);
-		Building basicDoor = this.loader.loadObject("basicDoor", engine);
-		Building basicBar = this.loader.loadObject("basicBar", engine);
-		basicDoor.getBuildingComponents().add(new DoorComponent());
+//		Building basicWindow = this.loader.loadObject("basicWindow", engine);
+//		Building basicDoor = this.loader.loadObject("basicDoor", engine);
+//		Building basicBar = this.loader.loadObject("basicBar", engine);
+//		basicDoor.getBuildingComponents().add(new DoorComponent());
 		
 		Building tiledFloor = this.loader.loadObject("tiledFloor", engine);
+		Building cornerFloor = this.loader.loadObject("cornerFloor", engine);
 		Building patio = this.loader.loadObject("patio", engine);
-		Building trimmedWall = this.loader.loadObject("trimmedWall", engine);
-		Building brickWall = this.loader.loadObject("brickWall", engine);
+//		Building trimmedWall = this.loader.loadObject("trimmedWall", engine);
+//		Building brickWall = this.loader.loadObject("brickWall", engine);
+
+		//Roof Tiles
+		Building roofCorner = this.loader.loadObject("roofCorner", engine);
+		Building roof = this.loader.loadObject("roof", engine);
+		Building roofFlat = this.loader.loadObject("roofFlat", engine);
+		Building roofOut = this.loader.loadObject("roofOut", engine);
+		Building shadeRoof = this.loader.loadObject("/roofTiles/shadeRoof", engine);
 		
-		//Garden
+		//Door
+//		Building doorFrame = this.loader.loadObject("doors/doorFrame", engine);
+//		doorFrame.setWalkThrough(true);
+		
+		/*
+		 * GARDEN
+		 */
 		Building pottedPlant = this.loader.loadObject("pottedPlant", engine);
 		Building pottedHedge = this.loader.loadObject("pottedHedge", engine);
+		Building largeHedge = this.loader.loadObject("largeHedge", engine);
+		Building tileHedge = this.loader.loadObject("tileHedge", engine);
 		
-		//Funiture
+//		Building borderedFence = this.loader.loadObject("fences/borderedFence", engine);
+//
+//		Building vinylFence = this.loader.loadObject("fences/vinylFence", engine);
+		Building pillar = this.loader.loadObject("pillars/pillar", engine);
+//		
+//		Building brickFence = this.loader.loadObject("fences/brickFence", engine);
+//		Building brickHalfPillar = this.loader.loadObject("pillars/brickHalfPillar", engine);
+//		Building brickPillar = this.loader.loadObject("pillars/brickPillar", engine);
+		
+		/*
+		 * EVENT / SEASONAL
+		 */
+		Building pumpkin = this.loader.loadObject("pumpkin", engine);
+		
+		Building wallObject = this.loader.loadObject("wallObjects/wallObject", engine);
+		Building door = this.loader.loadObject("wallObjects/door", engine);
+		door.getBuildingComponents().add(new DoorComponent());
+		Building window = this.loader.loadObject("wallObjects/window", engine);
+		
+		/*
+		 * FURNITURE
+		 */
 		Building basicBooth = this.loader.loadObject("basicBooth", engine);
 		basicBooth.setIsTable(true);
 		TableComponent booth = new TableComponent(TableType.BOOTH1);
 		basicBooth.getBuildingComponents().add(booth);
 		
+		Building table = this.loader.loadObject("furniture/table", engine);
+		Building chair = this.loader.loadObject("furniture/chair", engine);
+		
+		/*
+		 * WORKSTATIONS
+		 */
+		Building chefStation = this.loader.loadObject("chefStation", engine);
+		chefStation.getBuildingComponents().add(new ChefStation());
+		
+		Building waiterStation = this.loader.loadObject("waiterStation", engine);
+		waiterStation.getBuildingComponents().add(new HostStand());
+
 		/*
 		 * WORK IN PROGRESS
 		 */
-
-		Building hostStand = loadBuilding("hostStand", BuildingType.Object, engine);
-		hostStand.name = "Host Stand";
-		hostStand.setPrice(35);
-		hostStand.setObstructive(true);
-		hostStand.setIconZoom(0.4f);
-		BuildingList.register(hostStand, "Workstations");
-		hostStand.getBuildingComponents().add(new HostStand());
-		
-		Building kitchenCounter = loadBuilding("kitchenCounter", BuildingType.Object, engine);
-		kitchenCounter.name = "Chef Station";
-		kitchenCounter.setPrice(50);
-		kitchenCounter.setIconZoom(0.4f);
-		BuildingList.register(kitchenCounter, "Workstations");
-		kitchenCounter.getBuildingComponents().add(new ChefStation());
-		
-		Building largeHedge = loadBuilding("largeHedge", BuildingType.Object, engine);
-		largeHedge.name = "Large Hedge";
-		largeHedge.setPrice(20);
-		largeHedge.setWall(true);
-		largeHedge.setIconZoom(0.5f);
-		BuildingList.register(largeHedge, "Garden");
-		
-		Building tileHedge = loadBuilding("tileHedge", BuildingType.Floor, engine);
-		tileHedge.name = "Tile Hedge";
-		tileHedge.setPrice(25);
-		tileHedge.setIconZoom(0.5f);
-		BuildingList.register(tileHedge, "Garden");
-
 		Building person1 = loadBuilding("person1", BuildingType.Person, engine);
 		person1.name = "Customer_TEST";
 		person1.setObstructive(false);
 		person1.setIconZoom(0.5f);
 		person1.getBuildingComponents().add(new PathfinderComponent());
 		person1.getBuildingComponents().add(new CustomerComponent());
-		person1.getBuildingComponents().add(new ActionComponent(PersonType.CUSTOMER));
+		person1.getBuildingComponents().add(new ActionComponent("CustomerOld"));
 		BuildingList.register(person1, "WorkInProgress");
 		
 		Building waiter1 = loadBuilding("waiter1", BuildingType.Person, engine);
@@ -105,7 +126,7 @@ public class BuildingRepository {
 		waiter1.setIconZoom(0.5f);
 		waiter1.getBuildingComponents().add(new ServerComponent());
 		waiter1.getBuildingComponents().add(new PathfinderComponent());
-		waiter1.getBuildingComponents().add(new ActionComponent(PersonType.WAITER));
+		waiter1.getBuildingComponents().add(new ActionComponent("WaiterOld"));
 		BuildingList.register(waiter1, "WorkInProgress");
 		
 		Building chef1 = loadBuilding("chef1", BuildingType.Person, engine);
@@ -115,7 +136,7 @@ public class BuildingRepository {
 		chef1.setIconZoom(0.5f);
 		chef1.getBuildingComponents().add(new ChefComponent());
 		chef1.getBuildingComponents().add(new PathfinderComponent());
-		chef1.getBuildingComponents().add(new ActionComponent(PersonType.CHEF));
+		chef1.getBuildingComponents().add(new ActionComponent("ChefOld"));
 		BuildingList.register(chef1, "WorkInProgress");
 	}
 	
@@ -166,6 +187,7 @@ public class BuildingRepository {
 		Building bld = new Building(entity);
 		bld.type = type;
 		bld.name = name;
+		bld.model = model;
 		return bld;
 	}
 	

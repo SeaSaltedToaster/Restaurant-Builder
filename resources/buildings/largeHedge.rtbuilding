@@ -1,0 +1,11 @@
+name=Large Hedge
+type=Object
+price=15
+iconZoom=0.5
+category=Garden
+model=basic/largeHedge
+primary=0.625,0.625,0.625
+secondary=0.0,0.75,0.0
+components{
+
+}

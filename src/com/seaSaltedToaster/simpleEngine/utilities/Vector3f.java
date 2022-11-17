@@ -259,5 +259,9 @@ public class Vector3f {
 		this.y += dy;
 		this.z += dz;
 	}
+
+	public boolean isEmpty() {
+		return (x == 0 && y == 0 && z ==0);
+	}
 	
 }

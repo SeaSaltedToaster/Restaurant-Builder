@@ -1,9 +1,9 @@
 package com.seaSaltedToaster.restaurantGame.menus.employees;
 
 import com.seaSaltedToaster.MainApp;
+import com.seaSaltedToaster.restaurantGame.ai.person.waiter.ServerComponent;
 import com.seaSaltedToaster.restaurantGame.objects.Restaurant;
 import com.seaSaltedToaster.restaurantGame.objects.people.ChefComponent;
-import com.seaSaltedToaster.restaurantGame.objects.people.ServerComponent;
 import com.seaSaltedToaster.restaurantGame.tools.ColorPalette;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.input.listeners.ScrollListener;
@@ -52,14 +52,21 @@ public class EmployeeMenu extends UiComponent implements ScrollListener {
 		yValue.update(Window.DeltaTime);
 		float newY = yValue.getValue();
 		this.getPosition().setY(newY);
-		
-		if(isOpen)
-			MainApp.menuFocused = true;
-		
+				
 		smoothScroll.update(Window.DeltaTime);
 		VerticalLayout layout = (VerticalLayout) this.getConstraints().getLayout();
 		layout.setEdgeSpace(smoothScroll.getValue());
 		this.getConstraints().setLayout(layout);
+	}
+	
+	@Override
+	public void onHover() {
+		MainApp.menuFocused = true;
+	}
+	
+	@Override
+	public void stopHover() {
+		MainApp.menuFocused = false;
 	}
 	
 	@Override

@@ -1,0 +1,9 @@
+example_text_id,Example;
+display_settings,Configuracion de pantalla;
+graphics_settings,Configuracion de graficos;
+audio_settings,Configuracion de audio;
+language_settings,Preferencia de idioma;
+control_settings,Enlaces de control;
+menu_play,Jugar;
+menu_settings,Configuracion;
+menu_quit,Salir;

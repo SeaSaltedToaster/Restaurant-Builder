@@ -1,4 +1,4 @@
-#version 140
+#version 400
 
 in vec3 position;
 in vec3 color;
@@ -6,7 +6,7 @@ in vec3 normal;
 in int id;
 
 out vec3 pass_color;
-out int pass_id;
+out float pass_id;
 
 out vec4 shadowCoords;
 uniform mat4 toShadowMapSpace;

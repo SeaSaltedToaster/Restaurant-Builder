@@ -16,15 +16,16 @@ public class PathfindingWorld {
 	private int worldSize;
 	private final int curLayer = 0;
 	
-	//Walkable world lists
+	//Walkable world lists and layers
 	private boolean[][] walkableWorld;
-	private List<Vector3f> walls;
+	private List<Vector3f> walls, objects;
 	
 	public PathfindingWorld(int worldSize) {
 		//World size and walls init
 		this.worldSize = worldSize;
 		this.walls = new ArrayList<Vector3f>();
-
+		this.objects = new ArrayList<Vector3f>();
+		
 		//Walkable list init and set all to false
 		this.walkableWorld = new boolean[worldSize][worldSize];
 		setAll(walkableWorld, false);
@@ -45,6 +46,19 @@ public class PathfindingWorld {
 		//There is none
 		return false;
 	}
+	
+	public boolean hasObstruction(Vector3f location) {
+		//Check if a wall is there
+		for(Vector3f object : objects) {
+			if(object.equals(location)) {
+				//Found one, return true
+				return true;
+			}
+		}
+		
+		//There is none
+		return false;
+	}
 
 	public void addBuilding(Building building, Vector3f location) {
 		//Change depending on building type
@@ -55,18 +69,19 @@ public class PathfindingWorld {
 			break;
 		case Object:
 			//Check if the object is obstructive
-			if(building.isObstructive()) {
-				set(location, walkableWorld, false);
-			} else {
-				set(location, walkableWorld, true);
-			}
+//			if(building.isObstructive()) {
+				objects.add(location);
+//			} else {
+//				//No obstruction, no list
+//			}
 			break;
 		case Person:
 			//Nothing
 			break;
 		case Wall:
 			//Add wall
-			walls.add(location);
+			if(!building.isWalkThrough())
+				walls.add(location);
 			break;
 		default:
 			//Nothing
@@ -79,24 +94,27 @@ public class PathfindingWorld {
 		BuildingId id = (BuildingId) entity.getComponent("BuildingId");
 		Building type = id.getType();
 		BuildingType structType = type.type;
+
+		//Get coords
+		Vector3f position = entity.getPosition();
 		
 		//Remove from wall list if it is a wall
 		if(structType == BuildingType.Wall) {
-			this.walls.remove(entity.getPosition());
+			this.walls.remove(position);
 			return;
 		}
-		
-		//Get coords
-		Vector3f position = entity.getPosition();
+
+		//Check if there is a floor if it is an obstructive object
+		if(structType == BuildingType.Object) {
+			this.objects.remove(position);
+			return;
+		}
 		
 		//Set to unwalkable if it is a floor
 		if(structType == BuildingType.Floor) {
 			set(position, walkableWorld, false);
 			return;
 		}
-		
-		//Check if there is a floor if it is an obstructive object
-		//TODO this
 	}
 	
 	public void recalculateWorld(BuildLayer layer) {

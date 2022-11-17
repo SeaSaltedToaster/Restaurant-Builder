@@ -1,0 +1,11 @@
+name=Example Wall Obj
+type=WallObject
+price=10
+iconZoom=0.66
+category=Event
+model=basic/wallObjects/wallObject
+primary=0.78,0.72,0.43
+secondary=0,0,0
+components{
+
+}

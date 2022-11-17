@@ -5,8 +5,10 @@ import java.util.List;
 
 import com.seaSaltedToaster.restaurantGame.ai.person.chef.WaitForChefStation;
 import com.seaSaltedToaster.restaurantGame.ai.person.customer.WaitForTable;
-import com.seaSaltedToaster.restaurantGame.ai.person.waiter.WaitForOrder;
-import com.seaSaltedToaster.restaurantGame.ai.person.waiter.WaitForWorkstation;
+import com.seaSaltedToaster.restaurantGame.ai.person.versionPre.WaitForOrder;
+import com.seaSaltedToaster.restaurantGame.ai.person.versionPre.WaitForWorkstation;
+import com.seaSaltedToaster.restaurantGame.ai.person.waiter.FindWaiterTask;
+import com.seaSaltedToaster.restaurantGame.ai.person.waiter.LocateHostStand;
 import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.Component;
 
 public class ActionComponent extends Component {
@@ -16,29 +18,42 @@ public class ActionComponent extends Component {
 	private Action curAction;
 	
 	//Type of NPC the action is done on
-	private PersonType type;
+	private String tree;
 		
-	public ActionComponent(PersonType type) {
+	public ActionComponent(String tree) {
 		this.actions = new ArrayList<Action>();
-		this.type = type;
+		this.tree = tree;
 	}
 	
 	@Override
 	public void init() {
+		startBehaviourTree();
+	}
+	
+	public void startBehaviourTree() {
+		this.actions.clear();
+		this.curAction = null;
+		
 		//Switch by type of NPC
-		switch(type){
-		case CHEF:
+		switch(tree.trim()){
+		case "ChefOld":
 			//Add the starting action of the chef
 			actions.add(new WaitForChefStation(entity));
 			break;
-		case CUSTOMER:
+		case "CustomerOld":
 			//Starting wait on customer spawn
 			actions.add(new WaitForTable(entity)); //TODO randomize to make it less robotic
 			break;
-		case WAITER:
+		case "WaiterOld":
 			//Start action of the waiter NPC
 			actions.add(new WaitForWorkstation(entity));
 			actions.add(new WaitForOrder(entity));
+			break;
+		
+		case "Waiter1":
+			//New waiter behaviour tree
+			this.actions.add(new LocateHostStand(entity));
+			this.actions.add(new FindWaiterTask());
 			break;
 		default:
 			break;
@@ -76,6 +91,14 @@ public class ActionComponent extends Component {
 		}
 	}
 
+	public Action getCurAction() {
+		return curAction;
+	}
+
+	public String getTree() {
+		return tree;
+	}
+
 	public List<Action> getActions() {
 		return actions;
 	}
@@ -101,7 +124,7 @@ public class ActionComponent extends Component {
 
 	@Override
 	public Component copyInstance() {
-		return new ActionComponent(type);
+		return new ActionComponent(tree);
 	}
 
 }

@@ -40,4 +40,12 @@ public class KeyCallback extends GLFWKeyCallback {
 		listeners.add(listener);
 	}
 
+	public KeyEventData getKeyEventData() {
+		return keyEventData;
+	}
+
+	public List<KeyListener> getListeners() {
+		return listeners;
+	}
+
 }

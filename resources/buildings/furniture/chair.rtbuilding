@@ -1,0 +1,11 @@
+name=Chair
+type=Object
+price=10
+iconZoom=1.0
+category=Furniture
+model=basic/furniture/chair
+primary=0.375,0.1875,0.0
+secondary=0.375,0.1875,0.0
+components{
+
+}
