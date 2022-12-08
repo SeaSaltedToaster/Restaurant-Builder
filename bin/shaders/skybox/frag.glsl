@@ -1,4 +1,3 @@
-#version 400
 
 in vec4 out_position;
 out vec4 out_Color;
@@ -6,7 +5,7 @@ out vec4 out_Color;
 uniform float skyboxSize;
 uniform float dayValue;
 
-const float levels = 8;
+float levels = 8.0;
 
 float remap( float minval, float maxval, float curval )
 {
@@ -18,7 +17,7 @@ void main(void){
 	out_Color = vec4(0,1,0,1);
 	vec2 uv = vec2(out_position.x,(out_position.y/(skyboxSize)));
 
-	highp float pi = 3.141592653589793;
+	float pi = 3.141592653589793;
 
 	//Day Time
 	vec4 c1 = vec4(1.0, 1.0, 1.0, 0.0); //Top Color
@@ -28,7 +27,7 @@ void main(void){
 	//Night Time
 	vec4 nightColor = vec4(0.0f); //Top Color
 
-	highp float f = 1.0-acos(uv.y)/pi;
+	float f = 1.0-acos(uv.y)/pi;
 
 	float top = 1.0f;
 	float middle = 0.25f;

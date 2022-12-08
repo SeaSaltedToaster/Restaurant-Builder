@@ -1,9 +1,9 @@
 package com.seaSaltedToaster.restaurantGame.menus.employees;
 
 import com.seaSaltedToaster.MainApp;
-import com.seaSaltedToaster.restaurantGame.ai.person.waiter.ServerComponent;
 import com.seaSaltedToaster.restaurantGame.objects.Restaurant;
 import com.seaSaltedToaster.restaurantGame.objects.people.ChefComponent;
+import com.seaSaltedToaster.restaurantGame.objects.people.ServerComponent;
 import com.seaSaltedToaster.restaurantGame.tools.ColorPalette;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.input.listeners.ScrollListener;
@@ -14,7 +14,6 @@ import com.seaSaltedToaster.simpleEngine.uis.constraints.UiConstraints;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.YAlign;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.position.AlignX;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.position.AlignY;
-import com.seaSaltedToaster.simpleEngine.uis.constraints.scale.AspectRatio;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.scale.RelativeScale;
 import com.seaSaltedToaster.simpleEngine.uis.layouts.VerticalLayout;
 import com.seaSaltedToaster.simpleEngine.uis.text.Text;

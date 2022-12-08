@@ -50,6 +50,17 @@ public class ColorPicker extends UiComponent {
 		this.setActive(false);
 	}
 	
+	@Override
+	public void onHover() {
+		MainApp.menuFocused = true;
+	}
+	
+	
+	@Override
+	public void stopHover() {
+		MainApp.menuFocused = false;
+	}
+	
 	public void selectColor(Vector3f color) {
 		//Set color
 		ColorDisplay display = editing;

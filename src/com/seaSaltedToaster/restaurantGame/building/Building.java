@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.seaSaltedToaster.restaurantGame.building.categories.BuildingCategory;
+import com.seaSaltedToaster.restaurantGame.objects.WallComponent;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
 import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.Component;
 import com.seaSaltedToaster.simpleEngine.models.Vao;
@@ -23,7 +24,7 @@ public class Building {
 	private Vector3f defPrimary, defSecondary;
 	
 	//Settings
-	private boolean isWall = false, isFloor = false, isObstructive = false, isTable = false, walkThrough = false;
+	public boolean isWall = false, isFloor = false, isObstructive = false, isTable = false, walkThrough = false, show = true;
 	private float iconZoom = 1f;
 	private int price = 0;
 	public String name;
@@ -46,6 +47,16 @@ public class Building {
 		this.isFloor = false;
 		this.defPrimary = new Vector3f();
 		this.defSecondary = new Vector3f();
+	}
+	
+	
+	public Component getComponent(String comp) {
+		for(Component component : buildingComponents) {
+			if(component.getComponentType() == comp)  {
+				return component;
+			}
+		}
+		return null;
 	}
 
 	public BuildingType getType() {

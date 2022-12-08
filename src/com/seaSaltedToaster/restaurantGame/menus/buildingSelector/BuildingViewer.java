@@ -1,5 +1,6 @@
 package com.seaSaltedToaster.restaurantGame.menus.buildingSelector;
 
+import com.seaSaltedToaster.MainApp;
 import com.seaSaltedToaster.restaurantGame.building.BuildingId;
 import com.seaSaltedToaster.restaurantGame.menus.buildingSelector.colorPicker.ColorPicker;
 import com.seaSaltedToaster.restaurantGame.menus.buildingSelector.subMenus.ColorButton;
@@ -66,6 +67,17 @@ public class BuildingViewer extends UiComponent {
 	}
 	
 	@Override
+	public void onHover() {
+		MainApp.menuFocused = true;
+	}
+	
+	
+	@Override
+	public void stopHover() {
+		MainApp.menuFocused = false;
+	}
+	
+	@Override
 	public void onClickOff() {
 		if(isHovering || this.childHovering()) return;
 		
@@ -91,6 +103,8 @@ public class BuildingViewer extends UiComponent {
 		}
 		//If new, change
 		if(selected != currentObject) {
+			this.open(this.currentObject);
+			
 			this.yValue.setTarget(open);
 			currentObject = selected;
 			if(selected != null && currentObject != null)

@@ -6,7 +6,10 @@ import java.util.Random;
 
 import com.seaSaltedToaster.restaurantGame.ground.renderer.GroundRenderer;
 import com.seaSaltedToaster.simpleEngine.Engine;
+import com.seaSaltedToaster.simpleEngine.entity.Entity;
+import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.ModelComponent;
 import com.seaSaltedToaster.simpleEngine.models.Vao;
+import com.seaSaltedToaster.simpleEngine.renderer.shadows.ShadowRenderer;
 import com.seaSaltedToaster.simpleEngine.utilities.Color;
 import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 
@@ -24,13 +27,15 @@ public class Ground {
 	
 	//Objects
 	private List<GroundTile> tiles;
+	public List<Entity> meshes;
 	public static float worldSize, tileSize;
 
 	public Ground(float worldSize, float tileSize, Engine engine) {
-		this.renderer = new GroundRenderer(engine);
+		this.renderer = new GroundRenderer(this, engine);
 		this.tiles = new ArrayList<GroundTile>();
 		Ground.worldSize = worldSize;
 		Ground.tileSize = tileSize;
+		this.meshes = new ArrayList<Entity>();
 	}
 	
 	public void selectAt(Vector3f currentRay) {
@@ -39,19 +44,19 @@ public class Ground {
 			return;
 		}
 		for(GroundTile tile : tiles) {
-			float tileX = tile.getGridX() * tileSize;
-			float tileY = tile.getGridY() * tileSize;
-			if(Math.abs(currentRay.x - tileX) < tileSize) {
-				if(Math.abs(currentRay.z - tileY) < tileSize) {
+			float tileX = tile.getGridX();
+			float tileY = tile.getGridY();
+			if(Math.abs(currentRay.x - tileX) < 1) {
+				if(Math.abs(currentRay.z - tileY) < 1) {
 					renderer.setHighlight(tile.getId());
 				}
 			}
 		}
 	}
 	
-	public void update(Engine engine) {
+	public void update(ShadowRenderer shadowRenderer, Engine engine) {
 		renderer.prepare();
-		renderer.render(vao);
+		renderer.render(shadowRenderer);
 		renderer.endRender();
 	}
 	
@@ -72,6 +77,10 @@ public class Ground {
 		this.vao.bind(0,1,2,3);
 		this.vao.createIntAttribute(3, ids, 1);
 		this.vao.unbind(0,1,2,3);
+		
+		Entity entity = new Entity();
+		entity.addComponent(new ModelComponent(vao));
+		this.meshes.add(entity);
 	}
 
 	private int[] getIds(List<Integer> ids) {
@@ -130,23 +139,23 @@ public class Ground {
 	
 	private void createVertices(GroundTile tile) {
 		//Data
-		float halfStep = tileSize / 2.0f;
+		float halfStep = 1.0f / 2.0f;
 		float tileY = 0.0000005f * (float) (tile.getId());
 		
 		//Vertex 1
-		Vector3f v1 = new Vector3f(halfStep + (tile.getGridX() * tileSize), tileY, halfStep + tile.getGridY() * tileSize);
+		Vector3f v1 = new Vector3f(halfStep + (tile.getGridX()), tileY, halfStep + tile.getGridY());
 		vertices.add(v1);
 		
 		//Vertex 2
-		Vector3f v2 = new Vector3f(-halfStep + (tile.getGridX() * tileSize), tileY, halfStep + (tile.getGridY() * tileSize));
+		Vector3f v2 = new Vector3f(-halfStep + (tile.getGridX()), tileY, halfStep + (tile.getGridY()));
 		vertices.add(v2);
 
 		//Vertex 3
-		Vector3f v3 = new Vector3f(-halfStep + (tile.getGridX() * tileSize), tileY, -halfStep + (tile.getGridY() * tileSize));
+		Vector3f v3 = new Vector3f(-halfStep + (tile.getGridX()), tileY, -halfStep + (tile.getGridY()));
 		vertices.add(v3);
 
 		//Vertex 4
-		Vector3f v4 = new Vector3f(halfStep + (tile.getGridX() * tileSize), tileY, -halfStep + (tile.getGridY() * tileSize));
+		Vector3f v4 = new Vector3f(halfStep + (tile.getGridX()), tileY, -halfStep + (tile.getGridY()));
 		vertices.add(v4);
 
 		//Triangle

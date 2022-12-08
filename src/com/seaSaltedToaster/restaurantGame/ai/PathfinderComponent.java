@@ -35,7 +35,7 @@ public class PathfinderComponent extends Component {
 		//Set position the entity should be at
 		Vector3f newPos = mover.update();
 		if(newPos != null)
-			entity.getTransform().setPosition(newPos.copy());
+			entity.getTransform().setPosition(newPos);
 		
 		//If the entity reached the node, move to the next
 		if(mover.reachedTarget()) {

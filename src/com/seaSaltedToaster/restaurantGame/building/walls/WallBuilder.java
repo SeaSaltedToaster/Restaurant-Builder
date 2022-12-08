@@ -4,6 +4,8 @@ import com.seaSaltedToaster.MainApp;
 import com.seaSaltedToaster.restaurantGame.building.Building;
 import com.seaSaltedToaster.restaurantGame.building.BuildingManager;
 import com.seaSaltedToaster.restaurantGame.building.categories.BuildingList;
+import com.seaSaltedToaster.restaurantGame.objects.Restaurant;
+import com.seaSaltedToaster.restaurantGame.objects.WallComponent;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
 import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 
@@ -14,8 +16,9 @@ public class WallBuilder {
 	private WallMeshBuilder builder;
 	
 	//Placement settings
+	private WallComponent wallType;
 	private Vector3f startPoint, endPoint;
-	private Entity one, two;
+	private Entity one, two, preview;
 
 	public WallBuilder() {
 		this.builder = new WallMeshBuilder();
@@ -38,13 +41,14 @@ public class WallBuilder {
 			this.endPoint = clickPos;
 			this.two.setPosition(clickPos);
 			placeWall();
+			this.startPoint = clickPos;
 			return;
 		}
 	}
 	
 	
 	private void placeWall() {
-		this.builder.createMesh(startPoint, endPoint);
+		this.builder.createMesh(startPoint, endPoint, wallType);
 		this.resetEndpoints();
 	}
 	
@@ -53,7 +57,18 @@ public class WallBuilder {
 		boolean placedOne = (startPoint != null);
 		
 		if(placedOne) {
-			this.two.setPosition(corner);
+			if(two.getPosition().equals(corner)) {
+				
+			}
+			else {
+				this.two.setPosition(corner);
+				
+				Restaurant rest = MainApp.restaurant;
+				int layer = BuildingManager.curLayer;
+				rest.layers.get(layer).getBuildings().remove(preview);
+				this.preview = builder.generator.createWall(startPoint, corner, wallType, false);
+				rest.layers.get(layer).getBuildings().add(preview);
+			}
 		}
 		else {
 			this.one.setPosition(corner);
@@ -67,8 +82,13 @@ public class WallBuilder {
 		}
 	}
 	
+	public void set(Building building) {
+		this.wallType = (WallComponent) building.getComponent("Wall");
+		this.builder.setGenerator(wallType.getGenerator());
+	}
+	
 	private void createPreviews(Vector3f pos) {
-		Building bld = BuildingList.getBuilding("Pillar");
+		Building bld = BuildingList.getBuilding("Ball");
 		
 		this.one = bld.getEntity().copyEntity();
 		this.one.setPosition(pos);
@@ -80,9 +100,9 @@ public class WallBuilder {
 	}
 
 	private Vector3f getCorner(Vector3f position) {
-		float offset = 2f;
-		return new Vector3f(snap(position.x, offset), 
-				0, snap(position.z, offset));
+		float offset = 1f;
+		return new Vector3f(snap(position.x - 0.5f, offset) + 0.5f, 
+				0, snap(position.z - 0.5f, offset) + 0.5f);
 	}
 	
 	private float snap(float value, float gridSize) {
@@ -90,11 +110,15 @@ public class WallBuilder {
 		return Math.round(value * snap) / snap;
 	}
 
-	private void resetEndpoints() {
+	public void resetEndpoints() {
 		this.startPoint = null;
 		this.endPoint = null;
 		this.one.setPosition(reset);
 		this.two.setPosition(reset);
+		
+		Restaurant rest = MainApp.restaurant;
+		int layer = BuildingManager.curLayer;
+		rest.layers.get(layer).getBuildings().remove(preview);
 	}
 
 	public WallMeshBuilder getBuilder() {

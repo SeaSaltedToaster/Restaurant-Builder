@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.seaSaltedToaster.restaurantGame.WorldCamera;
 import com.seaSaltedToaster.restaurantGame.building.Building;
@@ -11,6 +13,8 @@ import com.seaSaltedToaster.restaurantGame.building.BuildingId;
 import com.seaSaltedToaster.restaurantGame.building.BuildingManager;
 import com.seaSaltedToaster.restaurantGame.building.BuildingType;
 import com.seaSaltedToaster.restaurantGame.building.categories.BuildingList;
+import com.seaSaltedToaster.restaurantGame.objects.FloorComponent;
+import com.seaSaltedToaster.restaurantGame.objects.WallComponent;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
 import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
@@ -73,6 +77,12 @@ public class LoadSystem {
 				 */
 				loadWall(bld, manager, parts, layer, index);
 				break;
+			case Floor :
+				/*
+				 * FLOOR
+				 */
+				loadFloor(bld, manager, parts, layer, index);
+				break;
 			default:
 				/*
 				 * NORMAL OBJECTS LOADING
@@ -88,7 +98,73 @@ public class LoadSystem {
 		}
 	}	
 	
-	private void loadWall(Building bld, BuildingManager manager, String[] parts, int layer, int index) {		
+	private void loadFloor(Building bld, BuildingManager manager, String[] parts, int layer, int index) {			
+		//Floor parts
+		String section = parts[2];
+		String[] floorParts = section.split(">");
+		
+		int count = Integer.parseInt(floorParts[0]);
+		int ix = 1;
+		
+		List<Vector3f> points = new ArrayList<Vector3f>();
+		for(int i = 0; i < count; i++) {
+			String vector = floorParts[ix];
+			String[] vectorParts = vector.split(",");
+			float vx = Float.parseFloat(vectorParts[0]);
+			float vy = Float.parseFloat(vectorParts[1]);
+			float vz = Float.parseFloat(vectorParts[2]);
+			points.add(new Vector3f(vx,vy,vz));
+			ix++;
+		}
+		
+		String type = floorParts[ix++];
+		String generator = floorParts[ix++];
+		
+		FloorComponent comp = new FloorComponent(type, generator, points);
+		Entity entity = manager.getFloorBuilder().getMeshBuilder().buildFloor(points, comp, true);
+		
+		//Get position
+		String transData = parts[1];
+		String[] posParts = transData.split(",");
+		float x = Float.parseFloat(posParts[0]);
+		float y = Float.parseFloat(posParts[1]);
+		float z = Float.parseFloat(posParts[2]);
+		entity.getTransform().getPosition().set(x, y, z);
+		
+		float dx = Float.parseFloat(posParts[3]);
+		entity.getTransform().getRotation().x = dx;
+		float dy = Float.parseFloat(posParts[4]);
+		entity.getTransform().getRotation().y = dy;
+		float dz = Float.parseFloat(posParts[5]);
+		entity.getTransform().getRotation().z = dz;
+		
+		float sx = Float.parseFloat(posParts[6]);
+		float sy = Float.parseFloat(posParts[7]);
+		float sz = Float.parseFloat(posParts[8]);
+		entity.getTransform().setScale(new Vector3f(sx, sy, sz));
+		
+		//Get colors
+		String prim = parts[3];
+		String[] primParts = prim.split(",");
+		float pr = Float.parseFloat(primParts[0]);
+		float pg = Float.parseFloat(primParts[1]);
+		float pb = Float.parseFloat(primParts[2]);
+		Vector3f primary = new Vector3f(pr, pg, pb);
+		
+		String second = parts[4];
+		String[] secondParts = second.split(",");
+		float sr = Float.parseFloat(secondParts[0]);
+		float sg = Float.parseFloat(secondParts[1]);
+		float sb = Float.parseFloat(secondParts[2]);
+		Vector3f secondary = new Vector3f(sr, sg, sb);
+		
+		//Add		
+		BuildingId id = (BuildingId) entity.getComponent("BuildingId");
+		id.setPrimary(primary);
+		id.setSecondary(secondary);		
+	}
+
+	private void loadWall(Building bld, BuildingManager manager, String[] parts, int layer, int index) {
 		//Get position
 		String transData = parts[1];
 		String[] posParts = transData.split(",");
@@ -103,21 +179,29 @@ public class LoadSystem {
 		Vector3f end = new Vector3f(dx, dy, dz);
 		
 		//Get colors
-		String prim = parts[2];
+		String prim = parts[3];
 		String[] primParts = prim.split(",");
 		float pr = Float.parseFloat(primParts[0]);
 		float pg = Float.parseFloat(primParts[1]);
 		float pb = Float.parseFloat(primParts[2]);
 		Vector3f primary = new Vector3f(pr, pg, pb);
 		
-		String second = parts[3];
+		String second = parts[4];
 		String[] secondParts = second.split(",");
 		float sr = Float.parseFloat(secondParts[0]);
 		float sg = Float.parseFloat(secondParts[1]);
 		float sb = Float.parseFloat(secondParts[2]);
 		Vector3f secondary = new Vector3f(sr, sg, sb);
 		
-		Entity entity = manager.getWallBuilder().getBuilder().createMesh(start, end).get(0);
+		String types = parts[2];
+		String[] typesParts = types.split(":");
+		String type = typesParts[0];
+		String generator = typesParts[1];
+		
+		WallComponent comp = new WallComponent(type, generator);
+		comp.setStart(start);
+		comp.setEnd(end);
+		Entity entity = manager.getWallBuilder().getBuilder().createMesh(start, end, comp).get(0);
 
 		//Add
 		BuildingId id = (BuildingId) entity.getComponent("BuildingId");

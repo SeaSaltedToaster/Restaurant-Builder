@@ -7,38 +7,49 @@ import com.seaSaltedToaster.restaurantGame.building.Building;
 import com.seaSaltedToaster.restaurantGame.building.BuildingId;
 import com.seaSaltedToaster.restaurantGame.building.BuildingType;
 import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
+import com.seaSaltedToaster.restaurantGame.ground.Ground;
+import com.seaSaltedToaster.restaurantGame.objects.FloorComponent;
+import com.seaSaltedToaster.restaurantGame.objects.WallComponent;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
+import com.seaSaltedToaster.simpleEngine.utilities.MathUtils;
+import com.seaSaltedToaster.simpleEngine.utilities.Vector2f;
 import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 
 public class PathfindingWorld {
 	
 	//Pathfinding world data
-	private int worldSize;
+	private int worldSize, gridSize;
 	private final int curLayer = 0;
 	
 	//Walkable world lists and layers
 	private boolean[][] walkableWorld;
-	private List<Vector3f> walls, objects;
+	private List<Vector3f> objects;
+	private List<WallComponent> walls;
 	
 	public PathfindingWorld(int worldSize) {
 		//World size and walls init
-		this.worldSize = worldSize;
-		this.walls = new ArrayList<Vector3f>();
+		this.walls = new ArrayList<WallComponent>();
 		this.objects = new ArrayList<Vector3f>();
 		
+		this.worldSize = worldSize;
+		float tileSpace = worldSize * (1.0f / Ground.tileSize);
+		this.gridSize = (int) (tileSpace + 1.0f);
+		
 		//Walkable list init and set all to false
-		this.walkableWorld = new boolean[worldSize][worldSize];
-		setAll(walkableWorld, false);
+		this.walkableWorld = new boolean[gridSize][gridSize];
+		setAll(walkableWorld, true);
 	}
 	
 	public boolean wallObstruction(Vector3f start, Vector3f end) {
-		//Get area of wall in between the two tiles
-		Vector3f middle = new Vector3f((start.x + end.x) / 2, (start.y + end.y) / 2, (start.z + end.z) / 2);
-		
 		//Check if a wall is there
-		for(Vector3f wall : walls) {
-			if(wall.equals(middle)) {
-				//Found one, return true
+		for(WallComponent wall : walls) {
+			Vector2f p1 = new Vector2f(wall.getStart().x, wall.getStart().z);
+			Vector2f p2 = new Vector2f(wall.getEnd().x, wall.getEnd().z);
+			
+			Vector2f q1 = new Vector2f(start.x, start.z);
+			Vector2f q2 = new Vector2f(end.x, end.z);
+			
+			if(MathUtils.doIntersect(p1, p2, q1, q2)) {
 				return true;
 			}
 		}
@@ -60,28 +71,42 @@ public class PathfindingWorld {
 		return false;
 	}
 
-	public void addBuilding(Building building, Vector3f location) {
+	public void addBuilding(Building building, Entity preview) {
+		Vector3f objectPos = preview.getPosition();
+		
 		//Change depending on building type
 		switch(building.type) {
-		case Floor:
+		case Floor :
+//			FloorComponent comp = (FloorComponent) preview.getComponent("Floor");
+//			if(comp.getPoints().size() == 2) {
+//				float x1 = (comp.getPoints().get(1).x);
+//				float z1 = (comp.getPoints().get(1).z);
+//				float x2 = (comp.getPoints().get(0).x);
+//				float z2 = (comp.getPoints().get(0).z);
+//				
+//				for(float x = x1; x <= x2; x+=0.25f) {
+//					for(float z = z1; z <= z2; z+=0.25f) {
+//						int dx = getIndex(x);
+//						int dz = getIndex(z);
+//						this.walkableWorld[dx][dz] = false;
+//					}
+//				}
+//			}
 			//Simply set it to true
-			set(location, walkableWorld, true);
 			break;
 		case Object:
-			//Check if the object is obstructive
-//			if(building.isObstructive()) {
-				objects.add(location);
-//			} else {
-//				//No obstruction, no list
-//			}
+			objects.add(objectPos);
+			int x = getIndex(objectPos.x);
+			int z = getIndex(objectPos.z);
+			this.walkableWorld[x][z] = false;
 			break;
 		case Person:
 			//Nothing
 			break;
 		case Wall:
 			//Add wall
-			if(!building.isWalkThrough())
-				walls.add(location);
+			WallComponent wall = (WallComponent) preview.getComponent("Wall");
+			walls.add(wall);
 			break;
 		default:
 			//Nothing
@@ -89,6 +114,10 @@ public class PathfindingWorld {
 		}
 	}
 	
+	private int getIndex(float x) {
+		return (int) (x * (1.0f / Ground.tileSize)) + (worldSize*2 + 2);
+	}
+
 	public void removeBuilding(Entity entity, BuildLayer layer) {
 		//Get building id
 		BuildingId id = (BuildingId) entity.getComponent("BuildingId");
@@ -100,7 +129,8 @@ public class PathfindingWorld {
 		
 		//Remove from wall list if it is a wall
 		if(structType == BuildingType.Wall) {
-			this.walls.remove(position);
+			WallComponent wall = (WallComponent) entity.getComponent("Wall");
+			this.walls.remove(wall);
 			return;
 		}
 
@@ -144,7 +174,7 @@ public class PathfindingWorld {
 		int pos = (int) location.x;
 		
 		//Convert and normalize
-		int normalized = pos + (worldSize / 2);
+		int normalized = pos + (gridSize / 2);
 		return normalized;
 	}
 	
@@ -153,14 +183,14 @@ public class PathfindingWorld {
 		int pos = (int) location.z;
 		
 		//Convert and normalize
-		int normalized = pos + (worldSize / 2);
+		int normalized = pos + (gridSize / 2);
 		return normalized;
 	}
 
 	public void setAll(boolean[][] world, boolean state) {
 		//Loop through every item in the array
-		for(int x = 0; x < worldSize; x++) {
-			for(int y = 0; y < worldSize; y++) {
+		for(int x = 0; x < gridSize; x++) {
+			for(int y = 0; y < gridSize; y++) {
 				//Set that part to the state
 				world[x][y] = state;
 			}

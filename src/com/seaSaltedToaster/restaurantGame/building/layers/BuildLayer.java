@@ -117,10 +117,16 @@ public class BuildLayer {
 			preview.addComponent(comp.copyInstance());
 		}
 		
-		//AI
-		manager.getPathWorld().addBuilding(object, preview.getTransform().getPosition());
+		notifyListeners(preview, object);
+		manager.getPathWorld().addBuilding(object, preview);
 	}
 	
+	private void notifyListeners(Entity preview, Building object) {
+		for(PlacementListener listener : BuildingManager.listeners) {
+			listener.notifyPlacement(preview, object);
+		}
+	}
+
 	public void remove(Entity entity) {
 		this.buildings.remove(entity);
 		this.manager.getPathWorld().removeBuilding(entity, this);

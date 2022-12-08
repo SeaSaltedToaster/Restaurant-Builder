@@ -1,5 +1,7 @@
 package com.seaSaltedToaster.restaurantGame.ground.renderer;
 
+import org.lwjgl.opengl.GL20;
+
 import com.seaSaltedToaster.simpleEngine.renderer.shader.Shader;
 import com.seaSaltedToaster.simpleEngine.renderer.shader.uniforms.UniformFloat;
 import com.seaSaltedToaster.simpleEngine.renderer.shader.uniforms.UniformInteger;
@@ -15,7 +17,7 @@ public class GroundShader extends Shader {
 	protected UniformMatrix4f viewMatrix = new UniformMatrix4f("viewMatrix");
 	protected UniformMatrix4f projectionMatrix = new UniformMatrix4f("projectionMatrix");
 	
-	protected UniformMatrix4f toShadowMapSpace = new UniformMatrix4f("toShadowMapSpace");
+	protected UniformMatrix4f lightViewMatrix = new UniformMatrix4f("lightViewMatrix");
 	protected UniformSampler shadowMap = new UniformSampler("shadowMap");
 	
 	protected UniformInteger selected = new UniformInteger("selected");
@@ -29,12 +31,16 @@ public class GroundShader extends Shader {
 		super.locateUniform(selected);
 		super.locateUniform(dayValue);
 		
-		super.locateUniform(toShadowMapSpace);
+		super.locateUniform(lightViewMatrix);		
 		super.locateUniform(shadowMap);
 	}
 	
+	public UniformSampler getShadowMap() {
+		return shadowMap;
+	}
+
 	public UniformMatrix4f getToShadowMapSpace() {
-		return toShadowMapSpace;
+		return lightViewMatrix;
 	}
 
 	public UniformFloat getDayValue() {

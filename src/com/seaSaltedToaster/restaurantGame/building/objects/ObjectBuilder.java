@@ -23,12 +23,12 @@ public class ObjectBuilder {
 	private BuildingManager manager;
 	
 	private boolean isPlacing = false;
-	private Vector3f lastChange;
+	private Transform lastChange;
 	
 	public ObjectBuilder(BuildingManager manager, Building object) {
 		this.object = object;
 		this.manager = manager;
-		this.lastChange = new Vector3f(0.0f);
+		this.lastChange = new Transform();
 		
 		this.preview = object.getEntity().copyEntity();
 		this.preview.addComponent(new BuildingId(-1, object, MainApp.restaurant.layers.get(0)));
@@ -38,12 +38,12 @@ public class ObjectBuilder {
 	public void placeAt(BuildLayer layer) {
 		boolean alreadyBuildingAt = !layer.isBuildingAt(preview.getPosition(), object.type);
 		if(alreadyBuildingAt) {
-			layer.addBuilding(preview, object, buildingIndex);
+			layer.addBuilding(preview.copyEntity(), object, buildingIndex);
 			MainApp.restaurant.money -= object.getPrice();
 			buildingIndex++;
 		}
 		this.isPlacing = false;
-		this.preview.setPosition(lastChange);
+		this.preview.setTransform(lastChange);
 		
 		manager.setBuilding(false);
 		manager.setCurrentBuilding(object);
@@ -56,10 +56,10 @@ public class ObjectBuilder {
 			if(!lastChange.equals(placePosition)) {
 				this.preview.setPosition(placePosition);
 			}
-			this.lastChange = placePosition;
+			this.lastChange = preview.getTransform();
 			return;
 		}
-		this.lastChange = position;
+		this.lastChange.setPosition(position);
 	}
 	
 	
@@ -126,7 +126,7 @@ public class ObjectBuilder {
 	public void setObject(Building object) {
 		this.object = object;
 		this.preview = object.getEntity().copyEntity();
-		this.preview.getTransform().setPosition(lastChange);
+		this.preview.setTransform(lastChange.copyTransform());
 	}
 	
 	public void showPreview(boolean show) {

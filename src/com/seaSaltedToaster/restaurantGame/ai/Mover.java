@@ -1,6 +1,7 @@
 package com.seaSaltedToaster.restaurantGame.ai;
 
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
+import com.seaSaltedToaster.simpleEngine.renderer.Window;
 import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 
 public class Mover {
@@ -9,8 +10,8 @@ public class Mover {
 	private Entity entity;
 	
 	//Speed of the entity
-	private float speed = 5.0f;
-	private float minTargetDist = 0.125f / 2.0f;
+	private float speed = 25.0f;
+	private float minTargetDist = 0.025f;
 	
 	//Movement information
 	public boolean isMoving = false;
@@ -19,7 +20,7 @@ public class Mover {
 	public Mover(Entity entity) {
 		//Set entity and temporary target position
 		this.entity = entity;
-		this.target = entity.getTransform().getPosition();
+		this.target = entity.getTransform().getPosition().copy();
 	}
 	
 	public Vector3f update() {
@@ -27,7 +28,8 @@ public class Mover {
 		if(target == null || !isMoving) return null;
 		
 		//Return the entity's position plus the per-frame movement
-		return entity.getTransform().getPosition().add(offset);
+		Vector3f pos = entity.getPosition().copy();
+		return pos.add(offset);
 	}
 	
 	public void setTarget(Vector3f target) {
@@ -38,8 +40,8 @@ public class Mover {
 		this.target = target.copy();
 		
 		//THe per-frame movement the entity will have
-		this.offset = start.subtract(target);
-		this.offset.scale(speed / -250f);
+		this.offset = target.subtract(start);
+		this.offset.scale((float) ((speed / offset.length())));
 		this.offset.y = 0;
 		
 		//Say that we are moving now
@@ -49,7 +51,6 @@ public class Mover {
 	public void stop() {
 		//Stop movement
 		this.isMoving = false;
-		entity.getTransform().setPosition(target.copy().scale(1.0f));
 	}
 	
 	public boolean reachedTarget() {
@@ -59,8 +60,8 @@ public class Mover {
 	
 	private float getTargetDistance() {
 		//Get positions
-		Vector3f targetPos = target;
-		Vector3f personPos = entity.getTransform().getPosition();
+		Vector3f targetPos = target.copy();
+		Vector3f personPos = entity.getPosition().copy();
 		
 		//Check and return the distance from the target
 		float dist = targetPos.subtract(personPos).length();

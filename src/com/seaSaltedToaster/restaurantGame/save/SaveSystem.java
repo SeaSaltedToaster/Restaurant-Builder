@@ -10,10 +10,12 @@ import com.seaSaltedToaster.restaurantGame.building.BuildingId;
 import com.seaSaltedToaster.restaurantGame.building.BuildingManager;
 import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
 import com.seaSaltedToaster.restaurantGame.menus.TimeDisplay;
+import com.seaSaltedToaster.restaurantGame.objects.FloorComponent;
 import com.seaSaltedToaster.restaurantGame.objects.WallComponent;
 import com.seaSaltedToaster.simpleEngine.entity.Camera;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
 import com.seaSaltedToaster.simpleEngine.utilities.ScreenshotUtils;
+import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 
 public class SaveSystem {
 	
@@ -31,10 +33,12 @@ public class SaveSystem {
 	
 	public static void createFolder() {
 		SaveSystem.file.mkdirs();
-		for(int i = 1; i <= 3; i++) {
-			File cur = new File(file.getAbsolutePath() + "/" + "World" + i);
-			cur.mkdirs();
-		}
+	}
+	
+	public static void createSave(String name) {
+		SaveSystem.file.mkdirs();
+		File cur = new File(file.getAbsolutePath() + "/" + name);
+		cur.mkdirs();
 	}
 	
 	public void save(Camera camera, TimeDisplay timeDisplay, BuildingManager manager) {
@@ -85,6 +89,7 @@ public class SaveSystem {
 	
 	private void saveEntity(Entity bld, File buildingsFile) {
 		//Components necessary
+		if(bld == null) return;
 		if(!bld.hasComponent("BuildingId")) return;
 		BuildingId id = (BuildingId) bld.getComponent("BuildingId");
 		
@@ -95,7 +100,16 @@ public class SaveSystem {
 		case Wall:
 			//Wall
 			WallComponent wallComp = (WallComponent) bld.getComponent("Wall");
-			writeToFile(buildingsFile, wallComp.getStart().toString() + "," + wallComp.getEnd().toString() + ";", false);
+			writeToFile(buildingsFile, wallComp.getStart().toString() + "," + wallComp.getEnd().toString() + ";" + wallComp.getWallType() + ":" + wallComp.getGenerator() + ";", false);
+			break;
+		case Floor:
+			FloorComponent floorComp = (FloorComponent) bld.getComponent("Floor");
+			writeToFile(buildingsFile, bld.getTransform().toString().replace(" ", ""), false);
+			writeToFile(buildingsFile, floorComp.getPoints().size() + "", false);
+			for(Vector3f point : floorComp.getPoints()) {
+				writeToFile(buildingsFile, ">" + point, false);
+			}
+			writeToFile(buildingsFile, ">" + floorComp.getType() + ">" + floorComp.getGenerator() + ";", false);
 			break;
 		default:
 			//Position

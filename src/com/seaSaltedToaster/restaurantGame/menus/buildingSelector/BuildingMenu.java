@@ -167,7 +167,10 @@ public class BuildingMenu extends UiComponent {
 			BuildingItem item = null;
 			if(isBuilding) {
 				Building building = category.getChildBuildings().get(i - category.getChildCategories().size());
-				item = new BuildingItem(building, this);
+				if(building.show)
+					item = new BuildingItem(building, this);
+				else
+					continue;
 			} else {
 				BuildingCategory newCat = category.getChildCategories().get(i);
 				item = new BuildingItem(newCat, this);

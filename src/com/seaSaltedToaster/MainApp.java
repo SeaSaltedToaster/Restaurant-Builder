@@ -5,6 +5,7 @@ import org.lwjgl.glfw.GLFW;
 import com.seaSaltedToaster.restaurantGame.WorldCamera;
 import com.seaSaltedToaster.restaurantGame.building.BuildingManager;
 import com.seaSaltedToaster.restaurantGame.building.categories.BuildingList;
+import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
 import com.seaSaltedToaster.restaurantGame.ground.Ground;
 import com.seaSaltedToaster.restaurantGame.menus.DeleteTool;
 import com.seaSaltedToaster.restaurantGame.menus.GeneralMenu;
@@ -25,8 +26,11 @@ import com.seaSaltedToaster.restaurantGame.save.SaveSystem;
 import com.seaSaltedToaster.restaurantGame.tools.Raycaster;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.audio.management.AudioMaster;
+import com.seaSaltedToaster.simpleEngine.entity.Entity;
 import com.seaSaltedToaster.simpleEngine.renderer.Window;
+import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
 import com.seaSaltedToaster.simpleEngine.utilities.ScreenshotUtils;
+import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 
 public class MainApp {
 	
@@ -46,7 +50,7 @@ public class MainApp {
 		/*
 		 * ENGINE AND RESOURCE BODIES
 		 */
-		Engine engine = new Engine("Restaurantario", ClientConfigs.WINDOW_X, ClientConfigs.WINDOW_Y);
+		Engine engine = new Engine("Restaurant Game", ClientConfigs.WINDOW_X, ClientConfigs.WINDOW_Y);
 		engine.setCamera(new WorldCamera(engine));
 		engine.getKeyboard().addKeyListener(new ScreenshotUtils());
 		
@@ -78,6 +82,8 @@ public class MainApp {
 			//Save system
 			private SaveSystem saveSystem;
 			private LoadSystem loadSystem;
+			
+			UiComponent comp;
 
 			@Override
 			public void loadScene(Engine engine) {
@@ -94,7 +100,7 @@ public class MainApp {
 				 * GAME OBJECTS
 				 */
 				//Ground the world is on
-				this.ground = new Ground(25, 1, engine);
+				this.ground = new Ground(25.0f, 0.25f, engine);
 				this.ground.generateGround(engine);
 				
 				//Raycaster for building
@@ -142,16 +148,28 @@ public class MainApp {
 				this.loadSystem.loadCamera((WorldCamera) engine.getCamera());
 				this.loadSystem.loadBuildings(manager);
 				
+				comp = new UiComponent(4);
+				comp.setScale(0.5f, -0.5f);
+				comp.setTexture(engine.getShadowRenderer().getShadowMap());
+//				this.addComponent(comp);
+								
 				MainApp.menuFocused = false;
 			}
 
 			@Override
 			public void renderScene(Engine engine) {
-				ground.update(engine);
+				ground.update(engine.getShadowRenderer(), engine);
 				
 				manager.updateFrame();
+				comp.setTexture(engine.getShadowRenderer().getShadowMap());
 				
 				introFade.update();
+				
+				engine.startShadows();
+				for(BuildLayer layer : restaurant.layers)
+					engine.renderShadows(layer.getBuildings());
+				engine.renderShadows(ground.meshes);
+				engine.endShadows();
 			}
 
 			@Override
@@ -166,6 +184,14 @@ public class MainApp {
 			@Override
 			public void unloadScene(Engine engine) {
 				saveSystem.save(engine.getCamera(), timeDisplay, manager);
+				
+				boolean[][] map = manager.getPathWorld().getWalkableWorld();
+				for(int x = 0; x < map.length; x++) {
+					for(int z = 0; z < map.length; z++) {
+						System.out.print(map[x][z] ? 0 : 1);
+					}
+					System.out.println();
+				}
 			}
 			
 		};
@@ -270,5 +296,12 @@ public class MainApp {
 		
 		engine.getWindow().closeWindow();
 	}
+	
+	public static void addExample(Vector3f seatPosition) {
+		Entity ent = BuildingList.getBuilding("Pillar").getEntity().copyEntity();
+		ent.setPosition(seatPosition);
+		MainApp.restaurant.engine.addEntity(ent);
+	}
+
 
 }

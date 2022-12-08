@@ -1,11 +1,10 @@
-#version 400
 
 const vec4 nightColor = vec4(0.0f);
 
 const vec3 primaryInd = vec3(0.1f, 0.15f, 0.2f);
 const vec3 secondaryInd = vec3(0.2f, 0.15f, 0.1f);
 
-flat in vec3 pass_color;
+in vec3 pass_color;
 
 uniform bool isPreview;
 
@@ -35,7 +34,7 @@ void main(void)	{
 	vec4 litColor = mix(baseColor, nightColor, dayValue);
 	
 	if(currentId == selectedId || currentId == -1) {
-		litColor *= vec4(2.0f);
+		//litColor = vec4(1,1,1,1);
 	}
 	
 	out_Color = litColor;

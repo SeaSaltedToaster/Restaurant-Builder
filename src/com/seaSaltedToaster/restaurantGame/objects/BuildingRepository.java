@@ -2,8 +2,6 @@ package com.seaSaltedToaster.restaurantGame.objects;
 
 import com.seaSaltedToaster.restaurantGame.ai.PathfinderComponent;
 import com.seaSaltedToaster.restaurantGame.ai.person.ActionComponent;
-import com.seaSaltedToaster.restaurantGame.ai.person.PersonType;
-import com.seaSaltedToaster.restaurantGame.ai.person.waiter.ServerComponent;
 import com.seaSaltedToaster.restaurantGame.building.Building;
 import com.seaSaltedToaster.restaurantGame.building.BuildingType;
 import com.seaSaltedToaster.restaurantGame.building.ObjectLoader;
@@ -15,10 +13,14 @@ import com.seaSaltedToaster.restaurantGame.objects.people.ChefComponent;
 import com.seaSaltedToaster.restaurantGame.objects.people.ChefStation;
 import com.seaSaltedToaster.restaurantGame.objects.people.CustomerComponent;
 import com.seaSaltedToaster.restaurantGame.objects.people.HostStand;
+import com.seaSaltedToaster.restaurantGame.objects.people.ServerComponent;
+import com.seaSaltedToaster.restaurantGame.objects.seating.SeatComponent;
+import com.seaSaltedToaster.restaurantGame.objects.seating.TableComponent;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
 import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.ModelComponent;
 import com.seaSaltedToaster.simpleEngine.models.Vao;
+import com.seaSaltedToaster.simpleEngine.utilities.Vector2f;
 
 public class BuildingRepository {
 	
@@ -38,23 +40,23 @@ public class BuildingRepository {
 		 * FINISHED BUILDINGS
 		 */
 		Building basicWall = this.loader.loadObject("basicWall", engine);
-//		Building basicWindow = this.loader.loadObject("basicWindow", engine);
-//		Building basicDoor = this.loader.loadObject("basicDoor", engine);
-//		Building basicBar = this.loader.loadObject("basicBar", engine);
-//		basicDoor.getBuildingComponents().add(new DoorComponent());
+		basicWall.getBuildingComponents().add(new WallComponent("Basic Wall", "Standard"));
+		
+		Building trimmedWall = this.loader.loadObject("trimmedWall", engine);
+		trimmedWall.getBuildingComponents().add(new WallComponent("Trimmed Wall", "Trimmed"));
 		
 		Building tiledFloor = this.loader.loadObject("tiledFloor", engine);
-		Building cornerFloor = this.loader.loadObject("cornerFloor", engine);
+		tiledFloor.getBuildingComponents().add(new FloorComponent("Tiled Floor", "Tiled", null));
+		
 		Building patio = this.loader.loadObject("patio", engine);
-//		Building trimmedWall = this.loader.loadObject("trimmedWall", engine);
-//		Building brickWall = this.loader.loadObject("brickWall", engine);
-
+		patio.getBuildingComponents().add(new FloorComponent("Patio", "Flat", null));
+				
 		//Roof Tiles
-		Building roofCorner = this.loader.loadObject("roofCorner", engine);
-		Building roof = this.loader.loadObject("roof", engine);
-		Building roofFlat = this.loader.loadObject("roofFlat", engine);
-		Building roofOut = this.loader.loadObject("roofOut", engine);
-		Building shadeRoof = this.loader.loadObject("/roofTiles/shadeRoof", engine);
+//		Building roofCorner = this.loader.loadObject("roofCorner", engine);
+//		Building roof = this.loader.loadObject("roof", engine);
+//		Building roofFlat = this.loader.loadObject("roofFlat", engine);
+//		Building roofOut = this.loader.loadObject("roofOut", engine);
+//		Building shadeRoof = this.loader.loadObject("/roofTiles/shadeRoof", engine);
 		
 		//Door
 //		Building doorFrame = this.loader.loadObject("doors/doorFrame", engine);
@@ -89,14 +91,12 @@ public class BuildingRepository {
 		
 		/*
 		 * FURNITURE
-		 */
-		Building basicBooth = this.loader.loadObject("basicBooth", engine);
-		basicBooth.setIsTable(true);
-		TableComponent booth = new TableComponent(TableType.BOOTH1);
-		basicBooth.getBuildingComponents().add(booth);
-		
+		 */		
 		Building table = this.loader.loadObject("furniture/table", engine);
+		table.getBuildingComponents().add(new TableComponent());
+		
 		Building chair = this.loader.loadObject("furniture/chair", engine);
+		chair.getBuildingComponents().add(new SeatComponent(new Vector2f(0.15f, 0.0f), 0.25f));
 		
 		/*
 		 * WORKSTATIONS
@@ -106,7 +106,13 @@ public class BuildingRepository {
 		
 		Building waiterStation = this.loader.loadObject("waiterStation", engine);
 		waiterStation.getBuildingComponents().add(new HostStand());
-
+		
+		Building ball = new Building(new Entity());
+		ball.getEntity().addComponent(new ModelComponent(engine.getObjLoader().loadObjModel("models/basic/ball")));
+		ball.name = "Ball";
+		ball.show = false;
+		BuildingList.getRoot().addChild(ball);
+		
 		/*
 		 * WORK IN PROGRESS
 		 */

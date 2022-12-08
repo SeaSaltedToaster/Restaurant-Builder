@@ -37,6 +37,11 @@ public class SavesBack extends UiComponent {
 	
 	@Override
 	public void onClick() {
+		if(!savesMenu.saveSide) {
+			savesMenu.setState(true);
+			return;
+		}
+		
 		MenuManager manager = this.savesMenu.getManager();
 		manager.getMainMenu().slide(true);
 		savesMenu.slide(false);

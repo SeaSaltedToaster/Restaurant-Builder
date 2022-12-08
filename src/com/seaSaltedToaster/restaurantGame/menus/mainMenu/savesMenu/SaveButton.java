@@ -53,11 +53,13 @@ public class SaveButton extends UiComponent {
 		this.hovScale.update(Window.DeltaTime);
 		this.setScaleMultiplier(hovScale.getValue());
 		
-		this.setClippingBounds(0.0f, 0.2f, 1.0f, 0.7f);
+		this.setClippingBounds(0.0f, 0.2f, 1.0f, 0.6f);
 	}
 	
 	@Override
 	public void onClick() {	
+		if(this.getPosition().y < -0.55f || this.getPosition().y > 0.55f) return;
+		
 		MainApp.curSave = name.getTextString();
 		
 		this.savesMenu.slide(false);
@@ -80,7 +82,7 @@ public class SaveButton extends UiComponent {
 			this.hovScale.setTarget(1.0f);
 		} 
 		else {
-			this.hovScale.setTarget(0.1f);
+			this.hovScale.setTarget(0.0f);
 		}
 	}
 	

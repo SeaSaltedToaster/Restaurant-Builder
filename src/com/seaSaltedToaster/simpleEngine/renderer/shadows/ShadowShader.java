@@ -9,12 +9,11 @@ public class ShadowShader extends Shader {
 	private static final String FRAGMENT_FILE = "/shaders/shadows/frag.glsl";
 	
 	private UniformMatrix4f transformationMatrix = new UniformMatrix4f("transformationMatrix");
-	private UniformMatrix4f viewMatrix = new UniformMatrix4f("viewMatrix");
-	private UniformMatrix4f projectionMatrix = new UniformMatrix4f("projectionMatrix");
+	private UniformMatrix4f lightViewMatrix = new UniformMatrix4f("lightViewMatrix");
 
 	protected ShadowShader() {
 		super(VERTEX_FILE, FRAGMENT_FILE, "in_position");
-		super.locateUniforms(transformationMatrix, viewMatrix, projectionMatrix);
+		super.locateUniforms(transformationMatrix, lightViewMatrix);
 	}
 	
 }

@@ -7,7 +7,9 @@ import org.lwjgl.glfw.GLFW;
 
 import com.seaSaltedToaster.MainApp;
 import com.seaSaltedToaster.restaurantGame.ai.PathfindingWorld;
+import com.seaSaltedToaster.restaurantGame.building.floors.FloorBuilder;
 import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
+import com.seaSaltedToaster.restaurantGame.building.layers.PlacementListener;
 import com.seaSaltedToaster.restaurantGame.building.objects.BuildingRenderer;
 import com.seaSaltedToaster.restaurantGame.building.objects.ObjectBuilder;
 import com.seaSaltedToaster.restaurantGame.building.objects.SelectionRenderer;
@@ -26,6 +28,7 @@ import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 public class BuildingManager implements KeyListener {
 	
 	//Building entity
+	public static List<PlacementListener> listeners = new ArrayList<PlacementListener>();
 	public static boolean isBuilding = false;
 	
 	//Others
@@ -39,6 +42,7 @@ public class BuildingManager implements KeyListener {
 	private WallBuilder wallBuilder;
 	
 	//Floors related
+	private FloorBuilder floorBuilder;
 	private PathfindingWorld pathWorld;
 	
 	//Objects related
@@ -48,8 +52,9 @@ public class BuildingManager implements KeyListener {
 	
 	public BuildingManager(Engine engine, Ground ground, Raycaster raycaster, Building preview) {
 		createLayers();
-
+		
 		//Floors related
+		this.floorBuilder = new FloorBuilder();
 		this.pathWorld = new PathfindingWorld((int) Ground.worldSize * 2);
 		
 		//Walls related
@@ -83,6 +88,9 @@ public class BuildingManager implements KeyListener {
 		case WALL:
 			this.wallBuilder.click(position);
 			break;
+		case FLOOR: 
+			this.floorBuilder.click(position);
+			break;
 		default:
 			this.objectBuilder.placeAt(layer);
 			break;
@@ -96,6 +104,9 @@ public class BuildingManager implements KeyListener {
 			break;
 		case WALL:
 			this.wallBuilder.update(rawPosition);
+			break;
+		case FLOOR:
+			this.floorBuilder.update(rawPosition);
 			break;
 		default:
 			break;
@@ -139,6 +150,17 @@ public class BuildingManager implements KeyListener {
 				break;
 			}
 		}
+		if(key == GLFW.GLFW_KEY_ENTER) {
+			setBuilding(false);
+			switch(Raycaster.mode) {
+			case DEFAULT:
+				break;
+			case FLOOR:
+				break;
+			default:
+				break;
+			}
+		}
 	}
 	
 	public Entity getBuilding(int index) {
@@ -159,8 +181,13 @@ public class BuildingManager implements KeyListener {
 	public void setCurrentBuilding(Building building) {
 		BuildingType type = building.type;
 		switch(type) {
+		case Floor:
+			Raycaster.mode = RayMode.FLOOR;
+			this.floorBuilder.setBuilding(building);
+			break;
 		case Wall:
 			Raycaster.mode = RayMode.WALL;
+			this.wallBuilder.set(building);
 			break;
 		default:
 			Raycaster.mode = RayMode.DEFAULT;
@@ -207,7 +234,16 @@ public class BuildingManager implements KeyListener {
 		BuildingManager.isBuilding = isBuilding;
 		if(!isBuilding) {
 			this.objectBuilder.showPreview(false);
+			this.wallBuilder.resetEndpoints();
 		}
+	}
+
+	public FloorBuilder getFloorBuilder() {
+		return floorBuilder;
+	}
+
+	public void setFloorBuilder(FloorBuilder floorBuilder) {
+		this.floorBuilder = floorBuilder;
 	}
 
 	public WallBuilder getWallBuilder() {

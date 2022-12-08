@@ -2,11 +2,8 @@ package com.seaSaltedToaster.simpleEngine.renderer.shadows;
 
 import java.util.List;
 
-import org.lwjgl.opengl.GL11;
-
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
-import com.seaSaltedToaster.simpleEngine.renderer.Fbo;
 import com.seaSaltedToaster.simpleEngine.renderer.lighting.Light;
 import com.seaSaltedToaster.simpleEngine.utilities.Matrix4f;
 import com.seaSaltedToaster.simpleEngine.utilities.MatrixUtils;
@@ -16,12 +13,13 @@ import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 
 public class ShadowRenderer {
 	
-	private static final int SHADOW_MAP_SIZE = 2048;
+	private static final int SHADOW_MAP_SIZE = 1024;
+	private final int size = 100;
 	private Engine engine;
 	
 	private ShadowFbo shadowFbo;
+	private ShadowBox box;
 	private ShadowShader shader;
-	private ShadowBox shadowBox;
 	
 	private Matrix4f projectionMatrix = new Matrix4f();
 	private Matrix4f lightViewMatrix = new Matrix4f();
@@ -29,37 +27,55 @@ public class ShadowRenderer {
 	private MatrixUtils utils;
 	
 	private Matrix4f offset = createOffset();
-
+	
 	private ShadowEntityRenderer entityRenderer;
 
 	public ShadowRenderer(Engine engine) {
 		this.engine = engine;
-		shader = new ShadowShader();
-		shadowBox = new ShadowBox(lightViewMatrix);
-		shadowFbo = new ShadowFbo(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
-		entityRenderer = new ShadowEntityRenderer(shader, projectionMatrix, lightViewMatrix);
+		this.shader = new ShadowShader();
+		this.shadowFbo = new ShadowFbo(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
+		this.entityRenderer = new ShadowEntityRenderer(shader, projectionMatrix, lightViewMatrix);		
 		this.utils = new MatrixUtils();
-		this.projectionMatrix = utils.createProjectionMatrix(70, 0.1f, 100f, engine);
+		
+		this.box = new ShadowBox(lightViewMatrix, engine.getCamera());
+		this.updateOrthoProjectionMatrix(size, size, size);
+		this.updateLightViewMatrix(new Vector3f(-25.0f), new Vector3f(0, 0, 0));
+		this.projectionViewMatrix = Matrix4f.mul(projectionMatrix, lightViewMatrix, projectionViewMatrix);
+		this.projectionViewMatrix = Matrix4f.mul(offset, projectionViewMatrix, projectionViewMatrix);
 	}
 
 	public void prepare(Light sun) {
-		shadowBox.update(engine.getCamera());
-		Vector3f sunPosition = sun.getPosition();
-		Vector3f lightDirection = new Vector3f(-sunPosition.x, -sunPosition.y, -sunPosition.z);
-		System.out.println(lightDirection.toString());
-		
-		updateOrthoProjectionMatrix(shadowBox.getWidth(), shadowBox.getHeight(), shadowBox.getLength());
-		updateLightViewMatrix(lightDirection, shadowBox.getCenter());
+		box.update();
 		
 		shadowFbo.bindFrameBuffer();
 		OpenGL.setDepthTest(true);
-		OpenGL.clearColor();
 		OpenGL.clearDepth();
 		shader.useProgram();
 	}
 	
+	private void updateLightViewMatrix(Vector3f direction, Vector3f center) {
+		direction.normalize();
+		center.negate();
+		lightViewMatrix.setIdentity();
+		float pitch = (float) Math.acos(new Vector2f(direction.x, direction.z).length());
+		Matrix4f.rotate(pitch, new Vector3f(1, 0, 0), lightViewMatrix, lightViewMatrix);
+		float yaw = (float) Math.toDegrees(((float) Math.atan(direction.x / direction.z)));
+		yaw = direction.z > 0 ? yaw - 180 : yaw;
+		Matrix4f.rotate((float) -Math.toRadians(yaw), new Vector3f(0, 1, 0), lightViewMatrix,
+				lightViewMatrix);
+		Matrix4f.translate(center, lightViewMatrix, lightViewMatrix);
+	}
+	
+	private void updateOrthoProjectionMatrix(float width, float height, float length) {
+		projectionMatrix.setIdentity();
+		projectionMatrix.m00 = 2f / width;
+		projectionMatrix.m11 = 2f / height;
+		projectionMatrix.m22 = -2f / length;
+		projectionMatrix.m33 = 1;
+	}
+	
 	public void render(List<Entity> entities) {
-		entityRenderer.render(entities, projectionMatrix, lightViewMatrix);
+		entityRenderer.render(entities, projectionViewMatrix);
 	}
 	
 	public void stopRender() {
@@ -73,14 +89,9 @@ public class ShadowRenderer {
 	public int getShadowMap() {
 		return shadowFbo.getShadowMap();
 	}
-
-	protected Matrix4f getLightSpaceTransform() {
-		return lightViewMatrix;
-	}
 	
 	public Matrix4f getToShadowMapSpaceMatrix() {
-		Matrix4f.mul(projectionMatrix, lightViewMatrix, projectionViewMatrix);
-		return Matrix4f.mul(offset, projectionViewMatrix, null);
+		return projectionViewMatrix;
 	}
 
 	private void finish() {
@@ -88,38 +99,10 @@ public class ShadowRenderer {
 		shadowFbo.unbindFrameBuffer();
 	}
 	
-	private void updateLightViewMatrix(Vector3f direction, Vector3f center) {
-		center.negate();
-		lightViewMatrix.setIdentity();
-		createViewMatrix(direction, direction);
-	}
-	
-	public Matrix4f createViewMatrix(Vector3f pos, Vector3f direction) {
-		Matrix4f viewMatrix = new Matrix4f();
-	    viewMatrix.setIdentity();
-	    Vector3f position = pos;
-	    Vector3f cameraPos = new Vector3f(-position.x, -position.y, -position.z);
-		float pitch = (float) Math.acos(new Vector2f(direction.x, direction.z).length());
-	    Matrix4f.rotate((float) Math.toRadians(pitch), new Vector3f(1,0,0), viewMatrix, viewMatrix);
-		float yaw = (float) Math.toDegrees(((float) Math.atan(direction.x / direction.z)));
-		yaw = direction.z > 0 ? yaw - 180 : yaw;
-	    Matrix4f.rotate((float) -Math.toRadians(yaw), new Vector3f(0,1,0), viewMatrix, viewMatrix);
-	    Matrix4f.translate(cameraPos, viewMatrix, viewMatrix);
-	    return viewMatrix;
-	}
-
-	private void updateOrthoProjectionMatrix(float width, float height, float length) {
-		projectionMatrix.setIdentity();
-		projectionMatrix.m00 = 2f / width;
-		projectionMatrix.m11 = 2f / height;
-		projectionMatrix.m22 = -2f / length;
-		projectionMatrix.m33 = 1;
-	}
-
 	private static Matrix4f createOffset() {
 		Matrix4f offset = new Matrix4f();
-		offset.translate(new Vector3f(0.5f, 0.5f, 0.5f));
-		offset.scale(new Vector3f(0.5f, 0.5f, 0.5f));
+		offset.translate(new Vector3f(0.5f));
+		offset.scale(new Vector3f(0.5f));
 		return offset;
 	}
 

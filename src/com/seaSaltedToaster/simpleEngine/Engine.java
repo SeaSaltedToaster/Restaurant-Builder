@@ -92,11 +92,11 @@ public class Engine {
 		this.entities = new ArrayList<Entity>();
 		
 		this.utils = new MatrixUtils();
-		this.viewMatrix = utils.createViewMatrix(camera);
+		this.viewMatrix = MatrixUtils.createViewMatrix(camera);
 		this.projectionMatrix = utils.createProjectionMatrix(FOV, NEAR_PLANE, FAR_PLANE, this);
 		this.skybox = new SkyboxRenderer(this);
 		
-		this.light = new Light(new Vector3f(10000, 15000, -10000), new Vector3f(0.0f));
+		this.light = new Light(new Vector3f(25.0f), new Vector3f(0.0f));
 		this.postProcessor = new PostProcessor(this);
 		this.shadowRenderer = new ShadowRenderer(this);
 		
@@ -125,11 +125,11 @@ public class Engine {
 		OpenGL.setDepthTest(true);
 		OpenGL.clearColor();
 		OpenGL.clearDepth();
-		OpenGL.clearColor(new Vector3f(0.0f), 0.0f);
+		OpenGL.clearColor(new Vector3f(1.0f, 0.0f, 0.0f), 0.0f);
 	}
 	
 	public void render() {
-		this.viewMatrix = utils.createViewMatrix(camera);
+		this.viewMatrix = MatrixUtils.createViewMatrix(camera);
 		this.projectionMatrix = utils.createProjectionMatrix(70, 0.1f, 1000f, this);
 		
 		this.advRenderer.prepare();
@@ -149,10 +149,15 @@ public class Engine {
 		this.postProcessor.endRender();
 	}
 	
-	public void renderShadows(List<Entity> others) {
+	public void startShadows() {
 		this.shadowRenderer.prepare(light);
+	}
+	
+	public void renderShadows(List<Entity> others) {
 		this.shadowRenderer.render(others);
-		this.shadowRenderer.render(entities);
+	}
+	
+	public void endShadows() {
 		this.shadowRenderer.stopRender();
 	}
 	

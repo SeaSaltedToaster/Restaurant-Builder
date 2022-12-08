@@ -1,10 +1,9 @@
-#version 400
 
-const float shade = 2.0;
+const float shade = 5.0;
 const vec4 nightColor = vec4(0.0f);
 
 in vec3 pass_color;
-flat in float pass_id;
+in float pass_id;
 
 in vec4 shadowCoords;
 
@@ -17,6 +16,8 @@ uniform float dayValue;
 
 void main(void)	{
 
+	float objectNearestLight = texture(shadowMap, shadowCoords.xy).r;
+	
 	vec4 baseColor = vec4(pass_color, 1.0f);	
 	vec4 litColor = mix(baseColor, nightColor, dayValue);
 	
@@ -27,5 +28,11 @@ void main(void)	{
 	else {
 		out_Color = litColor;
 	}
+	
+	if(shadowCoords.z > objectNearestLight) {
+		out_Color = out_Color * vec4(0.5);
+	}
+	
+	out_Color = texture(shadowMap, vec2(1,0)).rgba;
 	
 }

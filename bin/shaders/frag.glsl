@@ -1,4 +1,3 @@
-#version 400
 
 in vec3 pass_color;
 

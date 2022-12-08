@@ -78,15 +78,17 @@ public class Raycaster implements MouseListener, MousePosListener {
 		
 		if(builder.getSelectedEntity() != null) {
 			BuildingId id = (BuildingId) builder.getSelectedEntity().getComponent("BuildingId");
-			if(id.getType().type != BuildingType.WallObject) {
-				
-			}
-			else {
-				float rayLength = ray.length();
-				float dist = builder.getSelectedEntity().getPosition().copy().subtract(engine.getCamera().getPosition().copy()).length();
-				if(rayLength > dist) {
-					float multi = dist / rayLength;
-					ray = ray.scale(multi - 0.5f);
+			if(id != null) {
+				if(id.getType().type != BuildingType.WallObject) {
+					
+				}
+				else {
+					float rayLength = ray.length();
+					float dist = builder.getSelectedEntity().getPosition().copy().subtract(engine.getCamera().getPosition().copy()).length();
+					if(rayLength > dist) {
+						float multi = dist / rayLength;
+						ray = ray.scale(multi - 0.5f);
+					}
 				}
 			}
 		}

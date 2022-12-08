@@ -27,7 +27,8 @@ public class ScreenshotUtils implements KeyListener {
         ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * bpp);
         GL11.glReadPixels(0, 0, width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer );
         
-        File file = new File(System.getProperty("user.home") + "/Desktop/SSscreenshots/"+ LocalDate.now()+"-"+LocalTime.now().toString().replace(".", "").replace(":", "")+".png"); 
+//        File file = new File(System.getProperty("user.home") + "/Desktop/SSscreenshots/"+ LocalDate.now()+"-"+LocalTime.now().toString().replace(".", "").replace(":", "")+".png"); 
+        File file = new File("C:/Users/natha/Desktop/OpenGL/New Game Engine/Restaurant-Builder/screenshots/imgs/" + LocalDate.now()+"-"+LocalTime.now().toString().replace(".", "").replace(":", "")+".png");
         try {
 			file.createNewFile();
 		} catch (IOException e1) {

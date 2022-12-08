@@ -3,12 +3,6 @@ package com.seaSaltedToaster.restaurantGame.ai.person;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.seaSaltedToaster.restaurantGame.ai.person.chef.WaitForChefStation;
-import com.seaSaltedToaster.restaurantGame.ai.person.customer.WaitForTable;
-import com.seaSaltedToaster.restaurantGame.ai.person.versionPre.WaitForOrder;
-import com.seaSaltedToaster.restaurantGame.ai.person.versionPre.WaitForWorkstation;
-import com.seaSaltedToaster.restaurantGame.ai.person.waiter.FindWaiterTask;
-import com.seaSaltedToaster.restaurantGame.ai.person.waiter.LocateHostStand;
 import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.Component;
 
 public class ActionComponent extends Component {
@@ -38,22 +32,16 @@ public class ActionComponent extends Component {
 		switch(tree.trim()){
 		case "ChefOld":
 			//Add the starting action of the chef
-			actions.add(new WaitForChefStation(entity));
 			break;
 		case "CustomerOld":
 			//Starting wait on customer spawn
-			actions.add(new WaitForTable(entity)); //TODO randomize to make it less robotic
 			break;
 		case "WaiterOld":
 			//Start action of the waiter NPC
-			actions.add(new WaitForWorkstation(entity));
-			actions.add(new WaitForOrder(entity));
 			break;
 		
 		case "Waiter1":
 			//New waiter behaviour tree
-			this.actions.add(new LocateHostStand(entity));
-			this.actions.add(new FindWaiterTask());
 			break;
 		default:
 			break;
