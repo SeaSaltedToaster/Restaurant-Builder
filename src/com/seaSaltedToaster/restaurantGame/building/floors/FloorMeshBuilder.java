@@ -69,7 +69,7 @@ public class FloorMeshBuilder {
 		result.addComponent(newComp);
 		
 		if(add)
-			layer.addBuilding(result, BuildingList.getBuilding(comp.getType()), layer.getBuildings().size()+1);
+			layer.addBuilding(result, BuildingList.getBuilding(comp.getType()), -127);
 			
 		return result;
 	}

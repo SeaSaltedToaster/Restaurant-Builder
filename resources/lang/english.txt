@@ -1,5 +1,5 @@
 example_text_id,Example;
-display_settings,Display Settings;
+display_settings,Display_Settings;
 graphics_settings,Graphics Settings;
 audio_settings,Audio Settings;
 language_settings,Language Preference;
@@ -8,3 +8,10 @@ menu_play,Play;
 menu_settings,Settings;
 menu_quit,Quit;
 saves_title,Saves;
+saves_create,Create;
+saves_create_new,New Save;
+groundtype_grass,Grassy;
+groundtype_snow,Snowy;
+groundtype_arid,Arid;
+modetype_career,Career;
+modetype_creative,Creative;

@@ -105,7 +105,7 @@ public class MainMenu {
 	
 		//Version
 		float textSize = 1.0f;
-		this.version = new Text("Restaurantario Version 0.0.8e", textSize, 0);
+		this.version = new Text("Restaurantario Version 0.0.9 Christmas", textSize, 0);
 		this.version.setColor(0.0f);
 		UiConstraints cons2 = version.getConstraints();
 		cons2.setX(new AlignX(XAlign.LEFT, 0.0f));
@@ -115,7 +115,7 @@ public class MainMenu {
 	}
 
 	private void createBackground(Engine engine) {
-		this.backgroundImage = engine.getTextureLoader().loadTexture("/uis/menuBackground");
+		this.backgroundImage = engine.getTextureLoader().loadTexture("/uis/menuBackground1225");
 		this.background = new UiComponent(0);
 		this.background.setTexture(backgroundImage);
 		this.background.setScale(1.0f, 1.0f);

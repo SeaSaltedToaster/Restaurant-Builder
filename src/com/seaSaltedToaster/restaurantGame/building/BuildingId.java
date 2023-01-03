@@ -46,10 +46,6 @@ public class BuildingId extends Component {
 		return id;
 	}
 
-	public void setId(int id) {
-		this.id = id;
-	}
-
 	@Override
 	public void init() {
 		

@@ -8,6 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.seaSaltedToaster.restaurantGame.WorldCamera;
+import com.seaSaltedToaster.restaurantGame.ai.person.Action;
+import com.seaSaltedToaster.restaurantGame.ai.person.ActionComponent;
+import com.seaSaltedToaster.restaurantGame.ai.person.GoToAction;
+import com.seaSaltedToaster.restaurantGame.ai.person.WaitAction;
 import com.seaSaltedToaster.restaurantGame.building.Building;
 import com.seaSaltedToaster.restaurantGame.building.BuildingId;
 import com.seaSaltedToaster.restaurantGame.building.BuildingManager;
@@ -25,15 +29,28 @@ public class LoadSystem {
 	private static String saveLocation = System.getProperty("user.home") + "/Desktop";
 	private static File file = new File(saveLocation + "/RestaurantGame/saves");
 	
+	//Ais
+	private List<String> actions;
+	
 	//Save current
 	private String curSave;
 	
 	public LoadSystem(String curSave) {
 		this.curSave = curSave;
+		this.actions = new ArrayList<String>();
 		if(!file.exists())
 			LoadSystem.file.mkdirs();
 	}
 	
+	public String getGroundType() {
+		File ground = new File(file.getAbsolutePath() + "/" + curSave + "/ground.rf");
+		String allData = readFile(ground);
+		if(!file.exists() || file.getPath() == "" || allData == "NO_FILE")
+			return "Grassy";
+		
+		return allData.trim();
+	}
+		
 	public static int getSaveIcon(String save, Engine engine) {
 		File iconFile = new File(file.getAbsolutePath() + "/" + save + "/icon.png");
 		if(iconFile.exists()) {
@@ -43,12 +60,27 @@ public class LoadSystem {
 		return -1;
 	}
 	
+	public void loadActions() {
+		//File
+		File bldFile = new File(file.getAbsolutePath() + "/" + curSave + "/actions.rf");
+		if(!bldFile.exists()) return;
+		
+		//Get data
+		String allData = readFile(bldFile);
+		String[] allLines = allData.split(System.getProperty("line.separator"));
+		
+		
+		//Load
+		for(String line : allLines)
+			this.actions.add(line);
+		System.out.println(actions.get(0));
+	}
+	
 	public void loadBuildings(BuildingManager manager) {
 		File bldFile = new File(file.getAbsolutePath() + "/" + curSave + "/buildings.rf");
 		if(!bldFile.exists()) return;
 		
 		//Get data
-		int index = 0;
 		String allData = readFile(bldFile);
 		String[] allLines = allData.split(System.getProperty("line.separator"));
 		
@@ -62,43 +94,95 @@ public class LoadSystem {
 			String[] typeAll = typeData.split(",");
 			
 			String name = typeAll[0];
+			if(typeAll.length == 0)
+				continue;
 			String category = typeAll[1];
 			
 			String type = typeAll[2];
 			
 			int layer = Integer.parseInt(typeAll[3]);
+			int id = -127;
+			if(typeAll.length >= 5)	
+				Integer.parseInt(typeAll[4].replace("ID:", "").trim());
+
 			Building bld = BuildingList.getBuilding(name, BuildingList.getCategory(category));
-			
 			BuildingType typeEnum = BuildingType.valueOf(type);
+			
+			Entity entity = null;
+			
 			switch(typeEnum) {
 			case Wall:
 				/*
 				 * LOAD WALL OBJECTS
 				 */
-				loadWall(bld, manager, parts, layer, index);
+				entity = loadWall(bld, manager, parts, layer, id);
 				break;
 			case Floor :
 				/*
 				 * FLOOR
 				 */
-				loadFloor(bld, manager, parts, layer, index);
+				entity = loadFloor(bld, manager, parts, layer, id);
 				break;
 			default:
 				/*
 				 * NORMAL OBJECTS LOADING
 				 */
-				loadObject(bld, manager, parts, layer, index);
+				entity = loadObject(bld, manager, parts, layer, id);
 				break;
 			}
+			
+			//load actions
+			findActions(id, entity);
 			
 			//Create entity
 			if(bld == null)
 				return;
-			index++;
 		}
 	}	
 	
-	private void loadFloor(Building bld, BuildingManager manager, String[] parts, int layer, int index) {			
+	private void findActions(int id, Entity entity) {
+		if(!entity.hasComponent("Action")) return;
+		
+		ActionComponent comp = (ActionComponent) entity.getComponent("Action");
+		for(String line : actions) {
+			if(line.startsWith(""+id)) {
+				comp.getActions().add(processAction(line, entity));
+			}
+		}
+		comp.getActions().remove(null);
+		
+		if(comp.getActions().isEmpty()) {
+			for(int i = 0; i < 25; i++) {
+				comp.getActions().add(new GoToAction(new Vector3f((float) Math.random() * 20, 0, (float) Math.random() * 20), entity, true));
+			}
+		}
+	}
+
+	private Action processAction(String line, Entity entity) {
+		String[] vals = line.split(",");
+		String type = vals[2];
+		
+		Action action = null;
+		
+		switch(type.trim()) {
+		case "GoTo" :
+			action = new GoToAction(null, null, false);
+			action.object = entity;
+			action.loadAction(vals[3]);
+			break;
+		case "Wait" :
+			action = new WaitAction(0);
+			action.object = entity;
+			action.loadAction(vals[3]);
+			break;
+		default :
+			action = null;
+		}
+		
+		return action;
+	}
+
+	private Entity loadFloor(Building bld, BuildingManager manager, String[] parts, int layer, int index) {			
 		//Floor parts
 		String section = parts[2];
 		String[] floorParts = section.split(">");
@@ -161,10 +245,11 @@ public class LoadSystem {
 		//Add		
 		BuildingId id = (BuildingId) entity.getComponent("BuildingId");
 		id.setPrimary(primary);
-		id.setSecondary(secondary);		
+		id.setSecondary(secondary);	
+		return entity;
 	}
 
-	private void loadWall(Building bld, BuildingManager manager, String[] parts, int layer, int index) {
+	private Entity loadWall(Building bld, BuildingManager manager, String[] parts, int layer, int index) {
 		//Get position
 		String transData = parts[1];
 		String[] posParts = transData.split(",");
@@ -207,9 +292,10 @@ public class LoadSystem {
 		BuildingId id = (BuildingId) entity.getComponent("BuildingId");
 		id.setPrimary(primary);
 		id.setSecondary(secondary);
+		return entity;
 	}
 
-	private void loadObject(Building bld, BuildingManager manager, String[] parts, int layer, int index) {
+	private Entity loadObject(Building bld, BuildingManager manager, String[] parts, int layer, int index) {
 		Entity entity = bld.getEntity().copyEntity();
 		
 		//Get position
@@ -251,7 +337,8 @@ public class LoadSystem {
 		manager.getLayers().get(layer).addBuilding(entity, bld, index);
 		BuildingId id = (BuildingId) entity.getComponent("BuildingId");
 		id.setPrimary(primary);
-		id.setSecondary(secondary);		
+		id.setSecondary(secondary);	
+		return entity;
 	}
 
 	public void loadCamera(WorldCamera camera) {
@@ -293,9 +380,15 @@ public class LoadSystem {
 		try {
 			encoded = Files.readAllBytes(path.toPath());
 		} catch (IOException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
+			return "NO_FILE";
 		}
 		return new String(encoded, StandardCharsets.US_ASCII);
+	}
+
+	public boolean hasData() {
+		File bldFile = new File(file.getAbsolutePath() + "/" + curSave + "/buildings.rf");
+		return !bldFile.exists();
 	}
 
 }

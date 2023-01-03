@@ -22,6 +22,7 @@ public class GeneralButton extends UiComponent {
 		super(3);
 		create(icon, engine);
 		this.scale = new SmoothFloat(1.0f);
+		this.scale.setAmountPer(0.15f);
 	}
 	
 	@Override
@@ -33,6 +34,11 @@ public class GeneralButton extends UiComponent {
 	@Override
 	public void onHover() {
 		this.scale.setTarget(hScale);
+	}
+	
+	@Override
+	public void onClick() {
+		this.scale.setValue(1.5f);
 	}
 	
 	@Override

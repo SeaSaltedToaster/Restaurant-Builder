@@ -41,7 +41,7 @@ public class ResourceManager {
 		//Languages
 		System.out.println("Loading Language Files");
 		this.languageReader = new LanguageReader("" + "/lang/");
-		this.languages = this.languageReader.loadLanguageFiles("english", "deutsch", "espanol");
+		this.languages = this.languageReader.loadLanguageFiles("example", "english", "deutsch", "espanol");
 		LanguageManager.start(this.languages, "english");
 		
 		//Make sure we say we are done

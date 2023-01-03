@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.seaSaltedToaster.MainApp;
+import com.seaSaltedToaster.restaurantGame.building.Building;
+import com.seaSaltedToaster.restaurantGame.building.categories.BuildingList;
 import com.seaSaltedToaster.restaurantGame.ground.renderer.GroundRenderer;
+import com.seaSaltedToaster.restaurantGame.save.LoadSystem;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
 import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.ModelComponent;
@@ -14,6 +18,11 @@ import com.seaSaltedToaster.simpleEngine.utilities.Color;
 import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 
 public class Ground {
+	
+	//Type
+	public String groundType = "Snowy";
+	private GroundSettings[] types;
+	private GroundSettings type;
 	
 	//Mesh data
 	private GroundRenderer renderer;
@@ -36,6 +45,7 @@ public class Ground {
 		Ground.worldSize = worldSize;
 		Ground.tileSize = tileSize;
 		this.meshes = new ArrayList<Entity>();
+		addGroundTypes();
 	}
 	
 	public void selectAt(Vector3f currentRay) {
@@ -60,10 +70,17 @@ public class Ground {
 		renderer.endRender();
 	}
 	
-	public void generateGround(Engine engine) {
+	public void generateGround(LoadSystem loadSystem, Engine engine) {
+		//Type
+		this.groundType = loadSystem.getGroundType();
+		for(GroundSettings type : types) {
+			if(type.name.trim().equalsIgnoreCase(groundType.trim()))
+				this.type = type;
+		}
+		
 		//Create tile array
 		createArrays();
-		createTiles();
+		createTiles(loadSystem.hasData());
 		
 		//Get arrays
 		float[] positions = getVectorList(this.vertices);
@@ -121,15 +138,26 @@ public class Ground {
 		return positions;
 	}
 
-	private void createTiles() {
+	private void createTiles(boolean hasData) {
 		Random random = new Random();
 		int id = 0;
 		for(int x = (int) -worldSize; x < worldSize; x++) {
 			for(int z = (int) -worldSize; z < worldSize; z++) {
 				//Tile object
-				GroundTile tile = new GroundTile(x, z, random.nextInt(2)+1);
+				GroundTile tile = new GroundTile(x, z, random.nextInt(colorList.length));
 				tile.setId(id++);
 				this.tiles.add(tile);
+				
+				//Random tree
+				for(Spawnable obj : type.getObjs()) {
+					if(random.nextInt(100) > obj.getChance() && hasData) {
+						Building tree = BuildingList.getBuilding(obj.getName());
+						Entity entity = tree.getEntity().copyEntity();
+						entity.setPosition(new Vector3f(x, 0 ,z));
+						entity.getTransform().getRotation().setY(random.nextInt(360));						
+						MainApp.restaurant.layers.get(0).addBuilding(entity, tree, -127);
+					}
+				}
 				
 				//Create mesh data
 				createVertices(tile);
@@ -185,10 +213,24 @@ public class Ground {
 		this.tileIds = new ArrayList<Integer>();
 
 		//Colors
-		this.colorList = new Color[64];
-		this.colorList[0] = new Color(1,1,1);
-		this.colorList[1] = new Color(0.50f, 0.775f, 0.52f);
-		this.colorList[2] = new Color(0.50f, 0.75f, 0.52f);
+		this.colorList = type.getColors();
+	}
+	
+	private void addGroundTypes() {
+		this.types = new GroundSettings[3];
+		
+		GroundSettings grass = 	new GroundSettings("Grassy", new Color(0.50f, 0.775f, 0.52f), new Color(0.50f, 0.75f, 0.52f));
+		grass.addSpawnable("Tree", 95);
+		grass.addSpawnable("Rock", 97);
+		types[0] = grass;		
+		
+		GroundSettings snowy = new GroundSettings("Snowy", new Color(0.95f, 0.95f, 0.95f), new Color(1.045f, 1.045f, 1.045f));
+		snowy.addSpawnable("Rock", 98);
+		types[1] = snowy;		
+		
+		GroundSettings arid = new GroundSettings("Arid", new Color(1.00f,0.60f,0.20f), new Color(1.00f,0.70f,0.40f));
+		arid.addSpawnable("Cactus", 98.5f);
+		types[2] = arid;		
 	}
 
 	public static float getTileSize() {

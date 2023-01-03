@@ -4,6 +4,7 @@ in vec3 color;
 in vec3 normal;
 
 out vec3 pass_color;
+out vec3 surfaceNormal;
 
 uniform mat4 transformationMatrix;
 uniform mat4 viewMatrix;
@@ -17,4 +18,5 @@ void main(void)	{
 	gl_Position = toCamPos * projectionMatrix;
 	
 	pass_color = color;
+	surfaceNormal = (transformationMatrix * vec4(normal,0.0)).xyz;
 }

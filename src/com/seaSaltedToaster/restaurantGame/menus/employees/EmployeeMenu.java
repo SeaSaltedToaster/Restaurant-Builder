@@ -1,6 +1,7 @@
 package com.seaSaltedToaster.restaurantGame.menus.employees;
 
 import com.seaSaltedToaster.MainApp;
+import com.seaSaltedToaster.restaurantGame.menus.languages.LanguageManager;
 import com.seaSaltedToaster.restaurantGame.objects.Restaurant;
 import com.seaSaltedToaster.restaurantGame.objects.people.ChefComponent;
 import com.seaSaltedToaster.restaurantGame.objects.people.ServerComponent;
@@ -127,10 +128,11 @@ public class EmployeeMenu extends UiComponent implements ScrollListener {
 		UiConstraints textCons = new UiConstraints();
 		textCons.setX(new AlignX(XAlign.CENTER));
 		textCons.setY(new AlignY(YAlign.TOP, 0.33f));
-		this.title = new Text("Employees", 1.25f, 4);
+		this.title = new Text("employees_title", 1.25f, 4);
 		this.title.setColor(1.0f);
 		this.title.setConstraints(textCons);
 		this.titleBacker.addComponent(title);
+		LanguageManager.addText(title.getTextString(), title);
 	}
 	
 	public boolean isOpen() {

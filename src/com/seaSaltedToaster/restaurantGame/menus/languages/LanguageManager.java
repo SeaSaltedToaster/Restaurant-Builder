@@ -36,7 +36,7 @@ public class LanguageManager {
 		for(Entry<String, Text> textEntry : textMap.entrySet()) {
 			Text text = textEntry.getValue();
 			String id = textEntry.getKey();
-			setTextToCurrentLanguage(id, text);
+			setTextToCurrentLanguage(id, text, new Object[0]);
 		}
 		System.out.println("Set game language to " + languageText);
 	}
@@ -56,19 +56,36 @@ public class LanguageManager {
 	//Adds a new text object and translates it if necessary
 	public static void addText(String id, Text text) {
 		textMap.put(id, text);
-		setTextToCurrentLanguage(id, text);
+		setTextToCurrentLanguage(id, text, new Object[0]);
+	}
+	
+	public static void addText(String id, Text text, Object[] objects) {
+		textMap.put(id, text);
+		setTextToCurrentLanguage(id, text, objects);
 	}
 	
 	//Translate a text to the current language
-	public static void setTextToCurrentLanguage(String id, Text text) {
-		for(Entry<String, String> langEntry : currentLanguage.getLanguageList().entrySet()) {
-			if(langEntry.getKey().equals(id)) {				
-				text.setTextString(langEntry.getValue().trim());
+	public static void setTextToCurrentLanguage(String id, Text text, Object[] objects) {
+		for(Entry<String, LangTerm> langEntry : currentLanguage.getLanguageList().entrySet()) {
+			if(langEntry.getKey().equals(id)) {
+				
+				String langVal = new String(langEntry.getValue().getTerm().trim());
+				for(int i = 0; i < objects.length; i++)
+				{
+					String key = "(val" + (i+1) + ")";
+					if(langVal.contains(key)) 
+					{
+						langVal.replace(key.trim(), "1");
+						System.out.println(key + " : " + langVal);
+					}
+				}
+				text.setTextString(langVal);
+				
 				return;
 			}
 		}
 		//No match found
-		System.out.println("No translation match found for : " + id);
+		System.out.println("No translation match in " + currentLanguage.getName() + " found for : " + id);
 	}
 	
 	public static List<Language> getLanguages() {

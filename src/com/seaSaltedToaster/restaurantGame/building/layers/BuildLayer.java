@@ -3,6 +3,8 @@ package com.seaSaltedToaster.restaurantGame.building.layers;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.seaSaltedToaster.MainApp;
+import com.seaSaltedToaster.restaurantGame.ai.PathfinderComponent;
 import com.seaSaltedToaster.restaurantGame.ai.WalkableType;
 import com.seaSaltedToaster.restaurantGame.building.Building;
 import com.seaSaltedToaster.restaurantGame.building.BuildingId;
@@ -99,6 +101,7 @@ public class BuildLayer {
 	
 	public boolean isBuildingAt(Vector3f target, BuildingType type) {
 		for(Entity entity : buildings) {
+			if(entity == null) continue;
 			Vector3f entityPos = entity.getTransform().getPosition();
 			BuildingId id = (BuildingId) entity.getComponent("BuildingId");
 			if(entityPos.equals(target, 0) && id.getType().type == type) {
@@ -109,12 +112,28 @@ public class BuildLayer {
 	}
 
 	public void addBuilding(Entity preview, Building object, int buildingIndex) {
+		//Ids
+		int id = buildingIndex;
+		if(id == -127)
+			id = IdMaker.getNew();
+		IdMaker.addId(id);
+		
 		//Add building comps
-		preview.addComponent(new BuildingId(buildingIndex, object, this));
+		preview.addComponent(new BuildingId(id, object, this));
 		preview.addComponent(new PlaceAnimation());
 		this.buildingsToAdd.add(preview);
 		for(Component comp : object.getBuildingComponents()) {
-			preview.addComponent(comp.copyInstance());
+			if(comp.getComponentType() == "Pathfinder") 
+			{
+				PathfinderComponent cmp = (PathfinderComponent) comp.copyInstance();
+				cmp.wrld = manager.getPathWorld();
+				preview.addComponent(cmp);
+				MainApp.restaurant.cmp = cmp;
+			}
+			else
+			{
+				preview.addComponent(comp.copyInstance());
+			}
 		}
 		
 		notifyListeners(preview, object);

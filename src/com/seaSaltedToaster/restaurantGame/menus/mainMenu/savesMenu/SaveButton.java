@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.FileTime;
+import java.text.CharacterIterator;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.text.StringCharacterIterator;
 
 import com.seaSaltedToaster.MainApp;
 import com.seaSaltedToaster.restaurantGame.menus.mainMenu.MenuSettings;
@@ -44,8 +46,33 @@ public class SaveButton extends UiComponent {
 		DateFormat df = new SimpleDateFormat("MM/dd/yy HH:mm");
 		
 		createPanel();
-		addDetails(child.getName(), df.format(time.toMillis()), child.length() + " bytes");
+		addDetails(child.getName(), df.format(time.toMillis()), humanReadableByteCountBin(getFileSize(child)) + " bytes");
 		addIcon(savesMenu, icon);
+	}
+	
+	private static int getFileSize(File file) {
+		int i = (int) file.length();
+		if(file.listFiles() != null) {
+			for(File file2 : file.listFiles()) {
+				i += getFileSize(file2);
+			}
+		}
+		return i;
+	}
+	
+	public static String humanReadableByteCountBin(long bytes) {
+	    long absB = bytes == Long.MIN_VALUE ? Long.MAX_VALUE : Math.abs(bytes);
+	    if (absB < 1024) {
+	        return bytes + " B";
+	    }
+	    long value = absB;
+	    CharacterIterator ci = new StringCharacterIterator("KMGTPE");
+	    for (int i = 40; i >= 0 && absB > 0xfffccccccccccccL >> i; i -= 10) {
+	        value >>= 10;
+	        ci.next();
+	    }
+	    value *= Long.signum(bytes);
+	    return String.format("%.1f %ciB", value / 1024.0, ci.current());
 	}
 	
 	@Override

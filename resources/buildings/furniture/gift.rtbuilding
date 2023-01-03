@@ -1,0 +1,11 @@
+name=Gift
+type=Object
+price=5
+iconZoom=0.5
+category=Event
+model=basic/furniture/gift
+primary=0.66,0.0,0.0
+secondary=0.75,0.75,0.75
+components{
+
+}

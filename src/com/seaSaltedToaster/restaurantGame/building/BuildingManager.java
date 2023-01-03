@@ -50,12 +50,12 @@ public class BuildingManager implements KeyListener {
 	private BuildingRenderer renderer;
 	private SelectionRenderer selectRenderer;
 	
-	public BuildingManager(Engine engine, Ground ground, Raycaster raycaster, Building preview) {
-		createLayers();
+	public BuildingManager(Engine engine, float worldSize, Raycaster raycaster, Building preview) {		
+		this.createLayers();
 		
 		//Floors related
 		this.floorBuilder = new FloorBuilder();
-		this.pathWorld = new PathfindingWorld((int) Ground.worldSize * 2);
+		this.pathWorld = new PathfindingWorld((int) worldSize * 2);
 		
 		//Walls related
 		this.wallBuilder = new WallBuilder();
@@ -69,7 +69,7 @@ public class BuildingManager implements KeyListener {
 		engine.getKeyboard().addKeyListener(this);
 	}
 	
-	private void createLayers() {
+	public void createLayers() {
 		this.layers = new ArrayList<BuildLayer>();
 		for(int i = 0; i < layerCount; i++) {
 			BuildLayer layer = new BuildLayer(this, i);

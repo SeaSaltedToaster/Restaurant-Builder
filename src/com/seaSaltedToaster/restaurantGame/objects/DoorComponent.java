@@ -46,7 +46,7 @@ public class DoorComponent extends Component {
 		newEnt.getTransform().setPosition(entity.getTransform().getPosition().copy());
 		
 		//Get layer
-		restaurant.layers.get(0).addBuilding(newEnt, spawn, ObjectBuilder.buildingIndex++);
+		restaurant.layers.get(0).addBuilding(newEnt, spawn, -127);
 		
 		//Timer
 		timer.stop();

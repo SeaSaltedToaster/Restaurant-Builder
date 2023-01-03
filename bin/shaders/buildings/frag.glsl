@@ -5,6 +5,7 @@ const vec3 primaryInd = vec3(0.1f, 0.15f, 0.2f);
 const vec3 secondaryInd = vec3(0.2f, 0.15f, 0.1f);
 
 in vec3 pass_color;
+in vec3 surfaceNormal;
 
 uniform bool isPreview;
 
@@ -34,9 +35,21 @@ void main(void)	{
 	vec4 litColor = mix(baseColor, nightColor, dayValue);
 	
 	if(currentId == selectedId || currentId == -1) {
-		//litColor = vec4(1,1,1,1);
+		litColor = vec4(1,1,1,1);
 	}
 	
 	out_Color = litColor;
+	
+	bool snow = false;
+	if(snow)
+	{
+		float normalSnow = dot(surfaceNormal, vec3(0,1,0));
+		normalSnow + 0.5;
+			
+	    vec3 snowCol = vec3(1.0);
+	    vec3 snow = normalSnow * snowCol;
+	    if(normalSnow > 0.75)
+	    	out_Color = vec4(snow, 1);
+    }
 
 }

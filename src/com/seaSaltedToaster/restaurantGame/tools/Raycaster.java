@@ -173,6 +173,7 @@ public class Raycaster implements MouseListener, MousePosListener {
 		boolean canPlace = (leftClicked && builder.isBuilding());
 		if(canPlace) {
 			this.builder.place(ray);
+			return;
 		}
 	}
 		

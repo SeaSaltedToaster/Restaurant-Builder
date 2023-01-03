@@ -1,7 +1,6 @@
 package com.seaSaltedToaster.restaurantGame.ai;
 
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
-import com.seaSaltedToaster.simpleEngine.renderer.Window;
 import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 
 public class Mover {
@@ -10,8 +9,7 @@ public class Mover {
 	private Entity entity;
 	
 	//Speed of the entity
-	private float speed = 25.0f;
-	private float minTargetDist = 0.025f;
+	private float minTargetDist = 0.25f;
 	
 	//Movement information
 	public boolean isMoving = false;
@@ -34,15 +32,16 @@ public class Mover {
 	
 	public void setTarget(Vector3f target) {
 		//The new start is the old target
-		Vector3f start = this.target.copy();
+		Vector3f start = this.entity.getPosition().copy();
+		start.y = 0;
 		
 		//The new target is set
 		this.target = target.copy();
 		
 		//THe per-frame movement the entity will have
 		this.offset = target.subtract(start);
-		this.offset.scale((float) ((speed / offset.length())));
-		this.offset.y = 0;
+		float div = 25.0f;
+		this.offset.divide(div * getTargetDistance());
 		
 		//Say that we are moving now
 		this.isMoving = true;

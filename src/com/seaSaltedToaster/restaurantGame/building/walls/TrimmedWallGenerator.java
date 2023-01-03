@@ -54,7 +54,7 @@ public class TrimmedWallGenerator extends WallGenerator {
 		
 		if(addToBatch) {
 			BuildLayer layer = MainApp.restaurant.layers.get(BuildingManager.curLayer);
-			layer.addBuilding(wall, BuildingList.getBuilding(wallType.getWallType()), layer.getBuildings().size()+1);	
+			layer.addBuilding(wall, BuildingList.getBuilding(wallType.getWallType()), -127);	
 		}
 		
 		return wall;
@@ -110,28 +110,6 @@ public class TrimmedWallGenerator extends WallGenerator {
 		}
 	}
 	
-	private void addSideWall(float width, float height, Vector3f direction, Vector3f point, List<Vector3f> vertices, List<Integer> triangles) {
-		float projAngle = 90.0f;
-		
-		Vector3f v1 = MathUtils.projectVertex(point, width/2, projAngle);
-		vertices.add(v1);
-		Vector3f v2 = new Vector3f(v1.x, height, v1.z);
-		vertices.add(v2);
-		
-		Vector3f v3 =  MathUtils.projectVertex(point, width/2, -projAngle);
-		vertices.add(v3);
-		Vector3f v4 = new Vector3f(v3.x, height, v3.z);
-		vertices.add(v4);
-		
-		triangles.add(vertices.indexOf(v1));
-		triangles.add(vertices.indexOf(v2));
-		triangles.add(vertices.indexOf(v4));
-		
-		triangles.add(vertices.indexOf(v1));
-		triangles.add(vertices.indexOf(v4));
-		triangles.add(vertices.indexOf(v3));
-	}
-
 	@Override
 	public String getType() {
 		return "Standard";

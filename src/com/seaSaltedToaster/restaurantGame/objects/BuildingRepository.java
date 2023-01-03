@@ -1,6 +1,7 @@
 package com.seaSaltedToaster.restaurantGame.objects;
 
 import com.seaSaltedToaster.restaurantGame.ai.PathfinderComponent;
+import com.seaSaltedToaster.restaurantGame.ai.PathfindingWorld;
 import com.seaSaltedToaster.restaurantGame.ai.person.ActionComponent;
 import com.seaSaltedToaster.restaurantGame.building.Building;
 import com.seaSaltedToaster.restaurantGame.building.BuildingType;
@@ -84,6 +85,13 @@ public class BuildingRepository {
 		 */
 		Building pumpkin = this.loader.loadObject("pumpkin", engine);
 		
+		Building christmasTree = this.loader.loadObject("furniture/christmasTree", engine);
+		Building stocking = this.loader.loadObject("furniture/stocking", engine);
+		Building gift = this.loader.loadObject("furniture/gift", engine);
+		Building tree = this.loader.loadObject("furniture/tree", engine);
+		Building rock = this.loader.loadObject("furniture/rock", engine);
+		Building cactus = this.loader.loadObject("furniture/cactus", engine);
+
 		Building wallObject = this.loader.loadObject("wallObjects/wallObject", engine);
 		Building door = this.loader.loadObject("wallObjects/door", engine);
 		door.getBuildingComponents().add(new DoorComponent());

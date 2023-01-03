@@ -9,6 +9,7 @@ import com.seaSaltedToaster.restaurantGame.building.Building;
 import com.seaSaltedToaster.restaurantGame.building.BuildingId;
 import com.seaSaltedToaster.restaurantGame.building.BuildingManager;
 import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
+import com.seaSaltedToaster.restaurantGame.ground.Ground;
 import com.seaSaltedToaster.restaurantGame.menus.TimeDisplay;
 import com.seaSaltedToaster.restaurantGame.objects.FloorComponent;
 import com.seaSaltedToaster.restaurantGame.objects.WallComponent;
@@ -24,7 +25,7 @@ public class SaveSystem {
 	private static File file = new File(saveLocation + "/RestaurantGame/saves");;
 	
 	//Save current
-	private FileWriter writer;
+	private static FileWriter writer;
 	private String curSave;
 	
 	public SaveSystem(String curSave) {
@@ -35,13 +36,58 @@ public class SaveSystem {
 		SaveSystem.file.mkdirs();
 	}
 	
-	public static void createSave(String name) {
+	public static void setGroundType(String save, String type) {
+		File ground = new File(file.getAbsolutePath() + "/" + save + "/ground.rf");
+		try {
+			ground.createNewFile();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		writeToFile(ground, type, true);
+		try {
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void openTo(String file) {
+		File dest = new File(SaveSystem.file.getAbsolutePath() + "/" + curSave + "/" + file + ".rf");
+		SaveSystem.setWriterFile(dest);
+	}
+	
+	public void saveAction(String data) {
+		System.out.println(data);
+		File actions = new File(file.getAbsolutePath() + "/" + curSave + "/actions.rf");
+		try {
+			actions.createNewFile();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		writeToFile(actions, data + System.getProperty("line.separator"), false);
+	}
+	
+	public void closeWriter() {
+		try {
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void saveAction(int id, int index, String type, String data) {
+		this.saveAction(id + "," + index + "," + type + "," + data + ";");
+	}
+	
+	public static File createSave(String name) {
 		SaveSystem.file.mkdirs();
 		File cur = new File(file.getAbsolutePath() + "/" + name);
 		cur.mkdirs();
+		return cur;
 	}
 	
-	public void save(Camera camera, TimeDisplay timeDisplay, BuildingManager manager) {
+	public void save(Camera camera, TimeDisplay timeDisplay, Ground ground, BuildingManager manager) {
 		//File for the save
 		File cur = new File(file.getAbsolutePath() + "/" + curSave);
 		cur.mkdirs();
@@ -57,6 +103,9 @@ public class SaveSystem {
 		//Take icon shot
 		File scrn = new File(cur.getAbsolutePath() + "/icon.png");
 		ScreenshotUtils.screenshot(scrn, 750, 750);
+		
+		//Save ground
+		SaveSystem.setGroundType(curSave, ground.groundType);
 	}
 	
 	public void saveBuildings(BuildingManager manager, File buildingsFile) {
@@ -95,7 +144,7 @@ public class SaveSystem {
 		
 		//Basics
 		Building type = id.getType();
-		writeToFile(buildingsFile, type.getName() + "," + type.getCategory().getName() + "," + type.getType().name() + "," + id.getLayer().getLayerId() + ";", false);
+		writeToFile(buildingsFile, type.getName() + "," + type.getCategory().getName() + "," + type.getType().name() + "," + id.getLayer().getLayerId() + "," + "ID:" + id.getId() + ";", false);
 		switch(type.type) {
 		case Wall:
 			//Wall
@@ -149,7 +198,7 @@ public class SaveSystem {
 		}
 	}
 	
-	private void setWriterFile(File file) {
+	private static void setWriterFile(File file) {
 		try {
 			writer = new FileWriter(file);
 		} catch (IOException e) {
@@ -157,7 +206,7 @@ public class SaveSystem {
 		}
 	}
 	
-	public void writeToFile(File file, String string, boolean newFileWriter) {
+	public static void writeToFile(File file, String string, boolean newFileWriter) {
 		if(newFileWriter)
 			setWriterFile(file);
 		try {

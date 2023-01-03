@@ -1,0 +1,11 @@
+name=Stocking
+type=WallObject
+price=5
+iconZoom=1.33
+category=Event
+model=basic/furniture/stocking
+primary=0.8,0.0,0.0
+secondary=1.0,1.0,1.0
+components{
+
+}

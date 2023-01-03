@@ -3,6 +3,7 @@ package com.seaSaltedToaster.restaurantGame.ai.person;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.seaSaltedToaster.restaurantGame.save.SaveSystem;
 import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.Component;
 
 public class ActionComponent extends Component {
@@ -25,8 +26,8 @@ public class ActionComponent extends Component {
 	}
 	
 	public void startBehaviourTree() {
-		this.actions.clear();
-		this.curAction = null;
+		//this.actions.clear();
+		//this.curAction = null;
 		
 		//Switch by type of NPC
 		switch(tree.trim()){
@@ -65,6 +66,13 @@ public class ActionComponent extends Component {
 				curAction.update();
 			}
 		}
+		
+		//Set action entityes and indexes
+		for(int i = 0; i < actions.size(); i++) {
+			Action action = actions.get(i);
+			action.actionIndex = i;
+			action.object = getEntity();
+		}
 	}
 	
 	private void getNewAction() {
@@ -77,6 +85,11 @@ public class ActionComponent extends Component {
 			curAction = actions.get(0);	
 			curAction.start();
 		}
+	}
+	
+	public void save(SaveSystem system) {
+		for(Action action : actions)
+			action.saveAction(system);
 	}
 
 	public Action getCurAction() {

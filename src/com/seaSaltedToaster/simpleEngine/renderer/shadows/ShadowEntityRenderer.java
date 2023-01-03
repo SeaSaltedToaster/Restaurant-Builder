@@ -26,7 +26,7 @@ public class ShadowEntityRenderer {
 
 	protected void render(List<Entity> entities, Matrix4f lightViewMatrix) {
 		for (Entity entity : entities) {
-			if(!entity.hasComponent("Model")) continue;
+			if(entity == null || !entity.hasComponent("Model")) continue;
 			ModelComponent comp = (ModelComponent) entity.getComponent("Model");
 			if(comp.getMesh() == null) continue;
 			

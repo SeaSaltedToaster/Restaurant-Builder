@@ -3,6 +3,7 @@ package com.seaSaltedToaster;
 import org.lwjgl.glfw.GLFW;
 
 import com.seaSaltedToaster.restaurantGame.WorldCamera;
+import com.seaSaltedToaster.restaurantGame.ai.person.ActionComponent;
 import com.seaSaltedToaster.restaurantGame.building.BuildingManager;
 import com.seaSaltedToaster.restaurantGame.building.categories.BuildingList;
 import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
@@ -18,6 +19,7 @@ import com.seaSaltedToaster.restaurantGame.menus.layers.LayerMenu;
 import com.seaSaltedToaster.restaurantGame.menus.mainMenu.MainMenu;
 import com.seaSaltedToaster.restaurantGame.menus.mainMenu.loadingScreen.IntroFade;
 import com.seaSaltedToaster.restaurantGame.menus.mainMenu.loadingScreen.LoadingScreen;
+import com.seaSaltedToaster.restaurantGame.menus.mainMenu.savesMenu.CreateMenu;
 import com.seaSaltedToaster.restaurantGame.menus.mainMenu.savesMenu.SavesMenu;
 import com.seaSaltedToaster.restaurantGame.menus.mainMenu.settingsMenu.SettingsMenu;
 import com.seaSaltedToaster.restaurantGame.objects.Restaurant;
@@ -56,6 +58,8 @@ public class MainApp {
 		
 		ResourceManager resourseManager = new ResourceManager();
 		
+		//Restaurant
+		MainApp.restaurant = new Restaurant(engine);
 		/*
 		 * GAME STATE
 		 */
@@ -90,6 +94,7 @@ public class MainApp {
 				/*
 				 * GAME RESOURCES
 				 */
+				
 				//Load all game assets
 				resourseManager.doGameLoad(engine);
 				engine.setCamera(new WorldCamera(engine));
@@ -99,16 +104,21 @@ public class MainApp {
 				/*
 				 * GAME OBJECTS
 				 */
-				//Ground the world is on
+				//Layers
 				this.ground = new Ground(25.0f, 0.25f, engine);
-				this.ground.generateGround(engine);
 				
-				//Raycaster for building
 				this.raycaster = new Raycaster(engine);
 				this.raycaster.ground = ground;
 				
+				this.manager = new BuildingManager(engine, 25.0f, raycaster, BuildingList.getRoot().getChildBuildings().get(0));
+				
+				//Ground the world is on
+				this.loadSystem = new LoadSystem(curSave);
+				this.ground.generateGround(loadSystem, engine);
+				
+				//Raycaster for building
+				
 				//Building manager
-				this.manager = new BuildingManager(engine, ground, raycaster, BuildingList.getRoot().getChildBuildings().get(0));
 				this.raycaster.builder = manager;
 								
 				//Uis
@@ -144,13 +154,13 @@ public class MainApp {
 				this.introFade.slide(true);
 				
 				//Load save data
-				this.loadSystem = new LoadSystem(curSave);
 				this.loadSystem.loadCamera((WorldCamera) engine.getCamera());
+				this.loadSystem.loadActions();
 				this.loadSystem.loadBuildings(manager);
 				
-				comp = new UiComponent(4);
-				comp.setScale(0.5f, -0.5f);
-				comp.setTexture(engine.getShadowRenderer().getShadowMap());
+//				comp = new UiComponent(4);
+//				comp.setScale(0.5f, -0.5f);
+//				comp.setTexture(engine.getShadowRenderer().getShadowMap());
 //				this.addComponent(comp);
 								
 				MainApp.menuFocused = false;
@@ -161,7 +171,7 @@ public class MainApp {
 				ground.update(engine.getShadowRenderer(), engine);
 				
 				manager.updateFrame();
-				comp.setTexture(engine.getShadowRenderer().getShadowMap());
+//				comp.setTexture(engine.getShadowRenderer().getShadowMap());
 				
 				introFade.update();
 				
@@ -183,15 +193,17 @@ public class MainApp {
 
 			@Override
 			public void unloadScene(Engine engine) {
-				saveSystem.save(engine.getCamera(), timeDisplay, manager);
+				saveSystem.save(engine.getCamera(), timeDisplay, ground, manager);
 				
-				boolean[][] map = manager.getPathWorld().getWalkableWorld();
-				for(int x = 0; x < map.length; x++) {
-					for(int z = 0; z < map.length; z++) {
-						System.out.print(map[x][z] ? 0 : 1);
+				saveSystem.openTo("actions");
+				for(BuildLayer layer : manager.getLayers()) {
+					for(Entity entity : layer.getBuildings()) {
+						ActionComponent action = (ActionComponent) entity.getComponent("Action");
+						if(action != null)
+							action.save(saveSystem);
 					}
-					System.out.println();
 				}
+				saveSystem.closeWriter();
 			}
 			
 		};
@@ -210,6 +222,7 @@ public class MainApp {
 			private SettingsMenu settingsMenu;
 			private SavesMenu savesMenu;
 			private LoadingScreen loadingScreen;
+			private CreateMenu createMenu;
 			
 			@Override
 			public void loadScene(Engine engine) {
@@ -231,7 +244,8 @@ public class MainApp {
 				this.settingsMenu = new SettingsMenu(manager, engine);
 				this.savesMenu = new SavesMenu(manager, engine);
 				this.loadingScreen = new LoadingScreen(manager, engine);
-				
+				this.createMenu = new CreateMenu(manager, engine);
+
 				//No matter what, the camera will not move in the menu
 				MainApp.menuFocused = true;
 			}
@@ -247,6 +261,7 @@ public class MainApp {
 				settingsMenu.update();
 				savesMenu.update();
 				loadingScreen.update();
+				createMenu.update();
 			}
 
 			@Override
@@ -261,9 +276,6 @@ public class MainApp {
 
 		//Set the new scene
 		engine.setCurrentScene(menu);
-		
-		//Restaurant
-		MainApp.restaurant = new Restaurant(engine);
 		
 		//Update per frame
 		while(!engine.getWindow().shouldClose()) {	
@@ -298,7 +310,7 @@ public class MainApp {
 	}
 	
 	public static void addExample(Vector3f seatPosition) {
-		Entity ent = BuildingList.getBuilding("Pillar").getEntity().copyEntity();
+		Entity ent = BuildingList.getBuilding("Ball").getEntity().copyEntity();
 		ent.setPosition(seatPosition);
 		MainApp.restaurant.engine.addEntity(ent);
 	}

@@ -1,5 +1,6 @@
 package com.seaSaltedToaster.restaurantGame.menus.buildingSelector;
 
+import com.seaSaltedToaster.restaurantGame.menus.languages.LanguageManager;
 import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.UiConstraints;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.XAlign;
@@ -28,7 +29,10 @@ public class ItemTooltip extends UiComponent {
 		
 		//Set info
 		this.name.setTextString(item.getBuilding().name);
+		
 		this.price.setTextString("Price : " + item.getBuilding().getPrice());
+		LanguageManager.addText("buy_price", price, new Object[] {new String(""+item.getBuilding().getPrice())});
+		
 		this.type.setTextString("Type : " + item.getBuilding().type.name());
 	}
 	

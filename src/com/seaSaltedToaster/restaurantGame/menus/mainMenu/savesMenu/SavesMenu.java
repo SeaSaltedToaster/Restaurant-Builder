@@ -7,10 +7,12 @@ import java.util.List;
 import com.seaSaltedToaster.MenuManager;
 import com.seaSaltedToaster.restaurantGame.menus.languages.LanguageManager;
 import com.seaSaltedToaster.restaurantGame.menus.mainMenu.MenuSettings;
+import com.seaSaltedToaster.restaurantGame.menus.mainMenu.savesMenu.create.DropdownBox;
 import com.seaSaltedToaster.restaurantGame.menus.mainMenu.savesMenu.create.TextBox;
 import com.seaSaltedToaster.restaurantGame.menus.mainMenu.settingsMenu.SettingsMenu;
 import com.seaSaltedToaster.restaurantGame.save.LoadSystem;
 import com.seaSaltedToaster.simpleEngine.Engine;
+import com.seaSaltedToaster.simpleEngine.input.Mouse;
 import com.seaSaltedToaster.simpleEngine.input.listeners.ScrollListener;
 import com.seaSaltedToaster.simpleEngine.renderer.Window;
 import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
@@ -29,11 +31,10 @@ public class SavesMenu implements ScrollListener {
 	//Other objects
 	private MenuManager manager;
 	private Engine engine;
-	public boolean saveSide = true;
 	
 	//Body and side panel
 	private UiComponent mainBody, topBar, bottomBar;
-	private Text title;
+	private Text title, title2;
 	private SavesBack backButton;
 	private UiComponent backer;
 	
@@ -42,8 +43,9 @@ public class SavesMenu implements ScrollListener {
 	private CreateButton createButton;
 	
 	//Create portion
-	private Text saveName;
+	private Text saveName, groundTxt, modeTxt;
 	private TextBox nameBox;
+	private DropdownBox groundType, modeType;
 	
 	//Animations
 	private SmoothFloat allX, titleSa, scroll;
@@ -57,8 +59,7 @@ public class SavesMenu implements ScrollListener {
 		
 		//Per
 		addSaves();
-		addCreate(engine);
-		setState(this.saveSide);
+		setState(false);
 		engine.getMouse().addScrollListener(this);
 	}
 	
@@ -75,55 +76,20 @@ public class SavesMenu implements ScrollListener {
 		this.title.setScaleMultiplier(titleSa.getValue());
 		
 		//Scroll pane
-		if(saveSide) {
-			this.scroll.update(Window.DeltaTime);
-			VerticalLayout layout = (VerticalLayout) backer.getConstraints().getLayout();
-			layout.setEdgeSpace(scroll.getValue()); 
-		}
-		else
-		{
-			
-		}
+		this.scroll.update(Window.DeltaTime);
+		VerticalLayout layout = (VerticalLayout) backer.getConstraints().getLayout();
+		layout.setEdgeSpace(scroll.getValue()); 
 	}
 	
 	@Override
 	public void notifyScrollChanged(float scrollValue) {
-		this.scroll.increaseTarget(scrollValue * 0.05f);
+		this.scroll.increaseTarget(scrollValue * 0.10f);
 	}
 	
 	public void setState(boolean state) {
-		if(state) 
-		{
-			for(SaveButton btn : buttons)
-				btn.pop(true);
-			title.setTextString("My Saves");
-			
-			this.nameBox.setActive(false);
-		}
-		else
-		{
-			for(SaveButton btn : buttons)
-				btn.pop(false);
-			title.setTextString("Create New");
-			
-			this.nameBox.setActive(true);
-		}
-		this.saveSide = state;
+		slide(state);
 	}
-	
-	private void addCreate(Engine engine) {
-		this.nameBox = new TextBox(engine);
-		this.nameBox.setPosition(0.0f, 1.0f);
-		this.backer.addComponent(nameBox);
 		
-		this.saveName = new Text("Save Name :", 0.75f, 1);
-		UiConstraints titleCons = saveName.getConstraints();
-		titleCons.setX(new AlignX(XAlign.LEFT));
-		titleCons.setY(new AlignY(YAlign.TOP, -0.75f));
-		this.nameBox.addComponent(saveName);
-		LanguageManager.addText(saveName.getTextString(), saveName);
-	}
-	
 	public void addSaves() {	
 		//Get files
 		String saveLocation = System.getProperty("user.home") + "/Desktop";
@@ -138,27 +104,31 @@ public class SavesMenu implements ScrollListener {
 		this.buttons.clear();
 		for(int i = 0; i < file.listFiles().length; i++) {
 			File child = file.listFiles()[i];
-			int icon = LoadSystem.getSaveIcon(child.getName(), engine);
-			
-			SaveButton btn = new SaveButton(child, icon, this);
-			btn.setInteractable(true, engine);
-			
-			this.buttons.add(btn);
-			this.backer.addComponent(btn);
+			addSave(child);
 		}		
-		this.scroll.setValue(-0.15f);
+		this.scroll.setValue(0.0f);
 	}
 	
+	public void addSave(File child) {
+		int icon = LoadSystem.getSaveIcon(child.getName(), engine);
+		
+		SaveButton btn = new SaveButton(child, icon, this);
+		btn.setInteractable(true, engine);
+		
+		this.buttons.add(btn);
+		this.backer.addComponent(btn);		
+	}
+
 	private void addBarItems(Engine engine) {
 		this.backButton = new SavesBack(this, engine);
 		this.backButton.setInteractable(true, engine);
 		this.topBar.addComponent(backButton);
 		
-		this.createButton = new CreateButton(this);
+		this.createButton = new CreateButton(this, null);
 		this.createButton.setInteractable(true, engine);
 		this.bottomBar.addComponent(createButton);
 		
-		this.title = new Text("menu_title", 2.25f, 1);
+		this.title = new Text("saves_title", 2.25f, 1);
 		this.title.setInteractable(true, engine);
 		UiConstraints titleCons = title.getConstraints();
 		titleCons.setWidth(new RelativeScale(0.5f));
@@ -167,6 +137,17 @@ public class SavesMenu implements ScrollListener {
 		titleCons.setY(new AlignY(YAlign.TOP, -0.125f));
 		this.topBar.addComponent(title);
 		LanguageManager.addText(title.getTextString(), title);
+		
+		this.title2 = new Text("saves_create_new", 2.25f, 1);
+		this.title2.setInteractable(true, engine);
+		UiConstraints titleCons2 = title2.getConstraints();
+		titleCons2.setWidth(new RelativeScale(0.5f));
+		titleCons2.setHeight(new RelativeScale(0.75f));
+		titleCons2.setX(new AlignX(XAlign.CENTER));
+		titleCons2.setY(new AlignY(YAlign.TOP, -0.125f));
+		this.topBar.addComponent(title2);
+		LanguageManager.addText(title2.getTextString(), title2);
+		this.title2.setActive(false);
 		
 		this.titleSa = new SmoothFloat(1.0f);
 		this.titleSa.setValue(1.0f);
@@ -227,6 +208,14 @@ public class SavesMenu implements ScrollListener {
 		sidePanelCons.setX(new AlignX(XAlign.CENTER));
 		sidePanelCons.setY(new AlignY(align, 0.033f));
 		return bar;
+	}
+
+	public DropdownBox getGroundType() {
+		return groundType;
+	}
+
+	public DropdownBox getModeType() {
+		return modeType;
 	}
 
 	public TextBox getNameBox() {

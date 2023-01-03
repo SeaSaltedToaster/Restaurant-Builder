@@ -2,6 +2,7 @@ package com.seaSaltedToaster;
 
 import com.seaSaltedToaster.restaurantGame.menus.mainMenu.MainMenu;
 import com.seaSaltedToaster.restaurantGame.menus.mainMenu.loadingScreen.LoadingScreen;
+import com.seaSaltedToaster.restaurantGame.menus.mainMenu.savesMenu.CreateMenu;
 import com.seaSaltedToaster.restaurantGame.menus.mainMenu.savesMenu.SavesMenu;
 import com.seaSaltedToaster.restaurantGame.menus.mainMenu.settingsMenu.SettingsMenu;
 
@@ -11,6 +12,7 @@ public class MenuManager {
 	private SettingsMenu settingsMenu;
 	private SavesMenu savesMenu;
 	private LoadingScreen loadingScreen;
+	private CreateMenu createMenu;
 	
 	public MenuManager() {
 		super();
@@ -47,5 +49,15 @@ public class MenuManager {
 	public void setLoadingScreen(LoadingScreen loadingScreen) {
 		this.loadingScreen = loadingScreen;
 	}
+
+	public CreateMenu getCreateMenu() {
+		return createMenu;
+	}
+
+	public void setCreateMenu(CreateMenu createMenu) {
+		this.createMenu = createMenu;
+	}
+
+	
 
 }

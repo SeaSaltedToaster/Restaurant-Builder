@@ -4,6 +4,7 @@ const vec4 nightColor = vec4(0.0f);
 
 in vec3 pass_color;
 in float pass_id;
+in vec3 surfaceNormal;
 
 in vec4 shadowCoords;
 
@@ -28,11 +29,5 @@ void main(void)	{
 	else {
 		out_Color = litColor;
 	}
-	
-	if(shadowCoords.z > objectNearestLight) {
-		out_Color = out_Color * vec4(0.5);
-	}
-	
-	out_Color = texture(shadowMap, vec2(1,0)).rgba;
 	
 }

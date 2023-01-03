@@ -59,7 +59,6 @@ public class TextBox extends UiComponent implements KeyListener {
 		mainCons.setWidth(new RelativeScale(0.5f));
 		mainCons.setHeight(new AspectRatio(0.25f));	
 		mainCons.setX(new AlignX(XAlign.CENTER));
-		mainCons.setY(new AlignY(YAlign.TOP, 0.25f));
 		this.setAlpha(0.5f);
 		
 		this.textBox = new UiComponent(3);
@@ -89,14 +88,18 @@ public class TextBox extends UiComponent implements KeyListener {
 	private void addText(int key, int state, int mods) {
 		if(!isActive || !isTyping || state == GLFW.GLFW_RELEASE) return;
 		String keyName = GLFW.glfwGetKeyName(key, GLFW.glfwGetKeyScancode(key));
+		
 		if(checkSpecialChar(key)) return;
 		if(getMods(keyName, mods)) return;
-		text = text + keyName; chatText.setTextString(text);
+		
+		text = text + keyName; 
+		chatText.setTextString(text);
 	}
 	
 	private boolean getMods(String keyName, int mods) {
 		if(mods == GLFW.GLFW_MOD_SHIFT) {
-			text = text + keyName.toUpperCase(); chatText.setTextString(text);
+			text = text + keyName.toUpperCase(); 
+			chatText.setTextString(text);
 			return true;
 		}
 		return false;

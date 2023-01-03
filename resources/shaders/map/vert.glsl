@@ -6,6 +6,7 @@ in int id;
 
 out vec3 pass_color;
 out float pass_id;
+out vec3 surfaceNormal;
 
 out vec4 shadowCoords;
 
@@ -21,6 +22,8 @@ void main(void)	{
 				
 	vec4 toCamPos = worldPosition * viewMatrix;
 	gl_Position = toCamPos * projectionMatrix;
+			
+	surfaceNormal = (transformationMatrix * vec4(normal,0.0)).xyz;
 			
 	pass_color = color;
 	pass_id = float(id);

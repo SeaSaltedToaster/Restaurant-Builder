@@ -20,6 +20,7 @@ public class PathfinderComponent extends Component {
 	
 	//Layer the path is on
 	private BuildLayer layer;
+	public PathfindingWorld wrld;
 	
 	public PathfinderComponent() {
 		//Create path node list and pathfinder
@@ -42,6 +43,7 @@ public class PathfinderComponent extends Component {
 			curPath.remove(curNode);
 			getNextNode();
 		}
+		
 	}
 	
 	public void goTo(Vector3f target) {	
@@ -54,7 +56,7 @@ public class PathfinderComponent extends Component {
 		this.curPath = pathfinder.getPath(entity.getTransform().getPosition().copy(), end, layer);
 		
 		//If the path doesnt exist, set an empty path and return an error
-		if(curPath == null) {
+		if(curPath == null || curPath.isEmpty()) {
 			System.err.println("Coundn't calculate path");
 			this.curPath = new ArrayList<Node>();
 		}

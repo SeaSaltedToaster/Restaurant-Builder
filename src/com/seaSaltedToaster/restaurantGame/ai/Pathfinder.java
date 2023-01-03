@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import com.seaSaltedToaster.MainApp;
 import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
 import com.seaSaltedToaster.restaurantGame.ground.Ground;
 import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
@@ -15,12 +16,13 @@ public class Pathfinder {
 			
 	public List<Node> getPath(Vector3f start, Vector3f end, BuildLayer layer) {
 		//Convert list of booleans to a node grid
-		Node[][] grid = getNodes(layer);
+		PathfindingWorld world = layer.getManager().getPathWorld();
+		Node[][] grid = getNodes(world);
 		
 		//Get the target and start nodes, make sure they can be walked on
-		Node startNode = getNode(start, grid);
+		Node startNode = getNode(start, world, grid);
 		startNode.setWalkable(true);
-		Node endNode = getNode(end, grid);
+		Node endNode = getNode(end, world, grid);
 		endNode.setWalkable(true);
 		
 		//Lists of nodes that are searched and ones that are not
@@ -78,7 +80,11 @@ public class Pathfinder {
 				}
 			}
 		}
-		return RetracePath(startNode, lastNode);
+		
+		List<Node> path = new ArrayList<Node>();
+		path.add(startNode);
+		path.add(endNode);
+		return path;
 	}
 	
 	private boolean hasObstruction(BuildLayer layer, Vector3f location) {
@@ -93,10 +99,11 @@ public class Pathfinder {
 	private boolean wallObstruction(BuildLayer layer, Vector3f start, Vector3f end) {
 		//Get the pathfinding world list
 		PathfindingWorld world = layer.getManager().getPathWorld();
+		return false;
 		
 		//Return state of wall obstruction
-		boolean obs = world.wallObstruction(start, end);
-		return obs;
+//		boolean obs = world.wallObstruction(start, end);
+//		return obs;
 	}
 
 	private int GetDistance(Node nodeA, Node nodeB) {
@@ -158,6 +165,7 @@ public class Pathfinder {
 				//Add grid node to neighbor list
 				int checkX = node.getGridX() + x;
 				int checkY = node.getGridZ() + y;
+				if(checkX < 0 || checkY < 0 || checkX > grid.length-1 || checkY > grid.length-1) continue;
 				neighbors.add(grid[checkX][checkY]);
 			}
 		}
@@ -165,10 +173,10 @@ public class Pathfinder {
 		return neighbors;
 	}
 
-	private Node[][] getNodes(BuildLayer layer) {
+	private Node[][] getNodes(PathfindingWorld pw) {
 		//Get the list of booleans of walkability in this layer
-		int gridSize = worldSize;
-		boolean[][] world = layer.getManager().getPathWorld().getWalkableWorld();
+		int gridSize = pw.getWalkableWorld().length;
+		boolean[][] world = pw.getWalkableWorld();
 				
 		//Create the array and loop through all indexes
 		Node[][] grid = new Node[gridSize][gridSize];
@@ -178,7 +186,7 @@ public class Pathfinder {
 				boolean walkable = world[x][y];
 				
 				//Create new node
-				Node node = new Node(getNodePosition(x,y), walkable);
+				Node node = new Node(getNodePosition(y,x, pw), !walkable);
 				node.setGridX(x);
 				node.setGridZ(y);
 				
@@ -189,23 +197,19 @@ public class Pathfinder {
 		return grid;
 	}
 	
-	private Node getNode(Vector3f position, Node[][] grid) {
+	private Node getNode(Vector3f position, PathfindingWorld wrld, Node[][] grid) {
 		//Get the node in the grid at this position
-		int halfScale = worldSize / 2;
 		
 		//Get normalized coords
-		int rawX = (int) position.x;
-		int X = rawX + halfScale;
-		int rawY = (int) position.z;
-		int Y = rawY + halfScale;
+		int x = (int) wrld.getIndex(position.x);
+		int y = (int) wrld.getIndex(position.z);
 		
 		//Return node at the new coords
-		return grid[X][Y];
+		return grid[y][x];
 	}
 
-	private Vector3f getNodePosition(int x, int y) {
+	private Vector3f getNodePosition(int x, int y, PathfindingWorld pw) {
 		//Normalize the position to node space
-		int halfScale = worldSize / 2;
-		return new Vector3f(x - halfScale, 0, y - halfScale);
+		return new Vector3f(pw.posOf(x), 0, pw.posOf(y));
 	}
 }

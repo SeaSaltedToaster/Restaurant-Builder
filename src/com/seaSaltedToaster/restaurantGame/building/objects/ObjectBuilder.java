@@ -38,7 +38,7 @@ public class ObjectBuilder {
 	public void placeAt(BuildLayer layer) {
 		boolean alreadyBuildingAt = !layer.isBuildingAt(preview.getPosition(), object.type);
 		if(alreadyBuildingAt) {
-			layer.addBuilding(preview.copyEntity(), object, buildingIndex);
+			layer.addBuilding(preview.copyEntity(), object, -127);
 			MainApp.restaurant.money -= object.getPrice();
 			buildingIndex++;
 		}

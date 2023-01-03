@@ -32,7 +32,7 @@ public class LanguageReader {
 	
 	private Language loadLanguageFile(String file) {
 		//Create ID list
-		HashMap<String, String> languageList = new HashMap<String, String>();
+		HashMap<String, LangTerm> languageList = new HashMap<String, LangTerm>();
 		
 		//Get all lines in the file
 		String[] fileContents = openFile(file).split(";");
@@ -44,7 +44,7 @@ public class LanguageReader {
 			
 			String id = splitLine[0];
 			String text = splitLine[1];
-			languageList.put(id.trim(), text);
+			languageList.put(id.trim(), new LangTerm(text));
 		}
 		
 		return new Language(languageList, file.replace(".txt", "").substring(LANGUAGE_FOLDER.toCharArray().length));

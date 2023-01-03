@@ -3,6 +3,7 @@ package com.seaSaltedToaster.restaurantGame.objects;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.seaSaltedToaster.restaurantGame.ai.PathfinderComponent;
 import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
 import com.seaSaltedToaster.restaurantGame.objects.food.ItemOrder;
 import com.seaSaltedToaster.restaurantGame.objects.people.ChefComponent;
@@ -27,6 +28,7 @@ public class Restaurant {
 	
 	//Layers
 	public List<BuildLayer> layers;
+	public PathfinderComponent cmp;
 	
 	//Money
 	public int money = 0;
@@ -44,7 +46,7 @@ public class Restaurant {
 		this.orders = new ArrayList<ItemOrder>();
 		this.chefs = new ArrayList<ChefComponent>();
 		this.chefOrders = new ArrayList<ItemOrder>();
-		this.money = 2500;
+		this.money = 5000;
 		this.engine = engine;
 	}
 

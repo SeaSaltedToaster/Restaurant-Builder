@@ -5,19 +5,19 @@ import java.util.HashMap;
 public class Language {
 	
 	//First string is the ID of the text, second is the translated text string
-	private HashMap<String, String> languageList = new HashMap<String, String>();
+	private HashMap<String, LangTerm> languageList = new HashMap<String, LangTerm>();
 	private String name;
 
-	public Language(HashMap<String, String> languageList, String name) {
+	public Language(HashMap<String, LangTerm> languageList, String name) {
 		this.languageList = languageList;
 		this.name = name;
 	}
 
-	public HashMap<String, String> getLanguageList() {
+	public HashMap<String, LangTerm> getLanguageList() {
 		return languageList;
 	}
 
-	public void setLanguageList(HashMap<String, String> languageList) {
+	public void setLanguageList(HashMap<String, LangTerm> languageList) {
 		this.languageList = languageList;
 	}
 

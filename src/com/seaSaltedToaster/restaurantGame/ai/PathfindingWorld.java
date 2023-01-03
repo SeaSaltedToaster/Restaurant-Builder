@@ -37,7 +37,7 @@ public class PathfindingWorld {
 		
 		//Walkable list init and set all to false
 		this.walkableWorld = new boolean[gridSize][gridSize];
-		setAll(walkableWorld, true);
+		setAll(walkableWorld, false);
 	}
 	
 	public boolean wallObstruction(Vector3f start, Vector3f end) {
@@ -77,28 +77,15 @@ public class PathfindingWorld {
 		//Change depending on building type
 		switch(building.type) {
 		case Floor :
-//			FloorComponent comp = (FloorComponent) preview.getComponent("Floor");
-//			if(comp.getPoints().size() == 2) {
-//				float x1 = (comp.getPoints().get(1).x);
-//				float z1 = (comp.getPoints().get(1).z);
-//				float x2 = (comp.getPoints().get(0).x);
-//				float z2 = (comp.getPoints().get(0).z);
-//				
-//				for(float x = x1; x <= x2; x+=0.25f) {
-//					for(float z = z1; z <= z2; z+=0.25f) {
-//						int dx = getIndex(x);
-//						int dz = getIndex(z);
-//						this.walkableWorld[dx][dz] = false;
-//					}
-//				}
-//			}
+			FloorComponent comp = (FloorComponent) preview.getComponent("Floor");
+			if(comp.getPoints().size() == 2) {
+				fillArea(comp.getPoints().get(0), comp.getPoints().get(1));
+			}
 			//Simply set it to true
 			break;
 		case Object:
 			objects.add(objectPos);
-			int x = getIndex(objectPos.x);
-			int z = getIndex(objectPos.z);
-			this.walkableWorld[x][z] = false;
+			this.set(objectPos, walkableWorld, true);
 			break;
 		case Person:
 			//Nothing
@@ -114,7 +101,62 @@ public class PathfindingWorld {
 		}
 	}
 	
-	private int getIndex(float x) {
+	private void fillArea(Vector3f p1, Vector3f p2) {
+		//Space
+		float xDif = Math.abs(p1.x - p2.x);
+		float zDif = Math.abs(p1.z - p2.z);
+		float tileSpace = (Ground.tileSize);
+		
+		//Get start of row fill
+		float rowStart = 0;
+		if(p1.x > p2.x)
+			rowStart = p2.x;
+		else
+			rowStart = p1.x;
+		
+		//p2 to p1 Z
+		if(p1.z > p2.z) 
+		{
+			for(float z = p2.z; z <= p2.z + zDif; z += tileSpace) {
+				int index = getIndex(z);
+				boolean[] row = walkableWorld[index];
+				
+				for(float i = rowStart; i <= rowStart + xDif; i += tileSpace) 
+				{
+					if(noObj(z, i))
+						row[getIndex(i)] = false;
+				}
+				walkableWorld[index] = row;
+			}
+		}
+		//p2 to p1 Z
+		else 
+		{
+			for(float z = p1.z; z <= p1.z + zDif; z += tileSpace) {
+				int index = getIndex(z);
+				boolean[] row = walkableWorld[index];
+				
+				for(float i = rowStart; i <= rowStart + xDif; i += tileSpace) 
+				{
+					if(noObj(z, i))
+						row[getIndex(i)] = false;
+				}
+				walkableWorld[index] = row;
+			}
+		}
+	}
+
+	private boolean noObj(float z, float i) {
+		Vector2f base = new Vector2f(i, z);
+		for(Vector3f obj : objects)
+		{
+			if(base.x == obj.x && base.y == obj.z)
+				return false;
+		}
+		return true;
+	}
+
+	public int getIndex(float x) {
 		return (int) (x * (1.0f / Ground.tileSize)) + (worldSize*2 + 2);
 	}
 
@@ -157,16 +199,16 @@ public class PathfindingWorld {
 		int z = getTileZ(location);
 		
 		//Return state at those coords
-		return world[x][z];
+		return world[z][x];
 	}
 	
 	public void set(Vector3f location, boolean[][] world, boolean state) {
 		//Convert to tile coords
-		int x = getTileX(location);
-		int z = getTileZ(location);
+		int x = getIndex(location.x);
+		int z = getIndex(location.z);
 		
 		//Set state at those coords
-		world[x][z] = state;
+		world[z][x] = state;
 	}
 	
 	public int getTileX(Vector3f location) {
@@ -186,6 +228,14 @@ public class PathfindingWorld {
 		int normalized = pos + (gridSize / 2);
 		return normalized;
 	}
+	
+	public float posOf(int x) {
+		float unnormal = x - (gridSize / 2);
+		unnormal /= (1.0f / Ground.tileSize);
+		unnormal -= (2.0f * Ground.tileSize);
+		return unnormal;
+	}
+
 
 	public void setAll(boolean[][] world, boolean state) {
 		//Loop through every item in the array

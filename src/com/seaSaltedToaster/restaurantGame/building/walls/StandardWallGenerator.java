@@ -38,8 +38,8 @@ public class StandardWallGenerator extends WallGenerator {
 		List<Integer> triangles = new ArrayList<Integer>();
 		
 		float wallWidth = 0.125f;
-		addSideWall(wallWidth, direction, v1.copy(), vertices, triangles);
-		addSideWall(wallWidth, direction, v3.copy(), vertices, triangles);
+		addSideWall(wallWidth, 1.0f, direction, v1.copy(), vertices, triangles);
+		addSideWall(wallWidth, 1.0f, direction, v3.copy(), vertices, triangles);
 		
 		//Wall tri 1 and 2
 		triangles.add(2);
@@ -98,32 +98,10 @@ public class StandardWallGenerator extends WallGenerator {
 		
 		if(addToBatch) {
 			BuildLayer layer = MainApp.restaurant.layers.get(BuildingManager.curLayer);
-			layer.addBuilding(wall, BuildingList.getBuilding(wallType.getWallType()), layer.getBuildings().size()+1);	
+			layer.addBuilding(wall, BuildingList.getBuilding(wallType.getWallType()), -127);	
 		}
 		
 		return wall;
-	}
-	
-	private void addSideWall(float width, Vector3f direction, Vector3f point, List<Vector3f> vertices, List<Integer> triangles) {
-		float projAngle = 90.0f;
-		
-		Vector3f v1 = MathUtils.projectVertex(point, width/2, projAngle);
-		vertices.add(v1);
-		Vector3f v2 = new Vector3f(v1.x, 1, v1.z);
-		vertices.add(v2);
-		
-		Vector3f v3 =  MathUtils.projectVertex(point, width/2, -projAngle);
-		vertices.add(v3);
-		Vector3f v4 = new Vector3f(v3.x, 1, v3.z);
-		vertices.add(v4);
-		
-		triangles.add(vertices.indexOf(v1));
-		triangles.add(vertices.indexOf(v2));
-		triangles.add(vertices.indexOf(v4));
-		
-		triangles.add(vertices.indexOf(v1));
-		triangles.add(vertices.indexOf(v4));
-		triangles.add(vertices.indexOf(v3));
 	}
 
 	@Override

@@ -1,0 +1,14 @@
+example_text_id,Example;
+display_settings,display_settings;
+graphics_settings,graphics_settings;
+audio_settings,audio_settings;
+language_settings,language_settings;
+control_settings,control_settings;
+menu_quit,menu_quit;
+menu_settings,menu_settings;
+menu_play,menu_play;
+saves_title,saves_title;
+saves_create_new,saves_create_new;
+saves_create,saves_create;
+employees_title,employees_title;
+buy_price,buy_price : (val1);
