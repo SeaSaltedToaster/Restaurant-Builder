@@ -4,6 +4,7 @@ import org.lwjgl.glfw.GLFW;
 
 import com.seaSaltedToaster.restaurantGame.WorldCamera;
 import com.seaSaltedToaster.restaurantGame.ai.person.ActionComponent;
+import com.seaSaltedToaster.restaurantGame.ai.person.customer.PartyLeader;
 import com.seaSaltedToaster.restaurantGame.building.BuildingManager;
 import com.seaSaltedToaster.restaurantGame.building.categories.BuildingList;
 import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
@@ -30,7 +31,6 @@ import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.audio.management.AudioMaster;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
 import com.seaSaltedToaster.simpleEngine.renderer.Window;
-import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
 import com.seaSaltedToaster.simpleEngine.utilities.ScreenshotUtils;
 import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 
@@ -87,8 +87,6 @@ public class MainApp {
 			private SaveSystem saveSystem;
 			private LoadSystem loadSystem;
 			
-			UiComponent comp;
-
 			@Override
 			public void loadScene(Engine engine) {
 				/*
@@ -157,11 +155,6 @@ public class MainApp {
 				this.loadSystem.loadCamera((WorldCamera) engine.getCamera());
 				this.loadSystem.loadActions();
 				this.loadSystem.loadBuildings(manager);
-				
-//				comp = new UiComponent(4);
-//				comp.setScale(0.5f, -0.5f);
-//				comp.setTexture(engine.getShadowRenderer().getShadowMap());
-//				this.addComponent(comp);
 								
 				MainApp.menuFocused = false;
 			}
@@ -198,12 +191,27 @@ public class MainApp {
 				saveSystem.openTo("actions");
 				for(BuildLayer layer : manager.getLayers()) {
 					for(Entity entity : layer.getBuildings()) {
+						if(entity == null) continue;
+						PartyLeader leader = (PartyLeader) entity.getComponent("PartyLeader");
+						if(leader != null)
+							leader.save();
+						
 						ActionComponent action = (ActionComponent) entity.getComponent("Action");
 						if(action != null)
 							action.save(saveSystem);
 					}
 				}
 				saveSystem.closeWriter();
+				
+				boolean[][] map = manager.getPathWorld().getWalkableWorld();
+				for(int x = 0; x < map.length; x++) {
+					for(int y = 0; y < map.length; y++) {
+						System.out.print(map[x][y] ? "0" : "1");
+					}
+					System.out.println();
+				}
+				
+				
 			}
 			
 		};

@@ -28,8 +28,9 @@ public class Entity {
 	}
 	
 	public void updateComponents() {
-		for(Component component : this.getComponents()) {
-			component.update();
+		for(int i = 0; i < components.size(); i++) {
+			Component comp = components.get(i);
+			comp.update();
 		}
 	}
 	

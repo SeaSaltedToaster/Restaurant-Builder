@@ -12,11 +12,15 @@ import com.seaSaltedToaster.restaurantGame.ai.person.Action;
 import com.seaSaltedToaster.restaurantGame.ai.person.ActionComponent;
 import com.seaSaltedToaster.restaurantGame.ai.person.GoToAction;
 import com.seaSaltedToaster.restaurantGame.ai.person.WaitAction;
+import com.seaSaltedToaster.restaurantGame.ai.person.customer.CreateParty;
+import com.seaSaltedToaster.restaurantGame.ai.person.customer.FindTable;
+import com.seaSaltedToaster.restaurantGame.ai.person.customer.IdleStay;
 import com.seaSaltedToaster.restaurantGame.building.Building;
 import com.seaSaltedToaster.restaurantGame.building.BuildingId;
 import com.seaSaltedToaster.restaurantGame.building.BuildingManager;
 import com.seaSaltedToaster.restaurantGame.building.BuildingType;
 import com.seaSaltedToaster.restaurantGame.building.categories.BuildingList;
+import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
 import com.seaSaltedToaster.restaurantGame.objects.FloorComponent;
 import com.seaSaltedToaster.restaurantGame.objects.WallComponent;
 import com.seaSaltedToaster.simpleEngine.Engine;
@@ -73,7 +77,6 @@ public class LoadSystem {
 		//Load
 		for(String line : allLines)
 			this.actions.add(line);
-		System.out.println(actions.get(0));
 	}
 	
 	public void loadBuildings(BuildingManager manager) {
@@ -101,9 +104,7 @@ public class LoadSystem {
 			String type = typeAll[2];
 			
 			int layer = Integer.parseInt(typeAll[3]);
-			int id = -127;
-			if(typeAll.length >= 5)	
-				Integer.parseInt(typeAll[4].replace("ID:", "").trim());
+			int id = Integer.parseInt(typeAll[4].replace("ID:", "").trim());
 
 			Building bld = BuildingList.getBuilding(name, BuildingList.getCategory(category));
 			BuildingType typeEnum = BuildingType.valueOf(type);
@@ -130,32 +131,37 @@ public class LoadSystem {
 				entity = loadObject(bld, manager, parts, layer, id);
 				break;
 			}
-			
-			//load actions
-			findActions(id, entity);
-			
-			//Create entity
-			if(bld == null)
-				return;
 		}
+		
+		for(BuildLayer layer : manager.getLayers()) {
+			layer.updateLayer();
+			for(Entity entity : layer.getBuildings()) {
+				//ID
+				BuildingId id = (BuildingId) entity.getComponent("BuildingId");
+
+				//load actions
+				findActions(id.getId(), entity);
+
+			}
+		}
+
 	}	
 	
-	private void findActions(int id, Entity entity) {
+	private void findActions(int id, Entity entity) {	
 		if(!entity.hasComponent("Action")) return;
 		
 		ActionComponent comp = (ActionComponent) entity.getComponent("Action");
 		for(String line : actions) {
 			if(line.startsWith(""+id)) {
 				comp.getActions().add(processAction(line, entity));
+				comp.getActions().remove(null);
+				
+				System.out.println(comp.getActions().size());
+
 			}
 		}
-		comp.getActions().remove(null);
-		
-		if(comp.getActions().isEmpty()) {
-			for(int i = 0; i < 25; i++) {
-				comp.getActions().add(new GoToAction(new Vector3f((float) Math.random() * 20, 0, (float) Math.random() * 20), entity, true));
-			}
-		}
+		if(comp != null)
+			comp.getActions().remove(null);
 	}
 
 	private Action processAction(String line, Entity entity) {
@@ -175,9 +181,24 @@ public class LoadSystem {
 			action.object = entity;
 			action.loadAction(vals[3]);
 			break;
-		default :
+		case "CreateParty" :
+			action = new CreateParty();
+			action.object = entity;
+			action.loadAction(vals[3]);
 			action = null;
+			break;
+		case "FindTable" :
+			action = new FindTable(null);
+			action.object = entity;
+			action.loadAction(vals[3]);
+			break;
+		case "Idle" :
+			action = new IdleStay();
+			action.object = entity;
+			action.loadAction(vals[3]);
+			break;
 		}
+		System.out.println(action + " " + type);
 		
 		return action;
 	}

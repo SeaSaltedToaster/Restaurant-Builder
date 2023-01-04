@@ -3,6 +3,9 @@ package com.seaSaltedToaster.restaurantGame.ai.person;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.seaSaltedToaster.restaurantGame.ai.person.customer.CreateParty;
+import com.seaSaltedToaster.restaurantGame.ai.person.customer.FindTable;
+import com.seaSaltedToaster.restaurantGame.ai.person.customer.IdleStay;
 import com.seaSaltedToaster.restaurantGame.save.SaveSystem;
 import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.Component;
 
@@ -26,16 +29,23 @@ public class ActionComponent extends Component {
 	}
 	
 	public void startBehaviourTree() {
-		//this.actions.clear();
-		//this.curAction = null;
+		actions.remove(null);
+		if(!actions.isEmpty()) return;
 		
 		//Switch by type of NPC
 		switch(tree.trim()){
 		case "ChefOld":
 			//Add the starting action of the chef
 			break;
-		case "CustomerOld":
-			//Starting wait on customer spawn
+		case "Customer":
+			//Starting wait on customer spawn (party size based on capacity)
+			this.actions.add(new CreateParty());
+			
+			//Once we have our group, find a table to sit at
+			this.actions.add(new FindTable(entity));
+			this.actions.add(new IdleStay());
+			
+			//The FindTable class will continue the rest of the tree
 			break;
 		case "WaiterOld":
 			//Start action of the waiter NPC
@@ -46,6 +56,12 @@ public class ActionComponent extends Component {
 			break;
 		default:
 			break;
+		}
+		
+		for(int i = 0; i < actions.size(); i++) {
+			Action action = actions.get(i);
+			action.actionIndex = i;
+			action.object = getEntity();
 		}
 	}
 	
@@ -69,6 +85,8 @@ public class ActionComponent extends Component {
 		
 		//Set action entityes and indexes
 		for(int i = 0; i < actions.size(); i++) {
+			if(actions.get(i) == null)
+				continue;
 			Action action = actions.get(i);
 			action.actionIndex = i;
 			action.object = getEntity();

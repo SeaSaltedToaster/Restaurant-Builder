@@ -22,6 +22,7 @@ import com.seaSaltedToaster.simpleEngine.entity.Entity;
 import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.ModelComponent;
 import com.seaSaltedToaster.simpleEngine.models.Vao;
 import com.seaSaltedToaster.simpleEngine.utilities.Vector2f;
+import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 
 public class BuildingRepository {
 	
@@ -51,17 +52,6 @@ public class BuildingRepository {
 		
 		Building patio = this.loader.loadObject("patio", engine);
 		patio.getBuildingComponents().add(new FloorComponent("Patio", "Flat", null));
-				
-		//Roof Tiles
-//		Building roofCorner = this.loader.loadObject("roofCorner", engine);
-//		Building roof = this.loader.loadObject("roof", engine);
-//		Building roofFlat = this.loader.loadObject("roofFlat", engine);
-//		Building roofOut = this.loader.loadObject("roofOut", engine);
-//		Building shadeRoof = this.loader.loadObject("/roofTiles/shadeRoof", engine);
-		
-		//Door
-//		Building doorFrame = this.loader.loadObject("doors/doorFrame", engine);
-//		doorFrame.setWalkThrough(true);
 		
 		/*
 		 * GARDEN
@@ -130,7 +120,9 @@ public class BuildingRepository {
 		person1.setIconZoom(0.5f);
 		person1.getBuildingComponents().add(new PathfinderComponent());
 		person1.getBuildingComponents().add(new CustomerComponent());
-		person1.getBuildingComponents().add(new ActionComponent("CustomerOld"));
+		person1.getBuildingComponents().add(new ActionComponent("Customer"));
+		person1.setDefPrimary(new Vector3f(0.585, 0.54, 0.3225));
+		person1.setDefSecondary(new Vector3f(0.78, 0.72, 0.43));
 		BuildingList.register(person1, "WorkInProgress");
 		
 		Building waiter1 = loadBuilding("waiter1", BuildingType.Person, engine);

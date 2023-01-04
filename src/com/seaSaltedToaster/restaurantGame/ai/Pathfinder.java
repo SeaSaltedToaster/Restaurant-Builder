@@ -82,8 +82,6 @@ public class Pathfinder {
 		}
 		
 		List<Node> path = new ArrayList<Node>();
-		path.add(startNode);
-		path.add(endNode);
 		return path;
 	}
 	
@@ -186,7 +184,8 @@ public class Pathfinder {
 				boolean walkable = world[x][y];
 				
 				//Create new node
-				Node node = new Node(getNodePosition(y,x, pw), !walkable);
+				Node node = new Node(getNodePosition(y,x, pw), 
+						walkable);
 				node.setGridX(x);
 				node.setGridZ(y);
 				
@@ -205,6 +204,8 @@ public class Pathfinder {
 		int y = (int) wrld.getIndex(position.z);
 		
 		//Return node at the new coords
+		if(x >= grid.length || y >= grid.length)
+			return new Node(new Vector3f(x, 0, y), false);
 		return grid[y][x];
 	}
 

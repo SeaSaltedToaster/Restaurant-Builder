@@ -1,8 +1,5 @@
 package com.seaSaltedToaster.restaurantGame.ai.person;
 
-import java.util.List;
-
-import com.seaSaltedToaster.restaurantGame.ai.Node;
 import com.seaSaltedToaster.restaurantGame.ai.PathfinderComponent;
 import com.seaSaltedToaster.restaurantGame.building.BuildingId;
 import com.seaSaltedToaster.restaurantGame.save.SaveSystem;
@@ -36,16 +33,6 @@ public class GoToAction extends Action {
 		if(pathfinder.getCurPath() == null) {
 			//Nothing
 		}
-		
-		//Get path node list
-		List<Node> path = pathfinder.getCurPath();
-		
-		//Remove final node is setting is set and the path has more than one node
-		if(path.size() > 1 && removeFinalNode) {
-			Node tableNode = path.get(path.size()-1);
-			pathfinder.getCurPath().remove(tableNode);
-		}
-		System.out.println(path.size());
 	}
 
 	@Override

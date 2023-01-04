@@ -2,7 +2,6 @@ package com.seaSaltedToaster.restaurantGame.ai.person;
 
 import com.seaSaltedToaster.restaurantGame.building.BuildingId;
 import com.seaSaltedToaster.restaurantGame.save.SaveSystem;
-import com.seaSaltedToaster.simpleEngine.entity.Entity;
 import com.seaSaltedToaster.simpleEngine.renderer.Window;
 import com.seaSaltedToaster.simpleEngine.utilities.Timer;
 

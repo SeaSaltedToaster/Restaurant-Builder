@@ -85,7 +85,7 @@ public class PathfindingWorld {
 			break;
 		case Object:
 			objects.add(objectPos);
-			this.set(objectPos, walkableWorld, true);
+			this.set(objectPos, walkableWorld, false);
 			break;
 		case Person:
 			//Nothing
@@ -124,7 +124,7 @@ public class PathfindingWorld {
 				for(float i = rowStart; i <= rowStart + xDif; i += tileSpace) 
 				{
 					if(noObj(z, i))
-						row[getIndex(i)] = false;
+						row[getIndex(i)] = true;
 				}
 				walkableWorld[index] = row;
 			}
@@ -139,7 +139,7 @@ public class PathfindingWorld {
 				for(float i = rowStart; i <= rowStart + xDif; i += tileSpace) 
 				{
 					if(noObj(z, i))
-						row[getIndex(i)] = false;
+						row[getIndex(i)] = true;
 				}
 				walkableWorld[index] = row;
 			}

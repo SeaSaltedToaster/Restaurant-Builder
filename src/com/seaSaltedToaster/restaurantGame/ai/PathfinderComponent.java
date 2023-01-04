@@ -3,6 +3,7 @@ package com.seaSaltedToaster.restaurantGame.ai;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.seaSaltedToaster.MainApp;
 import com.seaSaltedToaster.restaurantGame.building.BuildingId;
 import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
 import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.Component;
@@ -26,6 +27,7 @@ public class PathfinderComponent extends Component {
 		//Create path node list and pathfinder
 		this.curPath = new ArrayList<Node>();
 		this.pathfinder = new Pathfinder();
+		MainApp.restaurant.cmp = this;
 	}
 	
 	@Override
