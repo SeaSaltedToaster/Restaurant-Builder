@@ -22,7 +22,7 @@ public class SelectionRenderer extends Renderer {
 	private Fbo fbo;
 	private short[] pixels;
 	private int selectedId = -127;
-	private static float colorAmt = 256.0f;
+	private static float colorAmt = 255.0f;
 	
 	//Manager
 	private BuildingManager manager;
@@ -94,6 +94,7 @@ public class SelectionRenderer extends Renderer {
 		//Get selected objects
 		short[] bytes = readPixelColour();
 		int id = (int) (decodeIdFromColor(bytes) / colorAmt);
+	    System.out.println(id);
 		this.selectedId = id;
 		Entity selected = manager.getBuilding(id);
 		if(selected != null)
@@ -112,7 +113,7 @@ public class SelectionRenderer extends Renderer {
 	}
 	
 	private Vector3f getIdColor(float index) {
-		float[] color = new float[16];
+		float[] color = new float[32];
 		encodeIdIntoColor(index, color);
 		float x = color[0];
 		float y = color[1];
@@ -123,23 +124,32 @@ public class SelectionRenderer extends Renderer {
 	private void encodeIdIntoColor(float id, float[] color) {
 		float index = (float) id;
 		color[2] = (index % colorAmt);
-		index = index / colorAmt;
+		
+		index = index - colorAmt;
 		if(index < 1) {
 			color[1] = 0f;
 			color[0] = 0f;
+			return;
 		}
-	    color[1] = (index % colorAmt);
-		index = index / colorAmt;
+		else {
+			color[1] = (index % colorAmt);
+		}
+		
+		index = index - colorAmt;
 		if(index < 1) {
 			color[0] = 0f;
+			return;
 		}
-	    color[0] = (index % colorAmt);
+		else {
+			color[0] = (index % colorAmt);
+		}
 	}
 		  
 	private static float decodeIdFromColor(short[] colour) {
 		float id = convertUnsignedByte(colour[2]);
-	    id += (convertUnsignedByte(colour[1]) * (colorAmt)) + 1;
+	    id += (convertUnsignedByte(colour[1]) * colorAmt);
 	    id += convertUnsignedByte(colour[0]) * (colorAmt * colorAmt);
+	    System.out.println(convertUnsignedByte(colour[0]) + " : " + convertUnsignedByte(colour[1]) + " : " + convertUnsignedByte(colour[2]));
 	    return id;
 	}
 	

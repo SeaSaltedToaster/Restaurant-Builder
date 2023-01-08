@@ -178,6 +178,18 @@ public class BuildingManager implements KeyListener {
 		return null;
 	}
 	
+	public static Entity getBuildingWithID(int id) {
+		for(BuildLayer layer : MainApp.restaurant.layers) {
+			for(Entity entity : layer.getBuildings()) {
+				if(!entity.hasComponent("BuildingId")) continue;
+				BuildingId ide = (BuildingId) entity.getComponent("BuildingId");
+				if(ide.getId() == id)
+					return entity;
+			}
+		}
+		return null;
+	}
+	
 	public void setCurrentBuilding(Building building) {
 		BuildingType type = building.type;
 		switch(type) {

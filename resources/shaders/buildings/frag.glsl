@@ -35,7 +35,7 @@ void main(void)	{
 	vec4 litColor = mix(baseColor, nightColor, dayValue);
 	
 	if(currentId == selectedId || currentId == -1) {
-		litColor = vec4(1,1,1,1);
+		litColor *= vec4(2.0);
 	}
 	
 	out_Color = litColor;

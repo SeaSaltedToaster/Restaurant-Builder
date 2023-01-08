@@ -14,7 +14,11 @@ import com.seaSaltedToaster.restaurantGame.ai.person.GoToAction;
 import com.seaSaltedToaster.restaurantGame.ai.person.WaitAction;
 import com.seaSaltedToaster.restaurantGame.ai.person.customer.CreateParty;
 import com.seaSaltedToaster.restaurantGame.ai.person.customer.FindTable;
+import com.seaSaltedToaster.restaurantGame.ai.person.customer.HoverParty;
 import com.seaSaltedToaster.restaurantGame.ai.person.customer.IdleStay;
+import com.seaSaltedToaster.restaurantGame.ai.person.customer.LoadSeating;
+import com.seaSaltedToaster.restaurantGame.ai.person.customer.OrderFood;
+import com.seaSaltedToaster.restaurantGame.ai.person.customer.SitDownAction;
 import com.seaSaltedToaster.restaurantGame.building.Building;
 import com.seaSaltedToaster.restaurantGame.building.BuildingId;
 import com.seaSaltedToaster.restaurantGame.building.BuildingManager;
@@ -188,12 +192,33 @@ public class LoadSystem {
 			action = null;
 			break;
 		case "FindTable" :
-			action = new FindTable(null);
+			action = new FindTable();
 			action.object = entity;
 			action.loadAction(vals[3]);
 			break;
 		case "Idle" :
 			action = new IdleStay();
+			action.object = entity;
+			action.loadAction(vals[3]);
+			break;
+		case "HoverParty" :
+			action = new HoverParty();
+			action.object = entity;
+			action.loadAction(vals[3]);
+			break;
+		case "SitDown" :
+			action = new SitDownAction(null);
+			action.object = entity;
+			action.loadAction(vals[3]);
+			break;
+		case "LoadSeating" :
+			action = new LoadSeating(null);
+			action.object = entity;
+			action.loadAction(vals[3]);
+			action = null;
+			break;
+		case "OrderFood" : 
+			action = new OrderFood();
 			action.object = entity;
 			action.loadAction(vals[3]);
 			break;

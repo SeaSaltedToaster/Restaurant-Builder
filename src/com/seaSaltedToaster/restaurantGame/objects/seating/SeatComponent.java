@@ -13,6 +13,7 @@ public class SeatComponent extends Component {
 
 	//Table
 	private TableComponent table;
+	private boolean isTaken = false;
 	
 	public SeatComponent(Vector2f position, float height) {
 		this.origin = new Vector3f(position.x, height, position.y);
@@ -34,6 +35,14 @@ public class SeatComponent extends Component {
 
 	public void setTable(TableComponent table) {
 		this.table = table;
+	}
+
+	public boolean isTaken() {
+		return isTaken;
+	}
+
+	public void setTaken(boolean isTaken) {
+		this.isTaken = isTaken;
 	}
 
 	@Override

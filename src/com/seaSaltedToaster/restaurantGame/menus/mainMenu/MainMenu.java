@@ -105,17 +105,17 @@ public class MainMenu {
 	
 		//Version
 		float textSize = 1.0f;
-		this.version = new Text("Restaurantario Version 0.0.9 Christmas", textSize, 0);
+		this.version = new Text("Restaurantario Version 0.0.9a - AI Update P1", textSize, 0);
 		this.version.setColor(0.0f);
 		UiConstraints cons2 = version.getConstraints();
-		cons2.setX(new AlignX(XAlign.LEFT, 0.0f));
+		cons2.setX(new AlignX(XAlign.LEFT, 0.0125f));
 		cons2.setY(new AlignY(YAlign.BOTTOM, 0.033f));
 		this.background.addComponent(version);
 		LanguageManager.addText("version", version);
 	}
 
 	private void createBackground(Engine engine) {
-		this.backgroundImage = engine.getTextureLoader().loadTexture("/uis/menuBackground1225");
+		this.backgroundImage = engine.getTextureLoader().loadTexture("/uis/menuBackground18");
 		this.background = new UiComponent(0);
 		this.background.setTexture(backgroundImage);
 		this.background.setScale(1.0f, 1.0f);

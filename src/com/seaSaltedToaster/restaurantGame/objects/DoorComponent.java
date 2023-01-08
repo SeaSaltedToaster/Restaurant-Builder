@@ -3,7 +3,6 @@ package com.seaSaltedToaster.restaurantGame.objects;
 import com.seaSaltedToaster.MainApp;
 import com.seaSaltedToaster.restaurantGame.building.Building;
 import com.seaSaltedToaster.restaurantGame.building.categories.BuildingList;
-import com.seaSaltedToaster.restaurantGame.building.objects.ObjectBuilder;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
 import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.Component;
 import com.seaSaltedToaster.simpleEngine.renderer.Window;
@@ -13,7 +12,7 @@ public class DoorComponent extends Component {
 
 	//Timing
 	private Timer timer;
-	private int waitTime = 5;
+	private int waitTime = 1;
 	
 	@Override
 	public void init() {
@@ -26,7 +25,7 @@ public class DoorComponent extends Component {
 		this.timer.update(Window.DeltaTime);
 		
 		Restaurant restaurant = MainApp.restaurant;
-		if(timer.isFinished() && !restaurant.atCapacity()) {
+		if(timer.isFinished() && !restaurant.atCapacity() && restaurant.capacity() > 0) {
 			spawnPerson(restaurant); //TODO SPAWN PEOPLE
 		}
 	}

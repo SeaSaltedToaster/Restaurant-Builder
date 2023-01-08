@@ -20,7 +20,8 @@ public class TableComponent extends Component implements PlacementListener {
 	private static int MAX_DIST = 1;
 	
 	//Claim state
-	private boolean isTaken;
+	private boolean isTaken = false;
+	private int capacity = 0;
 	
 	//Chairs
 	private List<SeatComponent> chairs;
@@ -43,7 +44,6 @@ public class TableComponent extends Component implements PlacementListener {
 			BuildingId id = (BuildingId) entity.getComponent("BuildingId");
 			this.notifyPlacement(entity, id.getType());
 		}
-		
 	}
 
 	@Override
@@ -62,22 +62,31 @@ public class TableComponent extends Component implements PlacementListener {
 				
 				component.setTable(this);
 				this.chairs.add(component);
+				this.capacity++;
 			}
 		}
 	}
 	
 	public int capacity() {
-		return chairs.size();
+		return capacity;
+	}
+
+	public List<SeatComponent> getChairs() {
+		return chairs;
+	}
+
+	public int getCapacity() {
+		return capacity;
 	}
 
 	public boolean isTaken() {
 		return isTaken;
 	}
-
-	/*
-	 * DEFAULT 
-	 */
 	
+	public void setTaken(boolean isTaken) {
+		this.isTaken = isTaken;
+	}
+
 	@Override
 	public void update() {
 		

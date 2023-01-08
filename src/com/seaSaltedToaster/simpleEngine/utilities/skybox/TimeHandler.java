@@ -51,7 +51,7 @@ public class TimeHandler {
 			newValue = (1 - value);
 		}
 		//Set
-		TimeHandler.DAY_VALUE = 0.0f;
+		TimeHandler.DAY_VALUE = BRIGHTNESS;
 		TimeHandler.BRIGHTNESS = (1.0f - newValue) - 0.125f;
 	}
 	

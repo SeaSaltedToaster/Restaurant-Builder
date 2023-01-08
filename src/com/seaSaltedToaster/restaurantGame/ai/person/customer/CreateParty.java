@@ -40,7 +40,7 @@ public class CreateParty extends Action {
 
 	@Override
 	public void update() {
-		
+		//None
 	}
 
 	@Override
@@ -48,8 +48,11 @@ public class CreateParty extends Action {
 		if(partySize != -127) return true;
 		
 		//Main person leader
-		this.partySize =  (int) Math.abs(Math.random() * 7) + 1;
+		this.partySize =  MainApp.restaurant.capacity();
 		BuildingId leaderId = (BuildingId) object.getComponent("BuildingId");
+		
+		if(this.partySize < 1 || MainApp.restaurant.capacity() < 1)
+			return false;
 
 		//Create our party
 		for(int i = 0; i < partySize; i++) 
@@ -62,12 +65,19 @@ public class CreateParty extends Action {
 			{
 				Building bld = BuildingList.getBuilding("Customer_TEST");
 				Entity member = bld.getEntity().copyEntity();
-				member.setPosition(object.getPosition().add(new Vector3f(Math.random(), 0, Math.random())));
+				member.getPosition().setX(object.getPosition().x);
+				member.getPosition().setZ(object.getPosition().z);
 
 				partyMembers.add(member);
 				leaderId.getLayer().addBuilding(member, bld, -127);
 				
-				member.removeComponent(member.getComponent("Action"));
+				ActionComponent memberAComp = (ActionComponent) member.getComponent("Action");
+				memberAComp.setTree("Guest");
+				memberAComp.getActions().clear();
+				
+				PartyMember memberComp = new PartyMember(object);
+				member.addComponent(memberComp);
+				
 				BuildingId id = (BuildingId) member.getComponent("BuildingId");
 				id.setPrimary(randomShirtColor());
 			}
@@ -75,6 +85,13 @@ public class CreateParty extends Action {
 		
 		PartyLeader leader = new PartyLeader(object, partyMembers, partySize);
 		object.addComponent(leader);
+		
+		for(Entity member : leader.getPartyMembers()) {
+			ActionComponent memberAComp = (ActionComponent) member.getComponent("Action");
+			HoverParty party = new HoverParty();
+			party.object = member;
+			memberAComp.getActions().add(party);
+		}
 		
 		return partySize != -127;
 	}
@@ -107,13 +124,22 @@ public class CreateParty extends Action {
 		
 		this.partySize = 0;
 		for(String member : lines) {
+			if(lines.length <= 1) break;
 			int num = Integer.parseInt(member);
 			for(BuildLayer layer : MainApp.restaurant.layers) {
 				for(Entity entity : layer.getBuildings()) {
 					
 					BuildingId id = (BuildingId) entity.getComponent("BuildingId");
 					if(id.getId() == num) {
-						entity.removeComponent(entity.getComponent("Action"));
+						
+						ActionComponent memberAComp = (ActionComponent) entity.getComponent("Action");
+						memberAComp.setTree("Guest");
+						memberAComp.doTree = false;
+						memberAComp.getActions().clear();
+						
+						PartyMember memberComp = new PartyMember(object);
+						entity.addComponent(memberComp);
+						
 						this.partyMembers.add(entity);
 						this.partySize++;
 					}
@@ -126,6 +152,7 @@ public class CreateParty extends Action {
 		object.addComponent(leader);
 		
 		ActionComponent comp = (ActionComponent) object.getComponent("Action");
+		comp.doTree = false;
 		comp.getActions().clear();
 	}
 

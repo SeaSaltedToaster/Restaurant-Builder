@@ -72,4 +72,12 @@ public class Restaurant {
 		return true;
 	}
 
+	public int capacity() {
+		for(TableComponent table : tables) {
+			if(!table.isTaken() && table.capacity() > 0)
+				return table.capacity();
+		}
+		return 0;
+	}
+
 }

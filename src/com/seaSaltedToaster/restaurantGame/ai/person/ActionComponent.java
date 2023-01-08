@@ -17,6 +17,7 @@ public class ActionComponent extends Component {
 	
 	//Type of NPC the action is done on
 	private String tree;
+	public boolean doTree = true;
 		
 	public ActionComponent(String tree) {
 		this.actions = new ArrayList<Action>();
@@ -30,7 +31,13 @@ public class ActionComponent extends Component {
 	
 	public void startBehaviourTree() {
 		actions.remove(null);
-		if(!actions.isEmpty()) return;
+		if(!actions.isEmpty() || !doTree) return;
+		
+		for(int i = 0; i < actions.size(); i++) {
+			Action action = actions.get(i);
+			action.actionIndex = i;
+			action.object = getEntity();
+		}
 		
 		//Switch by type of NPC
 		switch(tree.trim()){
@@ -42,7 +49,7 @@ public class ActionComponent extends Component {
 			this.actions.add(new CreateParty());
 			
 			//Once we have our group, find a table to sit at
-			this.actions.add(new FindTable(entity));
+			this.actions.add(new FindTable());
 			this.actions.add(new IdleStay());
 			
 			//The FindTable class will continue the rest of the tree
@@ -56,12 +63,6 @@ public class ActionComponent extends Component {
 			break;
 		default:
 			break;
-		}
-		
-		for(int i = 0; i < actions.size(); i++) {
-			Action action = actions.get(i);
-			action.actionIndex = i;
-			action.object = getEntity();
 		}
 	}
 	
@@ -117,6 +118,10 @@ public class ActionComponent extends Component {
 	public String getTree() {
 		return tree;
 	}
+	
+	public void setTree(String string) {
+		this.tree = string;
+	}
 
 	public List<Action> getActions() {
 		return actions;
@@ -145,5 +150,6 @@ public class ActionComponent extends Component {
 	public Component copyInstance() {
 		return new ActionComponent(tree);
 	}
+
 
 }

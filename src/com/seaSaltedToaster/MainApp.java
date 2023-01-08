@@ -5,6 +5,7 @@ import org.lwjgl.glfw.GLFW;
 import com.seaSaltedToaster.restaurantGame.WorldCamera;
 import com.seaSaltedToaster.restaurantGame.ai.person.ActionComponent;
 import com.seaSaltedToaster.restaurantGame.ai.person.customer.PartyLeader;
+import com.seaSaltedToaster.restaurantGame.ai.person.customer.PartySeating;
 import com.seaSaltedToaster.restaurantGame.building.BuildingManager;
 import com.seaSaltedToaster.restaurantGame.building.categories.BuildingList;
 import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
@@ -195,6 +196,10 @@ public class MainApp {
 						PartyLeader leader = (PartyLeader) entity.getComponent("PartyLeader");
 						if(leader != null)
 							leader.save();
+						
+						PartySeating seating = (PartySeating) entity.getComponent("PartySeating");
+						if(seating != null)
+							seating.saveSeating();
 						
 						ActionComponent action = (ActionComponent) entity.getComponent("Action");
 						if(action != null)
