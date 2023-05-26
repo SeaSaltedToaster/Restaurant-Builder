@@ -23,7 +23,6 @@ public class PartySeating extends Component {
 		
 		ActionComponent comp = (ActionComponent) entity.getComponent("Action");
 		comp.getActions().add(1, load);
-		System.out.println("G " + seating.size());
 	}
 	
 	public void addSeating(Entity person, SeatComponent component) {

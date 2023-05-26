@@ -59,6 +59,7 @@ public class Raycaster implements MouseListener, MousePosListener {
 		//If we are in a menu, do nothing
 		if(MainApp.menuFocused) {
 			this.ground.selectAt(null);
+			this.builder.setSelectedEntity(null);
 			return;
 		}
 		

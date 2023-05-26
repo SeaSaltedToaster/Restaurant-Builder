@@ -28,7 +28,7 @@ public class GeneralMenu extends UiComponent implements KeyListener {
 	//Objects
 	private int buttonCount = 6;
 	private int[] buttonIcons;
-	private UiComponent[] buttons;
+	private GeneralButton[] buttons;
 	
 	public GeneralMenu(Engine engine) {
 		super(1);
@@ -49,39 +49,52 @@ public class GeneralMenu extends UiComponent implements KeyListener {
 		if(eventData.getAction() != GLFW.GLFW_PRESS) return;
 		if(eventData.getKey() == GLFW.GLFW_KEY_ESCAPE) {
 			closeOthers();
+			
+			for(int i = 0; i < buttonCount; i++) {
+				buttons[i].setInUse(false);
+			}
 		}
 	}
 		
 	@Override
-	public void onClick() {		
+	public void onClick() {	
+		for(int i = 0; i < buttonCount; i++) {
+			buttons[i].setInUse(false);
+		}
+		
 		//General
 		if(buttons[0].isHovering()) {
+			buttons[0].setInUse(!buttons[0].isInUse());
 			closeOthers();
 		}
 		//Building
 		if(buttons[1].isHovering()) {
 			closeOthers();
 			building.show();
+			buttons[1].setInUse(!buttons[1].isInUse());
 		}
 		//Employees
 		if(buttons[2].isHovering()) {
 			closeOthers();
 			employee.show();
+			buttons[2].setInUse(!buttons[2].isInUse());
 		}
 		//Paint
 		if(buttons[3].isHovering()) {
 			closeOthers();
 			paint.show();
-			
+			buttons[3].setInUse(!buttons[3].isInUse());
 		}
 		//Delete
 		if(buttons[4].isHovering()) {
 			closeOthers();
 			delete.show(buttons[4]);
+			buttons[4].setInUse(!buttons[4].isInUse());
 		}
 		//Settings
 		if(buttons[5].isHovering()) {
 			closeOthers();
+			buttons[5].setInUse(!buttons[5].isInUse());
 		}
 	}
 
@@ -111,7 +124,7 @@ public class GeneralMenu extends UiComponent implements KeyListener {
 	}
 
 	private void addButtons(Engine engine) {
-		this.buttons = new UiComponent[buttonCount];
+		this.buttons = new GeneralButton[buttonCount];
 		for(int i = 0; i < buttonCount; i++) {
 			//Button
 			GeneralButton button = new GeneralButton(buttonIcons[i], engine);
@@ -132,9 +145,9 @@ public class GeneralMenu extends UiComponent implements KeyListener {
 
 	private void createBacking() {
 		UiConstraints cons = new UiConstraints();
-		cons.setX(new AlignX(XAlign.LEFT, 0.025f));
+		cons.setX(new AlignX(XAlign.LEFT, 0.00625f));
 		cons.setY(new AlignY(YAlign.TOP, 0.5f));
-		cons.setWidth(new AspectRatio(0.05f));
+		cons.setWidth(new AspectRatio(0.20f));
 		cons.setLayout(new VerticalLayout(-0.066f, 0.025f));
 		this.setConstraints(cons);
 		this.setScale(0.066f, 0.4f);

@@ -70,7 +70,7 @@ public class LoadSeating extends Action {
 		PartyLeader leader = (PartyLeader) object.getComponent("PartyLeader");
 		
 		for(String member : lines) {
-			if(lines.length <= 1) break;
+			if(lines.length <= 0) break;
 			
 			//Break down
 			String[] parts = member.split("&");
@@ -90,13 +90,16 @@ public class LoadSeating extends Action {
 					if(id.getId() == seat) {
 						seatE = entity;
 					}
-					
 				}
 			}
 			
+			if(seatE == null || personE == null) continue;
+			
 			SeatComponent comp = (SeatComponent) seatE.getComponent("Chair");
 			comp.setTaken(true);
+			
 			comp.getTable().setTaken(true);
+			comp.getTable().setTablePartyLeader(leader.getEntity());
 			personE.setPosition(comp.seatPosition);
 			seating.put(personE, comp);
 			

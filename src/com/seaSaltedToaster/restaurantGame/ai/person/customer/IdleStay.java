@@ -18,7 +18,7 @@ public class IdleStay extends Action {
 
 	@Override
 	public boolean isDone() {
-		return false;
+		return true;
 	}
 
 	@Override

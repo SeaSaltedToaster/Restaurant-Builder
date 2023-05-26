@@ -3,6 +3,7 @@ const vec4 nightColor = vec4(0.0f);
 
 const vec3 primaryInd = vec3(0.1f, 0.15f, 0.2f);
 const vec3 secondaryInd = vec3(0.2f, 0.15f, 0.1f);
+const float factor = 0.25;
 
 in vec3 pass_color;
 in vec3 surfaceNormal;
@@ -35,7 +36,10 @@ void main(void)	{
 	vec4 litColor = mix(baseColor, nightColor, dayValue);
 	
 	if(currentId == selectedId || currentId == -1) {
-		litColor *= vec4(2.0);
+		float x = (litColor.x > 0.5) ? litColor.x - factor : litColor.x + factor;
+		float y = (litColor.y > 0.5) ? litColor.y - factor : litColor.y + factor;
+		float z = (litColor.z > 0.5) ? litColor.z - factor : litColor.z + factor;
+		litColor = vec4(x, y, z, 1);
 	}
 	
 	out_Color = litColor;

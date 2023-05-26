@@ -24,7 +24,7 @@ void main(void)	{
 	
 	int fullId = int(pass_id + 0.5f);
 	if(fullId == selected) {
-		out_Color = litColor * vec4(vec3(shade), 1.0f);
+		out_Color = litColor += vec4(vec3(shade), 1.0f);
 	}
 	else {
 		out_Color = litColor;

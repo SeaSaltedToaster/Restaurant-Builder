@@ -127,6 +127,8 @@ public class ObjectBuilder {
 		this.object = object;
 		this.preview = object.getEntity().copyEntity();
 		this.preview.setTransform(lastChange.copyTransform());
+		
+		this.manager.getRenderer().setPreviewObj(object);
 	}
 	
 	public void showPreview(boolean show) {

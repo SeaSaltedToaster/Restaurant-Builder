@@ -145,6 +145,7 @@ public class BuildingManager implements KeyListener {
 			case DEFAULT:
 				break;
 			case WALL:
+				this.wallBuilder.stop();
 				break;
 			default:
 				break;
@@ -181,6 +182,7 @@ public class BuildingManager implements KeyListener {
 	public static Entity getBuildingWithID(int id) {
 		for(BuildLayer layer : MainApp.restaurant.layers) {
 			for(Entity entity : layer.getBuildings()) {
+				if(entity == null) continue;
 				if(!entity.hasComponent("BuildingId")) continue;
 				BuildingId ide = (BuildingId) entity.getComponent("BuildingId");
 				if(ide.getId() == id)

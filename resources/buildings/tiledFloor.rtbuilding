@@ -1,6 +1,6 @@
 name=Tiled Floor
 type=Floor
-price=10
+price=15
 iconZoom=0.66
 category=General
 model=basic/tiledFloor

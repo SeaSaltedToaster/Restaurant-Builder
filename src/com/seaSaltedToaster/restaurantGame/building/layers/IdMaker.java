@@ -12,7 +12,7 @@ public class IdMaker {
 	public static int getNew() {
 		int index = 0;
 		while(true) {
-			index = random.nextInt(Integer.MAX_VALUE - 1);
+			index = random.nextInt((int) Math.pow(10, 5));
 			if(!isUsed(index))
 				break;
 		}

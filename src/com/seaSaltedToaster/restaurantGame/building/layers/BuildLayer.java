@@ -122,6 +122,7 @@ public class BuildLayer {
 		preview.addComponent(new BuildingId(id, object, this));
 		preview.addComponent(new PlaceAnimation());
 		this.buildingsToAdd.add(preview);
+		
 		for(Component comp : object.getBuildingComponents()) {
 			if(comp.getComponentType() == "Pathfinder") 
 			{

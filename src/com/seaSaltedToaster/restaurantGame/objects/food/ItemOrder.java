@@ -1,34 +1,45 @@
 package com.seaSaltedToaster.restaurantGame.objects.food;
 
+import com.seaSaltedToaster.restaurantGame.objects.seating.SeatComponent;
+import com.seaSaltedToaster.restaurantGame.objects.seating.TableComponent;
+import com.seaSaltedToaster.restaurantGame.save.SaveSystem;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
 
 public class ItemOrder {
 	
-	//ID
+	//Identification of all
 	public static int totalId = 0;
-	private int id;
 	
-	//Data
-	private Entity table;
-	private int seat;
-	private Food foodItem; //TODO multiple food items
-	private boolean isTaken = false, isDelivered = false;
+	//Order id
+	private int id; //0
+	
+	//Table data
+	private TableComponent table; //1
+	private SeatComponent seat; //2
+	
+	//Food status
+	private Food foodItem; //3
+	private boolean isTaken = false, isDelivered = false; //4,5
 
 	//Cooking
-	private boolean isCooked = false;
-	private Entity chefWhoCooked;
+	private boolean isCooked = false; //6
+	private Entity chefWhoCooked; //7
 	
-	public ItemOrder(Entity table, int seat, Food foodItem) {
+	public ItemOrder(TableComponent table, SeatComponent seat, Food foodItem) {
 		this.table = table;
 		this.seat = seat;
 		this.foodItem = foodItem;
 		
-		totalId++;
+		ItemOrder.totalId++;
 		this.id = totalId;
 	}
 
 	public int getId() {
 		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public Entity getChefWhoCooked() {
@@ -67,19 +78,19 @@ public class ItemOrder {
 		this.isTaken = isTaken;
 	}
 
-	public Entity getTable() {
+	public TableComponent getTable() {
 		return table;
 	}
 
-	public void setTable(Entity table) {
+	public void setTable(TableComponent table) {
 		this.table = table;
 	}
 
-	public int getTableSpot() {
+	public SeatComponent getSeat() {
 		return seat;
 	}
 
-	public void setTableSpot(int seat) {
+	public void setSeat(SeatComponent seat) {
 		this.seat = seat;
 	}
 

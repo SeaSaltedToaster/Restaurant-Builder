@@ -1,6 +1,6 @@
 name=Basic Wall
 type=Wall
-price=10
+price=25
 iconZoom=0.66
 category=General
 model=basic/basicWall

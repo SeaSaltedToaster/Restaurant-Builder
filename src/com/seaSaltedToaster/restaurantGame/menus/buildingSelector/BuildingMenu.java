@@ -53,7 +53,7 @@ public class BuildingMenu extends UiComponent {
 		createButtons(engine, BuildingList.getRoot());
 		addCategoryName(curCategory, engine);
 		this.setInteractable(true, engine);
-		this.tooltip = new ItemTooltip();
+		this.tooltip = new ItemTooltip(this, engine);
 	}
 	
 	@Override
@@ -184,6 +184,9 @@ public class BuildingMenu extends UiComponent {
 			//TODO add back button
 		}
 		addCategoryName(category, engine);
+		
+		this.removeComponent(tooltip);
+		this.addComponent(tooltip);
 	}
 	
 	private void clearButtons() {
@@ -204,9 +207,13 @@ public class BuildingMenu extends UiComponent {
 		this.setConstraints(cons);
 		this.setScale(0.75f, 0.075f);
 		this.setColor(ColorPalette.MAIN_LIGHT);
-		this.setClippingBounds(0.125f, 0, 0.75f, 1.0f);
+		this.setClippingBounds(0.125f, 0, 1.75f, 1.0f); //TODO cutoff items
 		
 		this.yValue = new SmoothFloat(-0.25f);
+	}
+
+	public Engine getEngine() {
+		return engine;
 	}
 
 	public ItemTooltip getTooltip() {

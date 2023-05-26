@@ -12,6 +12,7 @@ public class UiConstraints {
 	private UiConstraint xScaleConstraint, yScaleConstraint;
 	
 	private UiLayout layout;
+	public boolean applyLayout = true;
 	
 	public UiConstraints(UiConstraint xConstraint, UiConstraint yConstraint, UiConstraint xScaleConstraint,
 			UiConstraint yScaleConstraint, UiLayout layout) {

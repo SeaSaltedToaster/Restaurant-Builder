@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.seaSaltedToaster.MainApp;
+import com.seaSaltedToaster.restaurantGame.building.Building;
 import com.seaSaltedToaster.restaurantGame.building.BuildingId;
 import com.seaSaltedToaster.restaurantGame.building.BuildingManager;
 import com.seaSaltedToaster.restaurantGame.building.PlaceAnimation;
@@ -20,6 +21,7 @@ import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 public class FloorMeshBuilder {
 	
 	private FloorGenerator generator;
+	private int tileCount = 0;
 	
 	public Entity buildFloor(List<Vector3f> points, FloorComponent comp, boolean add) {
 		this.setGenerator(comp.getGenerator());
@@ -36,6 +38,7 @@ public class FloorMeshBuilder {
 		}
 		points.removeAll(Collections.singleton(null));
 		
+		this.tileCount = 0;
 		Entity result = null;
 		
 		//Build based on count
@@ -68,8 +71,13 @@ public class FloorMeshBuilder {
 		FloorComponent newComp = new FloorComponent(comp.getType(), comp.getGenerator(), points);
 		result.addComponent(newComp);
 		
+		Building building = BuildingList.getBuilding(comp.getType());
+		
 		if(add)
-			layer.addBuilding(result, BuildingList.getBuilding(comp.getType()), -127);
+			MainApp.restaurant.money -= (tileCount * building.getPrice());
+		
+		if(add)
+			layer.addBuilding(result, building, -127);
 			
 		return result;
 	}
@@ -188,6 +196,7 @@ public class FloorMeshBuilder {
 		for(int x = xStart; x < xStart + xCount; x++) {
 			for(int z = zStart; z < zStart + zCount; z++) {
 				this.generator.addTile(vertices, triangles, colors, x - xStart, z - zStart);
+				this.tileCount ++;
 			}
 		}
 		

@@ -1,7 +1,9 @@
 package com.seaSaltedToaster.restaurantGame.menus.mainMenu;
 
+import com.seaSaltedToaster.restaurantGame.audio.AudioTracks;
 import com.seaSaltedToaster.restaurantGame.menus.languages.LanguageManager;
 import com.seaSaltedToaster.simpleEngine.Engine;
+import com.seaSaltedToaster.simpleEngine.audio.AudioSource;
 import com.seaSaltedToaster.simpleEngine.renderer.Window;
 import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.UiConstraints;
@@ -17,6 +19,7 @@ public class MenuButton extends UiComponent {
 	//Animation
 	private MainMenu menu;
 	private SmoothFloat scale;
+	private AudioSource source;
 	
 	//Button Info
 	private Text text;
@@ -30,6 +33,7 @@ public class MenuButton extends UiComponent {
 		super(0);
 		this.menu = mainMenu;
 		this.index = index;
+		this.source = new AudioSource();
 		createButton(word, mainMenu.getEngine());
 		
 		if(index == -1) {
@@ -72,6 +76,7 @@ public class MenuButton extends UiComponent {
 		if(index == -1) {
 			this.scale.setTarget(hScale * titleMulti); 
 		}
+		this.source.Play(AudioTracks.BUTTON_HOVER);
 	}
 	
 	@Override

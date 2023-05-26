@@ -7,11 +7,14 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.seaSaltedToaster.MainApp;
 import com.seaSaltedToaster.restaurantGame.WorldCamera;
 import com.seaSaltedToaster.restaurantGame.ai.person.Action;
 import com.seaSaltedToaster.restaurantGame.ai.person.ActionComponent;
 import com.seaSaltedToaster.restaurantGame.ai.person.GoToAction;
 import com.seaSaltedToaster.restaurantGame.ai.person.WaitAction;
+import com.seaSaltedToaster.restaurantGame.ai.person.chef.FinishCooking;
+import com.seaSaltedToaster.restaurantGame.ai.person.chef.WaitToCook;
 import com.seaSaltedToaster.restaurantGame.ai.person.customer.CreateParty;
 import com.seaSaltedToaster.restaurantGame.ai.person.customer.FindTable;
 import com.seaSaltedToaster.restaurantGame.ai.person.customer.HoverParty;
@@ -19,6 +22,10 @@ import com.seaSaltedToaster.restaurantGame.ai.person.customer.IdleStay;
 import com.seaSaltedToaster.restaurantGame.ai.person.customer.LoadSeating;
 import com.seaSaltedToaster.restaurantGame.ai.person.customer.OrderFood;
 import com.seaSaltedToaster.restaurantGame.ai.person.customer.SitDownAction;
+import com.seaSaltedToaster.restaurantGame.ai.person.waiter.GiveChefOrder;
+import com.seaSaltedToaster.restaurantGame.ai.person.waiter.GiveTableOrder;
+import com.seaSaltedToaster.restaurantGame.ai.person.waiter.TakeOrder;
+import com.seaSaltedToaster.restaurantGame.ai.person.waiter.WaitForOrder;
 import com.seaSaltedToaster.restaurantGame.building.Building;
 import com.seaSaltedToaster.restaurantGame.building.BuildingId;
 import com.seaSaltedToaster.restaurantGame.building.BuildingManager;
@@ -26,7 +33,13 @@ import com.seaSaltedToaster.restaurantGame.building.BuildingType;
 import com.seaSaltedToaster.restaurantGame.building.categories.BuildingList;
 import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
 import com.seaSaltedToaster.restaurantGame.objects.FloorComponent;
+import com.seaSaltedToaster.restaurantGame.objects.Restaurant;
 import com.seaSaltedToaster.restaurantGame.objects.WallComponent;
+import com.seaSaltedToaster.restaurantGame.objects.food.Food;
+import com.seaSaltedToaster.restaurantGame.objects.food.FoodRegistry;
+import com.seaSaltedToaster.restaurantGame.objects.food.ItemOrder;
+import com.seaSaltedToaster.restaurantGame.objects.seating.SeatComponent;
+import com.seaSaltedToaster.restaurantGame.objects.seating.TableComponent;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
 import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
@@ -67,7 +80,7 @@ public class LoadSystem {
 		}
 		return -1;
 	}
-	
+		
 	public void loadActions() {
 		//File
 		File bldFile = new File(file.getAbsolutePath() + "/" + curSave + "/actions.rf");
@@ -76,7 +89,6 @@ public class LoadSystem {
 		//Get data
 		String allData = readFile(bldFile);
 		String[] allLines = allData.split(System.getProperty("line.separator"));
-		
 		
 		//Load
 		for(String line : allLines)
@@ -101,7 +113,7 @@ public class LoadSystem {
 			String[] typeAll = typeData.split(",");
 			
 			String name = typeAll[0];
-			if(typeAll.length == 0)
+			if(typeAll.length <= 1)
 				continue;
 			String category = typeAll[1];
 			
@@ -222,8 +234,38 @@ public class LoadSystem {
 			action.object = entity;
 			action.loadAction(vals[3]);
 			break;
+		case "WaitForOrder" : 
+			action = new WaitForOrder();
+			action.object = entity;
+			action.loadAction(vals[3]);
+			break;
+		case "TakeOrder" : 
+			action = new TakeOrder(null);
+			action.object = entity;
+			action.loadAction(vals[3]);
+			break;
+		case "GiveChefOrder" : 
+			action = new GiveChefOrder(null);
+			action.object = entity;
+			action.loadAction(vals[3]);
+			break;
+		case "WaitToCook" : 
+			action = new WaitToCook();
+			action.object = entity;
+			action.loadAction(vals[3]);
+			break;
+		case "FinishCooking" : 
+			action = new FinishCooking(-32767);
+			action.object = entity;
+			action.loadAction(vals[3]);
+			break;
+		case "GiveTableOrder" : 
+			action = new GiveTableOrder(null);
+			action.object = entity;
+			action.loadAction(vals[3]);
+			break;
 		}
-		System.out.println(action + " " + type);
+		System.out.println(action + " " + type); //GiveTableOrder
 		
 		return action;
 	}
@@ -426,7 +468,6 @@ public class LoadSystem {
 		try {
 			encoded = Files.readAllBytes(path.toPath());
 		} catch (IOException e) {
-//			e.printStackTrace();
 			return "NO_FILE";
 		}
 		return new String(encoded, StandardCharsets.US_ASCII);

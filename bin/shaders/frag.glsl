@@ -12,7 +12,8 @@ void main(void)	{
     vec3 snowCol = vec3(1,1,1);
     vec3 snow = normalSnow * snowCol;
     
-    if(abs(normalSnow) > 0.5)
+    bool isSnow = false;
+    if(abs(normalSnow) > 0.5 && isSnow)
     	out_Color = vec4(snowCol, 1.0);
 
 }

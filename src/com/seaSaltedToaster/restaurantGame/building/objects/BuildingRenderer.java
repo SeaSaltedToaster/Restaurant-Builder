@@ -19,6 +19,9 @@ public class BuildingRenderer extends Renderer {
 	
 	//Shading / Objects
 	private BuildingManager manager;
+	private Building previewObj;
+	
+	//Ids / positions
 	private Matrix4f transform;
 	private int selectedId = -127;
 	
@@ -88,7 +91,6 @@ public class BuildingRenderer extends Renderer {
 		shader.loadUniform(this.transform, "transformationMatrix");
 		
 		//Other uniforms
-		shader.loadUniform(index, "currentId");
 		shader.loadUniform(TimeHandler.DAY_VALUE, "dayValue");
 		if(!manager.isBuilding())
 			shader.loadUniform(curId, "selectedId");
@@ -100,12 +102,13 @@ public class BuildingRenderer extends Renderer {
 		if(buildingId != null) {
 			shader.loadUniform(buildingId.getPrimary(), "primaryColor");
 			shader.loadUniform(buildingId.getSecondary(), "secondaryColor");
-			
-			if(index == -1) {
-				Building building = buildingId.getType();
-				shader.loadUniform(building.getDefPrimary(), "primaryColor");
-				shader.loadUniform(building.getDefSecondary(), "secondaryColor");
-			}
+			shader.loadUniform(buildingId.getId(), "currentId");
+		}
+		
+		if(index == -1) {
+			Building building = manager.getBuilder().getObject();
+			shader.loadUniform(building.getDefPrimary(), "primaryColor");
+			shader.loadUniform(building.getDefSecondary(), "secondaryColor");
 		}
 		
 		//Render
@@ -116,6 +119,14 @@ public class BuildingRenderer extends Renderer {
 	@Override
 	public void endRender() {
 		super.endRendering();
+	}
+
+	public Building getPreviewObj() {
+		return previewObj;
+	}
+
+	public void setPreviewObj(Building previewObj) {
+		this.previewObj = previewObj;
 	}
 
 	public List<Entity> getFoods() {

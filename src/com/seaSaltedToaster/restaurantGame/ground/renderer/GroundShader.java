@@ -1,7 +1,5 @@
 package com.seaSaltedToaster.restaurantGame.ground.renderer;
 
-import org.lwjgl.opengl.GL20;
-
 import com.seaSaltedToaster.simpleEngine.renderer.shader.Shader;
 import com.seaSaltedToaster.simpleEngine.renderer.shader.uniforms.UniformFloat;
 import com.seaSaltedToaster.simpleEngine.renderer.shader.uniforms.UniformInteger;
@@ -34,7 +32,7 @@ public class GroundShader extends Shader {
 		super.locateUniform(lightViewMatrix);		
 		super.locateUniform(shadowMap);
 	}
-	
+
 	public UniformSampler getShadowMap() {
 		return shadowMap;
 	}

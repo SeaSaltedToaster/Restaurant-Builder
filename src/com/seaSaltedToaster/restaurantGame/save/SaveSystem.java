@@ -12,7 +12,9 @@ import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
 import com.seaSaltedToaster.restaurantGame.ground.Ground;
 import com.seaSaltedToaster.restaurantGame.menus.TimeDisplay;
 import com.seaSaltedToaster.restaurantGame.objects.FloorComponent;
+import com.seaSaltedToaster.restaurantGame.objects.Restaurant;
 import com.seaSaltedToaster.restaurantGame.objects.WallComponent;
+import com.seaSaltedToaster.restaurantGame.objects.food.ItemOrder;
 import com.seaSaltedToaster.simpleEngine.entity.Camera;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
 import com.seaSaltedToaster.simpleEngine.utilities.ScreenshotUtils;
@@ -28,12 +30,33 @@ public class SaveSystem {
 	private static FileWriter writer;
 	private String curSave;
 	
+	//Loaders
+	private OrderLoader orderLoader;
+	
 	public SaveSystem(String curSave) {
 		this.curSave = curSave;
+		
+		this.orderLoader = new OrderLoader(file, curSave);
 	}
 	
 	public static void createFolder() {
 		SaveSystem.file.mkdirs();
+	}
+	
+	public void saveOrder(ItemOrder order) {
+		this.orderLoader.saveOrder(order, 0);
+	}
+	
+	public void loadOrders(Restaurant restaurant) {
+		this.orderLoader.loadOrders(restaurant, 0);
+	}
+	
+	public void saveChefOrder(ItemOrder order) {
+		this.orderLoader.saveOrder(order, 1);
+	}
+	
+	public void loadChefOrders(Restaurant restaurant) {
+		this.orderLoader.loadOrders(restaurant, 1);
 	}
 	
 	public static void setGroundType(String save, String type) {
@@ -57,7 +80,6 @@ public class SaveSystem {
 	}
 	
 	public void saveAction(String data) {
-		System.out.println(data);
 		File actions = new File(file.getAbsolutePath() + "/" + curSave + "/actions.rf");
 		try {
 			actions.createNewFile();

@@ -1,7 +1,11 @@
 package com.seaSaltedToaster.restaurantGame.building.objects;
 
+import java.nio.ByteBuffer;
+
 import org.lwjgl.opengl.GL11;
 
+import com.seaSaltedToaster.MainApp;
+import com.seaSaltedToaster.restaurantGame.building.BuildingId;
 import com.seaSaltedToaster.restaurantGame.building.BuildingManager;
 import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
 import com.seaSaltedToaster.simpleEngine.Engine;
@@ -20,9 +24,8 @@ public class SelectionRenderer extends Renderer {
 
 	//Framebuffer
 	private Fbo fbo;
-	private short[] pixels;
+	private ByteBuffer pixels;
 	private int selectedId = -127;
-	private static float colorAmt = 255.0f;
 	
 	//Manager
 	private BuildingManager manager;
@@ -34,7 +37,7 @@ public class SelectionRenderer extends Renderer {
 		this.transform = new Matrix4f();
 		
 		this.fbo = new Fbo(Window.getWidth(), Window.getHeight(), Fbo.DEPTH_RENDER_BUFFER);
-		this.pixels = new short[3];
+		this.pixels = ByteBuffer.wrap(new byte[16]);
 	}
 
 	@Override
@@ -56,14 +59,13 @@ public class SelectionRenderer extends Renderer {
 
 	@Override
 	public void render(Object obj) {
-		float fboIndex = 0;
 		for(BuildLayer layer : manager.getLayers()) {
 			if(!layer.isOn()) continue;
 			for(Entity entity : layer.getBuildings()) {
-				if(entity == null) continue;
-				Vector3f color = getIdColor(fboIndex);
+				if(entity == null || !entity.hasComponent("BuildingId")) continue;
+				BuildingId buildingId = (BuildingId) entity.getComponent("BuildingId");
+				Vector3f color = getIdColor(buildingId.getId());
 				renderToFBO(entity, color);
-				fboIndex++;
 			}
 		}
 	}
@@ -92,69 +94,60 @@ public class SelectionRenderer extends Renderer {
 		this.fbo.unbindFrameBuffer();
 		
 		//Get selected objects
-		short[] bytes = readPixelColour();
-		int id = (int) (decodeIdFromColor(bytes) / colorAmt);
-	    System.out.println(id);
+		byte[] bytes = readPixelColour();
+		int id = (int) (decodeIdFromColor(bytes) / 256);
 		this.selectedId = id;
-		Entity selected = manager.getBuilding(id);
-		if(selected != null)
+		Entity selected = BuildingManager.getBuildingWithID(id);
+		if(selected != null && !MainApp.menuFocused)
 			manager.setSelectedEntity(selected);
 		else
 			manager.setSelectedEntity(null);
+		System.out.println((selected != null) + " got : " + id);
 	}
 	
-	private short[] readPixelColour() {
+	private byte[] readPixelColour() {
 		this.fbo.bindToRead();
 		int mouseX = (int) Mouse.getMouseX();
 		int mouseY = (int) -Mouse.getMouseY() + (int) Window.getHeight();
-		GL11.glReadPixels(mouseX, mouseY, 1, 1, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, pixels);
+		pixels.clear();
+		GL11.glReadPixels(mouseX, mouseY, 1, 1, 6408, 5121, pixels);
 	    this.fbo.unbindFrameBuffer();
-	    return pixels;
+	    byte[] pix = pixels.array();
+	    return pix;
 	}
 	
+	  private static int F1 = 256;
+	  
+	  private static int F2 = F1 * F1;
+	
 	private Vector3f getIdColor(float index) {
-		float[] color = new float[32];
-		encodeIdIntoColor(index, color);
-		float x = color[0];
-		float y = color[1];
-		float z = color[2];
-		return new Vector3f(x/colorAmt,y/colorAmt,z/colorAmt);
+		float[] color = new float[4];
+		int id = (int) index;
+		if(id == selectedId)
+		color[3] = -1;
+		color[2] = (byte)(id % F1);
+	    id /= F1;
+	    color[1] = (byte)(id % F1);
+	    id /= F1;
+	    color[0] = (byte)(id % F1);
+	    
+		return new Vector3f(color[0],color[1],color[2]);
 	}
-		  
-	private void encodeIdIntoColor(float id, float[] color) {
-		float index = (float) id;
-		color[2] = (index % colorAmt);
-		
-		index = index - colorAmt;
-		if(index < 1) {
-			color[1] = 0f;
-			color[0] = 0f;
-			return;
-		}
-		else {
-			color[1] = (index % colorAmt);
-		}
-		
-		index = index - colorAmt;
-		if(index < 1) {
-			color[0] = 0f;
-			return;
-		}
-		else {
-			color[0] = (index % colorAmt);
-		}
-	}
-		  
-	private static float decodeIdFromColor(short[] colour) {
-		float id = convertUnsignedByte(colour[2]);
-	    id += (convertUnsignedByte(colour[1]) * colorAmt);
-	    id += convertUnsignedByte(colour[0]) * (colorAmt * colorAmt);
-	    System.out.println(convertUnsignedByte(colour[0]) + " : " + convertUnsignedByte(colour[1]) + " : " + convertUnsignedByte(colour[2]));
+		  		  
+	private static float decodeIdFromColor(byte[] colour) {
+	    int id = convertUnsignedByte(colour[2]);
+	    id += convertUnsignedByte(colour[1]) * F1;
+	    id += convertUnsignedByte(colour[0]) * F2;
+	    	    
+	    for(byte val : colour) {
+	    	System.out.print(val + ", ");
+	    }
+	    System.out.println(";");
 	    return id;
 	}
 	
-	private static int convertUnsignedByte(short b) {
-		return b & 0xFF;
+	private static int convertUnsignedByte(byte b) {
+		return (int) b & 0xFF;
 	}
 
 	public Fbo getFbo() {

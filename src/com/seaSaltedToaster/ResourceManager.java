@@ -2,6 +2,7 @@ package com.seaSaltedToaster;
 
 import java.util.List;
 
+import com.seaSaltedToaster.restaurantGame.audio.AudioTracks;
 import com.seaSaltedToaster.restaurantGame.building.categories.BuildingList;
 import com.seaSaltedToaster.restaurantGame.menus.languages.Language;
 import com.seaSaltedToaster.restaurantGame.menus.languages.LanguageManager;
@@ -37,6 +38,7 @@ public class ResourceManager {
 		//Load the audio system into play
 		System.out.println("Loading Audio System");
 		AudioMaster.init(engine);
+		AudioTracks.loadSounds(engine);
 		
 		//Languages
 		System.out.println("Loading Language Files");

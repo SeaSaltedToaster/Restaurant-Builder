@@ -3,7 +3,7 @@ type=Object
 price=5
 iconZoom=1.3
 category=Event
-model=basic/furniture/cactus
+model=basic/pillars/kc
 primary=0.0,0.75,0.0
 secondary=0.0,0.0,0.0
 components{

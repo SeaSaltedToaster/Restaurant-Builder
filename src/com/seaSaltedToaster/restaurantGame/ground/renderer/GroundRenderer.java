@@ -1,14 +1,11 @@
 package com.seaSaltedToaster.restaurantGame.ground.renderer;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
-
 import com.seaSaltedToaster.restaurantGame.ground.Ground;
 import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.entity.Transform;
 import com.seaSaltedToaster.simpleEngine.models.Vao;
 import com.seaSaltedToaster.simpleEngine.renderer.Renderer;
-import com.seaSaltedToaster.simpleEngine.renderer.shadows.ShadowRenderer;
+import com.seaSaltedToaster.simpleEngine.renderer.Window;
 import com.seaSaltedToaster.simpleEngine.utilities.skybox.TimeHandler;
 
 public class GroundRenderer extends Renderer {
@@ -16,7 +13,9 @@ public class GroundRenderer extends Renderer {
 	//ID
 	private Transform transform;
 	private static GroundShader shader;
+	
 	private int selected = -1;
+	private float timeSelected = 0.0f;
 	
 	//Engine
 	private Engine engine;
@@ -35,6 +34,7 @@ public class GroundRenderer extends Renderer {
 		GroundRenderer.shader.useProgram();
 		GroundRenderer.shader.loadUniform(id, "selected");
 		GroundRenderer.shader.stopProgram();
+		this.timeSelected = 0.0f;
 	}
 
 	@Override
@@ -47,13 +47,13 @@ public class GroundRenderer extends Renderer {
 		shader.loadUniform(TimeHandler.DAY_VALUE, "dayValue");
 		this.loadMatrices(transform);
 		
-		ShadowRenderer renderer = engine.getShadowRenderer();
-		shader.getToShadowMapSpace().loadValue(renderer.getToShadowMapSpaceMatrix());
-		
-		int map = renderer.getShadowMap();
-	    GL13.glActiveTexture(GL13.GL_TEXTURE0);
-	    GL11.glBindTexture(GL11.GL_TEXTURE_2D, map);
-	    
+//		ShadowRenderer renderer = engine.getShadowRenderer();
+//		shader.getToShadowMapSpace().loadValue(renderer.getToShadowMapSpaceMatrix());
+//		
+//		int map = renderer.getShadowMap();
+//	    GL13.glActiveTexture(GL13.GL_TEXTURE0);
+//	    GL11.glBindTexture(GL11.GL_TEXTURE_2D, map);
+	    		
 		Vao vao = ground.getMesh();
 		super.renderVao(vao);
 	}

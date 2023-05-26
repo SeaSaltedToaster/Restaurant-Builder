@@ -6,6 +6,7 @@ import com.seaSaltedToaster.restaurantGame.WorldCamera;
 import com.seaSaltedToaster.restaurantGame.ai.person.ActionComponent;
 import com.seaSaltedToaster.restaurantGame.ai.person.customer.PartyLeader;
 import com.seaSaltedToaster.restaurantGame.ai.person.customer.PartySeating;
+import com.seaSaltedToaster.restaurantGame.audio.TrackPlayer;
 import com.seaSaltedToaster.restaurantGame.building.BuildingManager;
 import com.seaSaltedToaster.restaurantGame.building.categories.BuildingList;
 import com.seaSaltedToaster.restaurantGame.building.layers.BuildLayer;
@@ -25,6 +26,7 @@ import com.seaSaltedToaster.restaurantGame.menus.mainMenu.savesMenu.CreateMenu;
 import com.seaSaltedToaster.restaurantGame.menus.mainMenu.savesMenu.SavesMenu;
 import com.seaSaltedToaster.restaurantGame.menus.mainMenu.settingsMenu.SettingsMenu;
 import com.seaSaltedToaster.restaurantGame.objects.Restaurant;
+import com.seaSaltedToaster.restaurantGame.objects.food.ItemOrder;
 import com.seaSaltedToaster.restaurantGame.save.LoadSystem;
 import com.seaSaltedToaster.restaurantGame.save.SaveSystem;
 import com.seaSaltedToaster.restaurantGame.tools.Raycaster;
@@ -32,6 +34,7 @@ import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.audio.management.AudioMaster;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
 import com.seaSaltedToaster.simpleEngine.renderer.Window;
+import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
 import com.seaSaltedToaster.simpleEngine.utilities.ScreenshotUtils;
 import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 
@@ -39,6 +42,7 @@ public class MainApp {
 	
 	//Game logic
 	public static Restaurant restaurant;
+	public static TrackPlayer trackPlayer;
 	
 	//Menu logic
 	public static boolean menuFocused = false;
@@ -58,7 +62,7 @@ public class MainApp {
 		engine.getKeyboard().addKeyListener(new ScreenshotUtils());
 		
 		ResourceManager resourseManager = new ResourceManager();
-		
+				
 		//Restaurant
 		MainApp.restaurant = new Restaurant(engine);
 		/*
@@ -87,6 +91,8 @@ public class MainApp {
 			//Save system
 			private SaveSystem saveSystem;
 			private LoadSystem loadSystem;
+			
+			UiComponent comp;
 			
 			@Override
 			public void loadScene(Engine engine) {
@@ -127,8 +133,8 @@ public class MainApp {
 				this.employee = new EmployeeMenu();
 				engine.addUi(employee);
 				
-				this.layerMenu = new LayerMenu(manager, engine);
-				engine.addUi(layerMenu);
+//				this.layerMenu = new LayerMenu(manager, engine);
+//				engine.addUi(layerMenu);
 				
 				this.general = new GeneralMenu(engine);
 				this.general.setBuilding(building);
@@ -156,24 +162,25 @@ public class MainApp {
 				this.loadSystem.loadCamera((WorldCamera) engine.getCamera());
 				this.loadSystem.loadActions();
 				this.loadSystem.loadBuildings(manager);
-								
+				
+				this.saveSystem.loadOrders(restaurant);
+				this.saveSystem.loadChefOrders(restaurant);
+				
+				this.comp = new UiComponent(0);
+				this.comp.setScale(0.5f, 0.5f);
+				this.addComponent(comp);
+				
 				MainApp.menuFocused = false;
 			}
 
 			@Override
 			public void renderScene(Engine engine) {
-				ground.update(engine.getShadowRenderer(), engine);
+				ground.update(engine);
 				
 				manager.updateFrame();
-//				comp.setTexture(engine.getShadowRenderer().getShadowMap());
+				comp.setTexture(engine.getShadowRenderer().getShadowMap());
 				
 				introFade.update();
-				
-				engine.startShadows();
-				for(BuildLayer layer : restaurant.layers)
-					engine.renderShadows(layer.getBuildings());
-				engine.renderShadows(ground.meshes);
-				engine.endShadows();
 			}
 
 			@Override
@@ -187,8 +194,10 @@ public class MainApp {
 
 			@Override
 			public void unloadScene(Engine engine) {
+				//Save normal stuff
 				saveSystem.save(engine.getCamera(), timeDisplay, ground, manager);
 				
+				//Save Ai actions
 				saveSystem.openTo("actions");
 				for(BuildLayer layer : manager.getLayers()) {
 					for(Entity entity : layer.getBuildings()) {
@@ -208,15 +217,16 @@ public class MainApp {
 				}
 				saveSystem.closeWriter();
 				
-				boolean[][] map = manager.getPathWorld().getWalkableWorld();
-				for(int x = 0; x < map.length; x++) {
-					for(int y = 0; y < map.length; y++) {
-						System.out.print(map[x][y] ? "0" : "1");
-					}
-					System.out.println();
-				}
+				//Save Restaurant Data
+				saveSystem.openTo("orders");
+				for(ItemOrder order : restaurant.orders) 
+					saveSystem.saveOrder(order);
+				saveSystem.closeWriter();
 				
-				
+				saveSystem.openTo("chefOrders");
+				for(ItemOrder order : restaurant.chefOrders) 
+					saveSystem.saveChefOrder(order);
+				saveSystem.closeWriter();
 			}
 			
 		};
@@ -246,6 +256,9 @@ public class MainApp {
 				resourseManager.doInitialLoad(engine);
 				
 				SaveSystem.createFolder();
+				
+				trackPlayer = new TrackPlayer();
+				trackPlayer.playNextTrack();
 				
 				/*
 				 * MENUS AND OBJECTS
@@ -310,7 +323,14 @@ public class MainApp {
 			engine.updateScene();
 			engine.renderUis();
 			engine.update();
+			
+			trackPlayer.update();
 			//Check if we closed
+			
+			engine.getShadowRenderer().clear();
+			for(BuildLayer layer : restaurant.layers)
+				engine.renderShadows(layer.getBuildings());
+			
 			if(quitApp)
 				break;
 		}

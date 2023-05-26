@@ -31,6 +31,7 @@ public class SitDownAction extends Action {
 	public boolean isDone() {
 		TableComponent component = (TableComponent) table.getComponent("Table");
 		for(SeatComponent seat : component.getChairs()) {
+			seat.setTable(component);
 			if(!seat.isTaken()) {
 				seat.setTaken(true);
 				

@@ -27,7 +27,7 @@ public class HorizontalLayout extends UiLayout {
 	}
 
 	private boolean hasExistingConstraints(UiComponent child) {
-		return (child.getConstraints().getXConstraint() != null); 
+		return (child.getConstraints().getXConstraint() != null || !child.getConstraints().applyLayout); 
 	}
 	
 }

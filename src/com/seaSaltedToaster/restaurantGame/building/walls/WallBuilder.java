@@ -49,6 +49,10 @@ public class WallBuilder {
 	
 	private void placeWall() {
 		this.builder.createMesh(startPoint, endPoint, wallType);
+		
+		int price = (int) (startPoint.copy().subtract(endPoint.copy())).lengthSquared();
+		MainApp.restaurant.money -= price;
+		
 		this.resetEndpoints();
 	}
 	
@@ -127,6 +131,10 @@ public class WallBuilder {
 
 	public void setBuilder(WallMeshBuilder builder) {
 		this.builder = builder;
+	}
+
+	public void stop() {
+		this.resetEndpoints();
 	}
 
 }

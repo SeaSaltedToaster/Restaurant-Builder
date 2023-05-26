@@ -1,6 +1,9 @@
 package com.seaSaltedToaster.restaurantGame.objects.people;
 
 import com.seaSaltedToaster.MainApp;
+import com.seaSaltedToaster.restaurantGame.ai.person.ActionComponent;
+import com.seaSaltedToaster.restaurantGame.ai.person.WaitAction;
+import com.seaSaltedToaster.restaurantGame.ai.person.chef.FinishCooking;
 import com.seaSaltedToaster.restaurantGame.building.BuildingId;
 import com.seaSaltedToaster.restaurantGame.building.categories.BuildingList;
 import com.seaSaltedToaster.restaurantGame.objects.Restaurant;
@@ -22,6 +25,14 @@ public class ChefComponent extends Employee {
 		MainApp.restaurant.chefs.add(this);
 		super.name = "Chef " + chefsCreated++;
 		this.model = BuildingList.getBuilding("Chef").getEntity().getModel();
+	}
+	
+	public void deliverOrder(ItemOrder order) {
+		int cookTime = (int) order.getCookingTime(); //TODO cook times
+		
+		ActionComponent comp = (ActionComponent) entity.getComponent("Action");
+		comp.getActions().add(new WaitAction(cookTime));
+		comp.getActions().add(new FinishCooking(order.getId()));
 	}
 	
 	@Override

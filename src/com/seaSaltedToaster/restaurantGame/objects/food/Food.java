@@ -6,14 +6,16 @@ public class Food {
 	
 	//Food model displayed on table
 	public Vao vao;
+	public int id;
 	
 	//Times and prices of the food
-	private int cookTime = 15;
+	private int cookTime = 10;
 	private int eatingTime = 15;
 	private int price = 25;
 
-	public Food(Vao vao) {
+	public Food(Vao vao, int id) {
 		this.vao = vao;
+		this.id = id;
 	}
 
 	public Vao getVao() {

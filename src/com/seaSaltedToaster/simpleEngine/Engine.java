@@ -15,7 +15,7 @@ import com.seaSaltedToaster.simpleEngine.renderer.AdvancedRenderer;
 import com.seaSaltedToaster.simpleEngine.renderer.Window;
 import com.seaSaltedToaster.simpleEngine.renderer.lighting.Light;
 import com.seaSaltedToaster.simpleEngine.renderer.postProcessing.PostProcessor;
-import com.seaSaltedToaster.simpleEngine.renderer.shadows.ShadowRenderer;
+import com.seaSaltedToaster.simpleEngine.renderer.shadows.ShadowMapRenderer;
 import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
 import com.seaSaltedToaster.simpleEngine.uis.rendering.UiRenderer;
 import com.seaSaltedToaster.simpleEngine.uis.text.rendering.FontRenderer;
@@ -61,7 +61,7 @@ public class Engine {
 	
 	//Graphical FX
 	private PostProcessor postProcessor;
-	private ShadowRenderer shadowRenderer;
+	private ShadowMapRenderer shadowRenderer;
 	
 	//Matrices
 	private Matrix4f viewMatrix, projectionMatrix;
@@ -98,7 +98,7 @@ public class Engine {
 		
 		this.light = new Light(new Vector3f(25.0f), new Vector3f(0.0f));
 		this.postProcessor = new PostProcessor(this);
-		this.shadowRenderer = new ShadowRenderer(this);
+		this.shadowRenderer = new ShadowMapRenderer(this);
 		
 		this.advRenderer = new AdvancedRenderer(this);
 	}
@@ -149,16 +149,10 @@ public class Engine {
 		this.postProcessor.endRender();
 	}
 	
-	public void startShadows() {
-		this.shadowRenderer.prepare(light);
-	}
-	
 	public void renderShadows(List<Entity> others) {
+		this.shadowRenderer.prepare();
 		this.shadowRenderer.render(others);
-	}
-	
-	public void endShadows() {
-		this.shadowRenderer.stopRender();
+		this.shadowRenderer.endRender();
 	}
 	
 	public void renderUis() {
@@ -205,7 +199,7 @@ public class Engine {
 		return postProcessor;
 	}
 
-	public ShadowRenderer getShadowRenderer() {
+	public ShadowMapRenderer getShadowRenderer() {
 		return shadowRenderer;
 	}
 

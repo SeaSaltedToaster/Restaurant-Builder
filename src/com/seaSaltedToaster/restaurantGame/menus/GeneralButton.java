@@ -15,8 +15,17 @@ import com.seaSaltedToaster.simpleEngine.utilities.SmoothFloat;
 
 public class GeneralButton extends UiComponent {
 
+	//Scaling
 	private SmoothFloat scale;
 	private float nScale = 1.0f, hScale = nScale * 1.25f;
+	
+	//Colors
+	private float base = ColorPalette.BUTTON_BASE;
+	private float hover = ColorPalette.BUTTON_HIGHLIGHT;
+	private float highlight = ColorPalette.BUTTON_HIGHLIGHT * 1.5f;
+	
+	//Open state
+	private boolean inUse = false;
 	
 	public GeneralButton(int icon, Engine engine) {
 		super(3);
@@ -34,6 +43,8 @@ public class GeneralButton extends UiComponent {
 	@Override
 	public void onHover() {
 		this.scale.setTarget(hScale);
+		if(!inUse)
+			this.setColor(hover);
 	}
 	
 	@Override
@@ -44,7 +55,8 @@ public class GeneralButton extends UiComponent {
 	@Override
 	public void stopHover() {
 		this.scale.setTarget(nScale);
-		this.setColor(ColorPalette.BUTTON_BASE);
+		if(!inUse)
+			this.setColor(base);
 	}
 	
 	private void create(int iconTex, Engine engine) {
@@ -52,10 +64,13 @@ public class GeneralButton extends UiComponent {
 		this.setColor(ColorPalette.BUTTON_BASE);
 		this.setInteractable(true, engine);
 		UiConstraints cons = new UiConstraints();
-		cons.setX(new AlignX(XAlign.CENTER));
-		cons.setWidth(new RelativeScale(0.66f * 3));
+		cons.setX(new AlignX(XAlign.LEFT, 0.25f));
+		cons.setWidth(new RelativeScale(0.5f));
 		cons.setHeight(new AspectRatio(1.0f));
 		this.setConstraints(cons);
+		
+		int tex = engine.getTextureLoader().loadTexture("/uis/slotBack");
+		this.setTexture(tex);
 		
 		//Icon
 		UiComponent icon = new UiComponent(4);
@@ -67,6 +82,20 @@ public class GeneralButton extends UiComponent {
 		iconCons.setHeight(new AspectRatio(1.0f));
 		icon.setConstraints(iconCons);
 		this.addComponent(icon);
+	}
+
+	public boolean isInUse() {
+		return inUse;
+	}
+
+	public void setInUse(boolean inUse) {
+		this.inUse = inUse;
+		
+		if(inUse)
+			this.setColor(highlight);
+		else
+			this.setColor(base);
+		System.out.println(inUse);
 	}
 
 }

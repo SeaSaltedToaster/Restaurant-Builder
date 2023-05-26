@@ -62,7 +62,7 @@ public class Pathfinder {
 			for(Node neighbour : neighbors) {
 				//If the neighbor is unusable, return to the next one
 				boolean wallBlock = wallObstruction(layer, node.getNodePoint(), neighbour.getNodePoint());
-				if(!neighbour.isWalkable || closedSet.contains(neighbour) || hasObstruction(layer, neighbour.getNodePoint()) || wallBlock) {
+				if(!neighbour.isWalkable || closedSet.contains(neighbour) || hasObstruction(layer, neighbour.getNodePoint()) || wallBlock && (node != endNode || node != startNode)) {
 					if(wallBlock)
 						continue;
 					if(neighbour != endNode)

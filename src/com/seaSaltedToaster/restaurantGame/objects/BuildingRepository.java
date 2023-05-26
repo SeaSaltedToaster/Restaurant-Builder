@@ -56,15 +56,15 @@ public class BuildingRepository {
 		/*
 		 * GARDEN
 		 */
-		Building pottedPlant = this.loader.loadObject("pottedPlant", engine);
-		Building pottedHedge = this.loader.loadObject("pottedHedge", engine);
-		Building largeHedge = this.loader.loadObject("largeHedge", engine);
-		Building tileHedge = this.loader.loadObject("tileHedge", engine);
+//		Building pottedPlant = this.loader.loadObject("pottedPlant", engine);
+//		Building pottedHedge = this.loader.loadObject("pottedHedge", engine);
+//		Building largeHedge = this.loader.loadObject("largeHedge", engine);
+//		Building tileHedge = this.loader.loadObject("tileHedge", engine);
 		
 //		Building borderedFence = this.loader.loadObject("fences/borderedFence", engine);
-//
 //		Building vinylFence = this.loader.loadObject("fences/vinylFence", engine);
-		Building pillar = this.loader.loadObject("pillars/pillar", engine);
+		
+//		Building pillar = this.loader.loadObject("pillars/pillar", engine);
 //		
 //		Building brickFence = this.loader.loadObject("fences/brickFence", engine);
 //		Building brickHalfPillar = this.loader.loadObject("pillars/brickHalfPillar", engine);
@@ -73,14 +73,13 @@ public class BuildingRepository {
 		/*
 		 * EVENT / SEASONAL
 		 */
-		Building pumpkin = this.loader.loadObject("pumpkin", engine);
-		
-		Building christmasTree = this.loader.loadObject("furniture/christmasTree", engine);
-		Building stocking = this.loader.loadObject("furniture/stocking", engine);
-		Building gift = this.loader.loadObject("furniture/gift", engine);
+//		Building pumpkin = this.loader.loadObject("pumpkin", engine);
+//		Building christmasTree = this.loader.loadObject("furniture/christmasTree", engine);
+//		Building stocking = this.loader.loadObject("furniture/stocking", engine);
+//		Building gift = this.loader.loadObject("furniture/gift", engine);
 		Building tree = this.loader.loadObject("furniture/tree", engine);
 		Building rock = this.loader.loadObject("furniture/rock", engine);
-		Building cactus = this.loader.loadObject("furniture/cactus", engine);
+//		Building cactus = this.loader.loadObject("furniture/cactus", engine);
 
 		Building wallObject = this.loader.loadObject("wallObjects/wallObject", engine);
 		Building door = this.loader.loadObject("wallObjects/door", engine);
@@ -127,62 +126,62 @@ public class BuildingRepository {
 		
 		Building waiter1 = loadBuilding("waiter1", BuildingType.Person, engine);
 		waiter1.name = "Waiter";
-		waiter1.setPrice(50);
+		waiter1.setPrice(300);
 		waiter1.setObstructive(false);
 		waiter1.setIconZoom(0.5f);
 		waiter1.getBuildingComponents().add(new ServerComponent());
 		waiter1.getBuildingComponents().add(new PathfinderComponent());
-		waiter1.getBuildingComponents().add(new ActionComponent("WaiterOld"));
+		waiter1.getBuildingComponents().add(new ActionComponent("Waiter"));
 		BuildingList.register(waiter1, "WorkInProgress");
 		
 		Building chef1 = loadBuilding("chef1", BuildingType.Person, engine);
 		chef1.name = "Chef";
-		chef1.setPrice(50);
+		chef1.setPrice(500);
 		chef1.setObstructive(false);
 		chef1.setIconZoom(0.5f);
 		chef1.getBuildingComponents().add(new ChefComponent());
 		chef1.getBuildingComponents().add(new PathfinderComponent());
-		chef1.getBuildingComponents().add(new ActionComponent("ChefOld"));
+		chef1.getBuildingComponents().add(new ActionComponent("Chef"));
 		BuildingList.register(chef1, "WorkInProgress");
 	}
 	
 	public void registerFoods(Engine engine) {
 		FoodRegistry.create();
 		
-		Food ribs = loadFood("foods/ribs", engine);
+		Food ribs = loadFood("foods/ribs", 0, engine);
 		FoodRegistry.registerFood(ribs, 0);
 		
-		Food jamToast = loadFood("foods/jamToast", engine);
+		Food jamToast = loadFood("foods/jamToast", 1, engine);
 		FoodRegistry.registerFood(jamToast, 1);
 		
-		Food chickenLegs = loadFood("foods/chickenLegs", engine);
+		Food chickenLegs = loadFood("foods/chickenLegs", 2, engine);
 		FoodRegistry.registerFood(chickenLegs, 2);
 		
-		Food beefTacos = loadFood("foods/beefTacos", engine);
+		Food beefTacos = loadFood("foods/beefTacos", 3, engine);
 		FoodRegistry.registerFood(beefTacos, 3);
 		
-		Food simpleStew = loadFood("foods/simpleStew", engine);
+		Food simpleStew = loadFood("foods/simpleStew", 4, engine);
 		FoodRegistry.registerFood(simpleStew, 4);
 		
-		Food fish = loadFood("foods/fish", engine);
+		Food fish = loadFood("foods/fish", 5, engine);
 		FoodRegistry.registerFood(fish, 5);
 		
-		Food steak = loadFood("foods/steak", engine);
+		Food steak = loadFood("foods/steak", 6, engine);
 		FoodRegistry.registerFood(steak, 6);
 		
-		Food burger = loadFood("foods/burger", engine);
+		Food burger = loadFood("foods/burger", 7, engine);
 		FoodRegistry.registerFood(burger, 7);
 		
-		Food dish1 = loadFood("foods/dish1", engine);
+		Food dish1 = loadFood("foods/dish1", -1, engine);
 		FoodRegistry.registerFood(dish1, -1);
 		
-		Food check = loadFood("foods/check", engine);
+		Food check = loadFood("foods/check", -10, engine);
 		FoodRegistry.registerFood(check, -10);
 	}
 	
-	private Food loadFood(String name, Engine engine) {
+	private Food loadFood(String name, int id, Engine engine) {
 		Vao model = engine.getObjLoader().loadObjModel(name);
-		Food food = new Food(model);
+		Food food = new Food(model, id);
 		return food;
 	}
 	

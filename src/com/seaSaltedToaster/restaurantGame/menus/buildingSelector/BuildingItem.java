@@ -5,6 +5,7 @@ import com.seaSaltedToaster.restaurantGame.building.BuildingId;
 import com.seaSaltedToaster.restaurantGame.building.categories.BuildingCategory;
 import com.seaSaltedToaster.restaurantGame.tools.ColorPalette;
 import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.ModelComponent;
+import com.seaSaltedToaster.simpleEngine.renderer.Window;
 import com.seaSaltedToaster.simpleEngine.uis.UiComponent;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.XAlign;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.UiConstraints;
@@ -13,6 +14,7 @@ import com.seaSaltedToaster.simpleEngine.uis.constraints.position.AlignX;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.position.AlignY;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.scale.AspectRatio;
 import com.seaSaltedToaster.simpleEngine.uis.constraints.scale.RelativeScale;
+import com.seaSaltedToaster.simpleEngine.utilities.SmoothFloat;
 
 public class BuildingItem extends UiComponent {
 
@@ -27,6 +29,8 @@ public class BuildingItem extends UiComponent {
 	
 	//Spin icon
 	private int spinningIcon;
+	private SmoothFloat scale;
+	private float nScale = 1.0f, hScale = nScale * 1.25f;
 	
 	public BuildingItem(Building building, BuildingMenu menu) {
 		super(4);
@@ -43,10 +47,19 @@ public class BuildingItem extends UiComponent {
 	}
 	
 	@Override
+	public void updateSelf() {
+		scale.update(Window.DeltaTime);
+		float newScale = scale.getValue();
+		this.setScaleMultiplier(newScale);
+	}
+	
+	@Override
 	public void onHover() {
 		if(building != null) {
 			menu.getTooltip().open(this);
 		}
+		
+		this.scale.setTarget(hScale);
 	}
 	
 	@Override
@@ -69,20 +82,30 @@ public class BuildingItem extends UiComponent {
 		}
 		this.iconComp.setTexture(icon);
 		menu.getTooltip().close();
+		
+		this.scale.setTarget(nScale);
 	}
 
 	private void createPanel() {
-		this.setAlpha(0.0f);
+		this.scale = new SmoothFloat(-0.25f);
+		this.scale.setValue(-0.5f);
+		this.scale.setTarget(1.0f);
+		
+		int tex = menu.getEngine().getTextureLoader().loadTexture("/uis/slotBack");
+		this.setTexture(tex);
+		
+		this.setAlpha(1.0f);
 		UiConstraints cons = this.getConstraints();
 		cons.setY(new AlignY(YAlign.MIDDLE));
-		cons.setHeight(new RelativeScale(0.75f));
+		cons.setHeight(new RelativeScale(0.85f));
 		cons.setWidth(new AspectRatio(1.0f));
+		this.setColor(0.5f);
 		
 		this.iconComp = new UiComponent(5);
 		UiConstraints iconCons = iconComp.getConstraints();
 		iconCons.setX(new AlignX(XAlign.CENTER));
-		iconCons.setY(new AlignY(YAlign.TOP));
-		iconCons.setHeight(new AspectRatio(0.95f));
+		iconCons.setY(new AlignY(YAlign.MIDDLE));
+		iconCons.setHeight(new AspectRatio(0.875f));
 		iconCons.setWidth(new RelativeScale(1.0f));
 		this.addComponent(iconComp);
 		
@@ -96,6 +119,7 @@ public class BuildingItem extends UiComponent {
 			this.setAlpha(1.0f);
 			this.setColor(ColorPalette.MAIN_SHADE);
 		}
+		this.setColor(ColorPalette.MAIN_SHADE);
 		this.iconComp.setTexture(icon);	
 	}
 	

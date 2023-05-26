@@ -13,7 +13,6 @@ import com.seaSaltedToaster.simpleEngine.Engine;
 import com.seaSaltedToaster.simpleEngine.entity.Entity;
 import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.ModelComponent;
 import com.seaSaltedToaster.simpleEngine.models.Vao;
-import com.seaSaltedToaster.simpleEngine.renderer.shadows.ShadowRenderer;
 import com.seaSaltedToaster.simpleEngine.utilities.Color;
 import com.seaSaltedToaster.simpleEngine.utilities.Vector3f;
 
@@ -64,9 +63,9 @@ public class Ground {
 		}
 	}
 	
-	public void update(ShadowRenderer shadowRenderer, Engine engine) {
+	public void update(Engine engine) {
 		renderer.prepare();
-		renderer.render(shadowRenderer);
+		renderer.render(null);
 		renderer.endRender();
 	}
 	

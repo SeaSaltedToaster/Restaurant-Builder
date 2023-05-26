@@ -68,6 +68,9 @@ public class FindTable extends Action {
 			mComp.getActions().add(mSitAction);
 		}
 		
+		TableComponent component = (TableComponent) table.getComponent("Table");
+		component.setTablePartyLeader(object);
+		
 		PartySeating seating = new PartySeating();
 		this.object.addComponent(seating);
 	}
@@ -81,6 +84,7 @@ public class FindTable extends Action {
 		PartyLeader leader = (PartyLeader) object.getComponent("PartyLeader");
 		int partySize = leader.getPartyMembers().size() + 1;
 		for(Entity obj : layer.getBuildings()) {
+			if(obj == null) continue;
 			if(obj.hasComponent("Table")) {
 				TableComponent component = (TableComponent) obj.getComponent("Table");
 				if(!component.isTaken() && component.getCapacity() >= partySize) {

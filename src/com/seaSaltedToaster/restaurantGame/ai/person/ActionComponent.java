@@ -3,9 +3,11 @@ package com.seaSaltedToaster.restaurantGame.ai.person;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.seaSaltedToaster.restaurantGame.ai.person.chef.WaitToCook;
 import com.seaSaltedToaster.restaurantGame.ai.person.customer.CreateParty;
 import com.seaSaltedToaster.restaurantGame.ai.person.customer.FindTable;
 import com.seaSaltedToaster.restaurantGame.ai.person.customer.IdleStay;
+import com.seaSaltedToaster.restaurantGame.ai.person.waiter.WaitForOrder;
 import com.seaSaltedToaster.restaurantGame.save.SaveSystem;
 import com.seaSaltedToaster.simpleEngine.entity.componentArchitecture.Component;
 
@@ -33,6 +35,10 @@ public class ActionComponent extends Component {
 		actions.remove(null);
 		if(!actions.isEmpty() || !doTree) return;
 		
+		doTree(true);
+	}
+	
+	public void doTree(boolean b) {
 		for(int i = 0; i < actions.size(); i++) {
 			Action action = actions.get(i);
 			action.actionIndex = i;
@@ -41,8 +47,10 @@ public class ActionComponent extends Component {
 		
 		//Switch by type of NPC
 		switch(tree.trim()){
-		case "ChefOld":
+		case "Chef":
 			//Add the starting action of the chef
+			this.actions.add(new WaitToCook());
+			
 			break;
 		case "Customer":
 			//Starting wait on customer spawn (party size based on capacity)
@@ -54,18 +62,16 @@ public class ActionComponent extends Component {
 			
 			//The FindTable class will continue the rest of the tree
 			break;
-		case "WaiterOld":
-			//Start action of the waiter NPC
-			break;
-		
-		case "Waiter1":
+		case "Waiter":
 			//New waiter behaviour tree
+			this.actions.add((new WaitForOrder()));
+			
 			break;
 		default:
 			break;
 		}
 	}
-	
+
 	@Override
 	public void update() {
 		//If there is not current action, get one

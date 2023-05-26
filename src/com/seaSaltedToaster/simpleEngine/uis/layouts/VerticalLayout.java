@@ -28,7 +28,7 @@ public class VerticalLayout extends UiLayout {
 	}
 
 	private boolean hasExistingConstraints(UiComponent child) {
-		return (child.getConstraints().getYConstraint() != null); 
+		return (child.getConstraints().getYConstraint() != null || !child.getConstraints().applyLayout); 
 	}
 
 	public float getEdgeSpace() {

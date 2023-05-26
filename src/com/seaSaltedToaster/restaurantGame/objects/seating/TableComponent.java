@@ -24,6 +24,7 @@ public class TableComponent extends Component implements PlacementListener {
 	private int capacity = 0;
 	
 	//Chairs
+	private Entity tablePartyLeader;
 	private List<SeatComponent> chairs;
 	
 	public TableComponent() {
@@ -69,6 +70,14 @@ public class TableComponent extends Component implements PlacementListener {
 	
 	public int capacity() {
 		return capacity;
+	}
+
+	public Entity getTablePartyLeader() {
+		return tablePartyLeader;
+	}
+
+	public void setTablePartyLeader(Entity tablePartyLeader) {
+		this.tablePartyLeader = tablePartyLeader;
 	}
 
 	public List<SeatComponent> getChairs() {
